@@ -1,0 +1,14 @@
+tmp
+apis/.venv
+apis/backgrounds
+apis/checkpoints
+apis/gfpgan
+apis/media
+apis/output
+apis/sadtalker
+apis/temp
+apis/videos
+apis/gemini-images
+apis/oldapi.py
+apis/**/__pycache__/
+.env
