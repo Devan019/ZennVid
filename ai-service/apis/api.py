@@ -1,8 +1,8 @@
 import json
 import os
 
-from fastapi import FastAPI
-from fastapi.responses import FileResponse 
+from fastapi import FastAPI, File, UploadFile
+from fastapi.responses import FileResponse, JSONResponse 
 import edge_tts
 
 from pydantic import BaseModel
@@ -136,6 +136,20 @@ async def generate_image_gemini_test(request: ImageRequest):
 
     return FileResponse(zip_path, media_type="application/zip", filename="generated_images.zip")
 
+class CaptionRequest(BaseModel):
+    audio_file: str
+
+@app.post("/generate-capations")
+def create_captions(req: CaptionRequest) -> str:
+    from helpers.wisper_model import generate_captions
+    srt_path = generate_captions(req.audio_file)
+    return srt_path
+
+@app.post("/generate-captions-test")
+async def create_captions_test(file: UploadFile = File(...)):
+    from helpers.wisper_model import generate_captions
+    captions = await generate_captions(file)
+    return JSONResponse(content=captions)
 
 
 import uvicorn
