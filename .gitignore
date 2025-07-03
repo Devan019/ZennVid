@@ -1,4 +1,8 @@
-**.json
+
 ai-service/SadTalker
 ai-service/coqui.ai/TTS
 test
+
+audio.json
+caption.json
+groq-script.json
