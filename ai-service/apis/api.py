@@ -24,6 +24,41 @@ tmp_image_description = [
     "the sky pirate's airship flying through a narrow, neon-lit tunnel beneath the floating cities, with the ship's engines glowing bright blue as it picks up speed"
 ]
 
+Audio_Mapper = {
+    "gujarati" : "gu",
+    "bengali" : "bn",
+    "tamil" : "ta",
+    "telugu" : "te",
+    "marathi" : "mr",
+    "malayalam" : "ml",
+    "punjabi" : "pa",
+    "urdu" : "ur",
+    "kannada" : "kn",
+    "assamese" : "as",
+    "maithili" : "mai",
+    "sindhi" : "sd",
+    "sanskrit" : "sa",
+    "english" : "en",
+    "french" : "fr",
+    "spanish" : "es",
+    "german" : "de",
+    "italian" : "it",
+    "japanese" : "ja",
+    "korean" : "ko",
+    "portuguese" : "pt",
+    "russian" : "ru",
+    "hindi" : "hi",
+    "arabic" : "ar",
+    "turkish" : "tr",
+    "dutch" : "nl",
+    "polish" : "pl",
+    "swedish" : "sv",
+    "norwegian" : "no",
+    "danish" : "da",
+    "finnish" : "fi",
+    "chinese" : "zh-CN",
+}
+
 
 # Folder structure
 BASE_DIR = "media"
@@ -150,6 +185,87 @@ async def create_captions_test(file: UploadFile = File(...)):
     from helpers.wisper_model import generate_captions
     captions = await generate_captions(file)
     return JSONResponse(content=captions)
+
+
+class VideoClone(BaseModel):
+    audio: str
+    text: str
+
+@app.post("/voice-clone")
+def voice_clone(request: VideoClone):
+    from helpers.coqui.voice_cloning import getVoiceCloneAudio
+    output_path =  getVoiceCloneAudio(request.text, request.audio)
+    return output_path
+
+
+class VideoPro(BaseModel):
+    topic: str
+    theme: str
+    voice: str
+    image_size: str = "1024x1024"
+    language: str = "en"
+
+@app.post("/video-gen-pro")
+async def videoGenPro(req: VideoPro):
+
+    # step  1 groq script
+    from helpers.groq_script import getScript
+    from helpers.gemini_image_gen import generate_image
+    from helpers.translate import getTranslateText
+    from helpers.wisper_model import generate_captions
+    from helpers.edge_tts import generate_audio_edge
+    from helpers.assembia_captaions import assembia_caption
+    
+
+    raw_string = getScript(req.theme, req.topic)
+    groqScriptTmp = raw_string.encode().decode('unicode_escape')
+    groqScript = json.loads(groqScriptTmp)
+
+    # print(groqScript)
+
+    images = []
+    #step 2 gen images
+    idx = 0
+    for item in groqScript:
+        print("item is ", item)
+        prompt = item['prompt']
+        img_path = generate_image(prompt, req.image_size, idx)
+        idx += 1
+        images.append(img_path)
+
+    # step 3 gen audio
+    audio_desc = ""
+    audio_desc2 = ""
+    for item in groqScript:
+
+        description = getTranslateText(item['description'], Audio_Mapper[req.language])
+        audio_desc += description + ". "
+        audio_desc2 += item['description'] 
+
+    print(f"description is ", audio_desc)
+    audio = await generate_audio_edge(audio_desc, req.voice,"audio.mp3")
+
+    # step 4 gen captions
+    srt_path = await generate_captions(audio)
+
+    return {
+        "script": groqScript,
+        "images": images,
+        "audio": audio,
+        "captions": srt_path
+    }
+
+
+
+class TranslateReq(BaseModel):
+    text: str
+    language : str
+
+@app.post("/translate-text")
+def translate_text(request: TranslateReq):
+    from helpers.translate import getTranslateText
+    translated_text = getTranslateText(request.text, request.language)
+    return translated_text
 
 
 import uvicorn

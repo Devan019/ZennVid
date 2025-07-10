@@ -5,7 +5,7 @@ export const UserValidation = z.object({
   email : z.string().email(),
   username: z.string(),
   password : z.string().min(8, "Password must be at least 8 characters long").optional(),
-  provider : z.nativeEnum(Provider).default(Provider.CREDENTIALS)
+  provider : z.nativeEnum(Provider).default(Provider.CREDENTIALS).optional()
 })
 
 export const SignInValidation = z.object({

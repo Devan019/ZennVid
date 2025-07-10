@@ -1,20 +1,57 @@
-from TTS.api import TTS
-from torch.serialization import safe_globals
-from TTS.tts.configs.xtts_config import XttsConfig
-from TTS.tts.models.xtts import XttsAudioConfig  # <- NEW line
-
+from fastapi import UploadFile
+from TTS.api import TTS  # <-- Required for dataset config
+import os
 print("Loading TTS model...")
 
-with safe_globals([XttsConfig, XttsAudioConfig]):  # <- Add both here
-    tts = TTS("tts_models/multilingual/multi-dataset/xtts_v2", gpu=False)
+# Add all required globals for safe unpickling
+
+tts = TTS("tts_models/multilingual/multi-dataset/xtts_v2")
+tts.to("cuda")
 
 print("TTS model loaded successfully.")
 
-tts.tts_to_file(
-    text="It took me quite a long time to develop a voice, and now that I have it I'm not going to be silent.",
-    file_path="output.wav",
-    speaker_wav="audio.wav",
-    language="en"
-)
 
+# tts.tts_to_file(
+#     text=text,
+#     file_path="output.wav",
+#     speaker_wav="marks.wav",
+#     language="en"
+# )
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+SPEAKER_DIR = os.path.join(BASE_DIR)
+
+voiceMapper = {
+    "Mark Zuckerberg" : os.path.join(SPEAKER_DIR, "marks.wav"),
+    "Elon Musk" : os.path.join(SPEAKER_DIR, "elon.wav"),
+    "Donald Trump" : os.path.join(SPEAKER_DIR, "trump.wav"),
+    "Barack Obama" : os.path.join(SPEAKER_DIR, "obama.wav"),
+    "Joe Biden" : os.path.join(SPEAKER_DIR, "biden.wav"),
+    "Narendra Modi" : os.path.join(SPEAKER_DIR, "modi.wav"),
+    "Vladimir Putin" : os.path.join(SPEAKER_DIR, "putin.wav"),
+    "Cristiano Ronaldo" : os.path.join(SPEAKER_DIR, "cristiano.wav"),
+    "Lionel Messi" : os.path.join(SPEAKER_DIR, "messi.wav"),
+    "Bill Gates" : os.path.join(SPEAKER_DIR, "gates.wav"),
+    "Jeff Bezos" : os.path.join(SPEAKER_DIR, "bezos.wav"),
+    "Sundar Pichai" : os.path.join(SPEAKER_DIR, "pichai.wav"),
+    "Tim Cook" : os.path.join(SPEAKER_DIR, "cook.wav"),
+    "Satya Nadella" : os.path.join(SPEAKER_DIR, "nadella.wav"),
+    "Warren Buffet" : os.path.join(SPEAKER_DIR, "buffet.wav"),
+}
+
+def getVoiceCloneAudio(text: str = "Technology has always been about bringing people closer together. At Meta, our mission is to build the future of human connection — a future powered by AI, virtual reality, and the metaverse", speaker_key: str = "Mark Zuckerberg", output_path: str = "output.wav") -> None:
+    print(f"Generating speech for: {text}")
+    speaker = voiceMapper.get(speaker_key)
+    print(f"Selected speaker: {speaker_key} ({speaker})")
+    if not speaker:
+        speaker = "marks.wav"
+    tts.tts_to_file(
+        text=text,
+        file_path=output_path,
+        speaker_wav=speaker,
+        language="en"
+    )
+    return output_path
+
+getVoiceCloneAudio(text="Technology has always been about bringing people closer together. At Meta, our mission is to build the future of human connection — a future powered by AI, virtual reality, and the metaverse", speaker_key="Mark Zuckerberg", output_path="output.wav")
 print("Speech generated and saved to output.wav")

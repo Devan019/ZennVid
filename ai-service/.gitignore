@@ -12,3 +12,5 @@ apis/gemini-images
 apis/oldapi.py
 apis/**/__pycache__/
 .env
+results
+*.pyc

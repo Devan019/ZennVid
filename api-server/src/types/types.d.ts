@@ -1,5 +1,6 @@
 import "@auth/express";
-import { Request } from 'express';
+import e , { NextFunction, Request, Response } from 'express';
+
 declare module "@auth/express" {
   interface User {
     _id: string;
@@ -34,3 +35,5 @@ declare global {
     }
   }
 }
+
+

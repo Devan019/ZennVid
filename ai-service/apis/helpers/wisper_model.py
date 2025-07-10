@@ -40,7 +40,7 @@ async def generate_captions(file: Union[str, UploadFile]) -> list[dict]:
     model = whisper.load_model("base", device=device)
 
     # Transcribe
-    result = model.transcribe(file_path)
+    result = model.transcribe(file_path, task="translate")
 
     # Build JSON captions
     captions = []
@@ -52,4 +52,10 @@ async def generate_captions(file: Union[str, UploadFile]) -> list[dict]:
             "text": segment["text"].strip()
         })
 
+    print(captions)
     return captions
+
+import asyncio
+
+if __name__ == "__main__":
+    asyncio.run(generate_captions("audio.mp3"))

@@ -2,9 +2,12 @@ import { ExpressAuthConfig } from "@auth/express";
 import { Provider } from "../constants/provider";
 import Google from "@auth/express/providers/google";
 import { AUTH_GOOGLE_ID, AUTH_GOOGLE_SECRET, AUTH_SECRET } from "../env_var";
-import connectToMongo from "../lib/mongoConnection";
+import { skipCSRFCheck } from "@auth/core";
+import connectToMongo from "../utils/mongoConnection";
 import { User } from "./model/User";
-import ExpressError from "../lib/ExpressError";
+import ExpressError from "../utils/ExpressError";
+import Credentials from "@auth/express/providers/credentials"
+import { passwordCompare } from "../utils/passwordCompare";
 
 export const authConfig: ExpressAuthConfig = {
   providers: [
@@ -12,7 +15,62 @@ export const authConfig: ExpressAuthConfig = {
       clientId: AUTH_GOOGLE_ID,
       clientSecret: AUTH_GOOGLE_SECRET,
       name: "google",
+    }),
+    Credentials({
+      name: "credentials",
+      credentials: {
+        email: {},
+        password: {},
+        username: {},
+        provider: {}
+      },
+
+      async authorize(credentials, request) {
+        let user = null;
+        try {
+          await connectToMongo();
+          const { email, password, username } = credentials as {
+            username?: string,
+            email?: string,
+            password: string,
+          };
+
+          if (!password) {
+            throw new ExpressError(400, "Password is required");
+          }
+
+          user = await User.findOne({ $or: [{ email }, { username }] });
+
+          if (!user) {
+            throw new ExpressError(404, "User not found");
+          }
+
+          if (user.provider !== Provider.CREDENTIALS) {
+            throw new ExpressError(409, "User already exists with different provider");
+          }
+
+          const isPasswordValid = await passwordCompare(password, user.password);
+
+          if (!isPasswordValid) {
+            throw new ExpressError(401, "Invalid credentials");
+          }
+
+          return {
+            _id: user._id.toString(),
+            email: user.email,
+            username: user.username,
+            provider: user.provider,
+          };
+
+
+        } catch (error) {
+          console.error(error);
+          throw new ExpressError(500, "Internal server error");
+        }
+
+      },
     })
+
   ],
   secret: AUTH_SECRET,
   session: {
@@ -51,13 +109,15 @@ export const authConfig: ExpressAuthConfig = {
           }
           return true;
         }
+        if (account?.provider) {
+          await User.create({
+            email: user.email,
+            username: user.name,
+            provider: account.provider
+          });
+        }
 
-
-        await User.create({
-          email: user.email,
-          username: user.name,
-          provider: account?.provider ?? Provider.CREDENTIALS,
-        });
+        console.log("User created successfully");
 
         return true;
       } catch (error) {
@@ -65,6 +125,6 @@ export const authConfig: ExpressAuthConfig = {
         return false;
       }
     },
-
   },
+  skipCSRFCheck,
 };
