@@ -1,14 +1,14 @@
 from fastapi import UploadFile
 from TTS.api import TTS  # <-- Required for dataset config
 import os
-print("Loading TTS model...")
+
 
 # Add all required globals for safe unpickling
 
 tts = TTS("tts_models/multilingual/multi-dataset/xtts_v2")
 tts.to("cuda")
 
-print("TTS model loaded successfully.")
+
 
 
 # tts.tts_to_file(
@@ -40,9 +40,6 @@ voiceMapper = {
 }
 
 def getVoiceCloneAudio(text: str = "Technology has always been about bringing people closer together. At Meta, our mission is to build the future of human connection — a future powered by AI, virtual reality, and the metaverse", speaker_key: str = "Mark Zuckerberg", output_path: str = "output.wav") -> None:
-    print(f"Generating speech for: {text}")
-    speaker = voiceMapper.get(speaker_key)
-    print(f"Selected speaker: {speaker_key} ({speaker})")
     if not speaker:
         speaker = "marks.wav"
     tts.tts_to_file(
@@ -53,5 +50,5 @@ def getVoiceCloneAudio(text: str = "Technology has always been about bringing pe
     )
     return output_path
 
-getVoiceCloneAudio(text="Technology has always been about bringing people closer together. At Meta, our mission is to build the future of human connection — a future powered by AI, virtual reality, and the metaverse", speaker_key="Mark Zuckerberg", output_path="output.wav")
-print("Speech generated and saved to output.wav")
+# getVoiceCloneAudio(text="Technology has always been about bringing people closer together. At Meta, our mission is to build the future of human connection — a future powered by AI, virtual reality, and the metaverse", speaker_key="Mark Zuckerberg", output_path="output.wav")
+

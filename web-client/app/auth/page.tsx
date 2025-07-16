@@ -2,13 +2,14 @@
 import { Providers, signInSchema, signUpSchema } from "@/types/auth";
 import { motion, AnimatePresence } from "framer-motion"
 import { Mail, User, Shield, EyeOff, Eye, ArrowRight, Lock, InstagramIcon, Facebook } from "lucide-react"
-import { redirect } from "next/navigation";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react"
 import { z } from "zod";
-import { toast } from "sonner"
 import { FaApple, FaGoogle, FaInstagram, FaTwitter } from "react-icons/fa"
 import { FaMeta, FaSquareXTwitter, FaX, FaXTwitter } from "react-icons/fa6"
+import { useMutation } from "@tanstack/react-query";
+import { loginWithCredentials, loginWithGoogle } from "@/lib/apiProvider";
+import { toast } from "sonner";
 
 export interface ConformUser {
   username: string;
@@ -37,7 +38,22 @@ interface IFormErrors {
 type SignInData = z.infer<typeof signInSchema>;
 type SignUpData = z.infer<typeof signUpSchema>;
 
+
+
 const AuthPages: React.FC = () => {
+
+  const googleMutation = useMutation({
+    mutationFn: loginWithGoogle, // function that does API call
+    onSuccess: (redirectUrl) => {
+      window.location.href = redirectUrl; // redirect to Google
+    },
+    onError: (err) => {
+      console.error("Error logging in:", err);
+    },
+  });
+
+
+
   const router = useRouter();
   const [signInMode, setSignInMode] = useState<'email' | 'username'>('email')
   const [isSignUp, setIsSignUp] = useState<boolean>(false)
@@ -62,6 +78,26 @@ const AuthPages: React.FC = () => {
       setErrors(prev => ({ ...prev, [name]: '' }))
     }
   }
+
+  const credentialsMutation = useMutation({
+    mutationFn: () => {
+      const { emailOrUsername, password } = formData;
+      return loginWithCredentials(emailOrUsername, emailOrUsername, password);
+    },
+    onSuccess: (data) => {
+
+      console.log("Login successful:", data);
+      if (data) {
+
+        window.location.href = "/dashboard"; // redirect to dashboard
+      } else {
+        toast.error("Invalid credentials. Please check your email/username and password.");
+      }
+    },
+    onError: (error) => {
+      toast.error("Login failed. Please check your credentials and try again.");
+    },
+  })
 
   const validateForm = (): boolean => {
     try {
@@ -93,30 +129,16 @@ const AuthPages: React.FC = () => {
           password: formData.password,
         } as SignInData
 
-
-
       // Handle form submission here - you can call your API
+
 
       // Example: 
       if (isSignUp) {
-        
+
       } else {
         "use server"
         try {
-          console.log("get it")
-          const result:any = {};
-
-          if (result?.error) {
-            // This will be "CredentialsSignin" when authorize returns null
-            if (result.error === "CredentialsSignin") {
-              toast.error("Invalid credentials. Please check your email/username and password.")
-            } else {
-              toast.error("An error occurred during sign in. Please try again.")
-            }
-          } else if (result?.ok) {
-            // Success - redirect manually or handle success
-            window.location.href = "/" // or use router.push()
-          }
+          const result = await credentialsMutation.mutateAsync();
         } catch (error) {
           toast.error("user doesn't exit");
         }
@@ -146,6 +168,7 @@ const AuthPages: React.FC = () => {
 
   async function handleSocialLogin(name: Providers) {
     // await signIn(name, { redirect: true, callbackUrl: "/dashboard" });
+    await googleMutation.mutateAsync();
   }
 
   const socialProviders = [

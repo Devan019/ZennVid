@@ -125,6 +125,9 @@ export const authConfig: ExpressAuthConfig = {
         return false;
       }
     },
+    
   },
   skipCSRFCheck,
+  useSecureCookies : process.env.NODE_ENV === "production",
+  trustHost: true,
 };

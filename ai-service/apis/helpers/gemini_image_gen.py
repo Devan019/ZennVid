@@ -35,7 +35,7 @@ def generate_image(prompt: str, image_size: str = "1024x1024", index: int = 0) -
 
     for part in response.candidates[0].content.parts:
       if part.text is not None:
-        print(part.text)
+        pass
       elif part.inline_data is not None:
         image = Image.open(BytesIO((part.inline_data.data)))
         image.save(f"p{index}.png")

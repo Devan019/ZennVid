@@ -44,7 +44,6 @@ def assembia_caption(audio_path: str) -> list[dict]:
             "end": format_timestamp(segment.end),
             "text": segment.text.strip()
         })
-        print(captions)
 
     return captions
 

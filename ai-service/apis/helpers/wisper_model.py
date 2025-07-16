@@ -52,7 +52,6 @@ async def generate_captions(file: Union[str, UploadFile]) -> list[dict]:
             "text": segment["text"].strip()
         })
 
-    print(captions)
     return captions
 
 import asyncio

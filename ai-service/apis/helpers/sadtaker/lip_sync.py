@@ -2,7 +2,6 @@ import requests
 import base64
 import os
 from dotenv import load_dotenv
-print("Loading environment variables...")
 # Use this function to convert an image file from the filesystem to base64
 def image_file_to_base64(image_path):
     with open(image_path, 'rb') as f:

@@ -84,13 +84,10 @@ class GroqScript(BaseModel):
 async def groq_script(scipt: GroqScript):
     from helpers.groq_script  import getScript  
     script = getScript(scipt.theme, scipt.story)
-    # print(script)
     script = script.replace("```json", '')
     script = script.replace("```", '')
 
     raw_string = script.encode().decode('unicode_escape')
-    # print(script)
-    # parsed_script = json.loads(script)
     parsed_json = json.loads(raw_string)
     return parsed_json
 
@@ -221,13 +218,11 @@ async def videoGenPro(req: VideoPro):
     groqScriptTmp = raw_string.encode().decode('unicode_escape')
     groqScript = json.loads(groqScriptTmp)
 
-    # print(groqScript)
 
     images = []
     #step 2 gen images
     idx = 0
     for item in groqScript:
-        print("item is ", item)
         prompt = item['prompt']
         img_path = generate_image(prompt, req.image_size, idx)
         idx += 1
@@ -242,7 +237,6 @@ async def videoGenPro(req: VideoPro):
         audio_desc += description + ". "
         audio_desc2 += item['description'] 
 
-    print(f"description is ", audio_desc)
     audio = await generate_audio_edge(audio_desc, req.voice,"audio.mp3")
 
     # step 4 gen captions
