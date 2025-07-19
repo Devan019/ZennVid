@@ -1,12 +1,10 @@
-import e, { Request, Response } from "express";
-import connectToMongo from "./utils/mongoConnection";
-import { ExpressAuth, getSession } from "@auth/express";
-import { authConfig } from "./auth/auth";
+import e from "express";
 import cookieParser from "cookie-parser";
 import { AuthRouter } from "./auth/route";
-import { NextFunction } from "express-serve-static-core";
 import cors from "cors"
+import { TestRouter } from "./test/route";
 const app = e();
+app.use(e.json());
 const corsOptions = {
             origin: ['http://localhost:3000', 'https://your-frontend-domain.com'], // Whitelist specific origins
             methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow specific HTTP methods
@@ -17,25 +15,12 @@ const corsOptions = {
 app.use(cookieParser());
 app.use(cors(corsOptions));
 
-export async function authSession(req: Request, res: Response, next: NextFunction) {
-  res.locals.session = await getSession(req, authConfig) ?? { user: null };
-  next()
-}
-
-
-app.use(authSession);
-
-app.get("/", async (req, res) => {
-  await connectToMongo();
-  res.send("Hello World!");
-});
-
 app.set("trust proxy", true)
-app.use("/auth/", ExpressAuth(authConfig));
-app.use(e.json());
-app.use("/api/auth", AuthRouter);
+
+app.use("/auth", AuthRouter);
+app.use("/test", TestRouter);
 
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`Server is running on port http://localhost:${PORT}`);
 });

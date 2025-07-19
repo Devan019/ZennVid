@@ -8,176 +8,279 @@ import { z } from "zod";
 import { FaApple, FaGoogle, FaInstagram, FaTwitter } from "react-icons/fa"
 import { FaMeta, FaSquareXTwitter, FaX, FaXTwitter } from "react-icons/fa6"
 import { useMutation } from "@tanstack/react-query";
-import { loginWithCredentials, loginWithGoogle } from "@/lib/apiProvider";
+import { checkUserWithOtp, loginWithCredentials, loginWithGoogle, signUpWithCredentials } from "@/lib/apiProvider";
 import { toast } from "sonner";
+import { useAuthStore } from "@/store/UserStore";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogOverlay, DialogTitle } from "@/components/ui/dialog";
+import { OtpInput } from "@/components/OtpInput";
 
+
+// Types
 export interface ConformUser {
-  username: string;
   email: string;
   role: string;
   password: string;
+  username?: string;
 }
 
 interface IFormData {
-  emailOrUsername: string;
   email: string;
-  username: string;
   password: string;
   confirmPassword: string;
+  username: string;
 }
 
 interface IFormErrors {
-  emailOrUsername?: string;
   email?: string;
-  username?: string;
   password?: string;
   confirmPassword?: string;
+  username?: string;
+  general?: string;
 }
-
 
 type SignInData = z.infer<typeof signInSchema>;
 type SignUpData = z.infer<typeof signUpSchema>;
 
-
-
 const AuthPages: React.FC = () => {
+  const router = useRouter();
 
+  // State management
+  const [isSignUp, setIsSignUp] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { login } = useAuthStore();
+
+  const [openotp, setopenotp] = useState(false)
+  const [otp, setotp] = useState<string>("")
+
+  const [formData, setFormData] = useState<IFormData>({
+    email: '',
+    password: '',
+    confirmPassword: '',
+    username: '',
+  });
+
+  const [errors, setErrors] = useState<IFormErrors>({});
+
+  // Mutations
+  //google login
   const googleMutation = useMutation({
-    mutationFn: loginWithGoogle, // function that does API call
+    mutationFn: loginWithGoogle,
     onSuccess: (redirectUrl) => {
-      window.location.href = redirectUrl; // redirect to Google
+      if (redirectUrl) {
+        window.location.href = redirectUrl;
+      }
     },
-    onError: (err) => {
-      console.error("Error logging in:", err);
+    onError: (error: any) => {
+      console.error("Google login error:", error);
+      toast.error("Failed to login with Google. Please try again.");
+    },
+  });
+
+  // Credentials mutation for sign in and sign up
+  const credentialsMutation = useMutation({
+    mutationFn: async () => {
+      if (isSignUp) {
+        // For sign up
+        const { email, password, username } = formData;
+        return await signUpWithCredentials(email, password, username);
+      } else {
+        // For sign in
+        const { email, password } = formData;
+        return await loginWithCredentials(email, password);
+      }
+    },
+    onSuccess: (data) => {
+      console.log(`${isSignUp ? 'Sign up' : 'Sign in'} successful:`, data);
+      toast.success(`${isSignUp ? 'Send OTP' : 'Welcome back'}!`);
+      if (!isSignUp) {
+        login(data?.DATA?.user);
+        console.log("Redirecting to dashboard...");
+        setTimeout(() => {
+          router.push("/dashboard");
+        },1500);
+      } else {
+        setopenotp(true)
+      }
+
+      // Redirect to dashboard or appropriate page
+    },
+    onError: (error: any) => {
+      console.error(`${isSignUp ? 'Sign up' : 'Sign in'} error:`, error);
+      const errorMessage = error?.message ||
+        (isSignUp ? "Failed to create account. Please try again." :
+          "Invalid credentials. Please check your email and password.");
+      toast.error(errorMessage);
+    },
+  });
+
+  //check otp mutation
+  const checkOtpMutation = useMutation({
+    mutationFn: async (otp: string) => {
+      const { email } = formData;
+      return await checkUserWithOtp(email, otp);
+    },
+    onSuccess: (data) => {
+      console.log("OTP verification successful:", data);
+      toast.success("OTP verified successfully! redirecting to home page...");
+      login(data?.DATA?.user);
+      setTimeout(() => {
+          router.push("/dashboard");
+        },1500);
+    },
+    onError: (error: any) => {
+      console.error("OTP verification error:", error);
+      toast.error("Invalid OTP. Please try again.");
     },
   });
 
 
 
-  const router = useRouter();
-  const [signInMode, setSignInMode] = useState<'email' | 'username'>('email')
-  const [isSignUp, setIsSignUp] = useState<boolean>(false)
-  const [iconError] = useState<string>("-translate-y-[110%]")
-  const [showPassword, setShowPassword] = useState<boolean>(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false)
-  const [formData, setFormData] = useState<IFormData>({
-    emailOrUsername: '',
-    email: '',
-    username: '',
-    password: '',
-    confirmPassword: '',
-  })
-  const [errors, setErrors] = useState<IFormErrors>({})
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>): void => {
-    const { name, value } = e.target
-    setFormData(prev => ({ ...prev, [name]: value }))
+  // Event handlers
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    const { name, value } = e.target;
 
-    // Clear error when user starts typing
-    if (errors[name as keyof IFormErrors]) {
-      setErrors(prev => ({ ...prev, [name]: '' }))
+    // Handle emailOrUsername for sign in
+    const fieldName = name === 'emailOrUsername' ? 'email' : name;
+
+    setFormData(prev => ({ ...prev, [fieldName]: value }));
+
+    // Clear specific field error when user starts typing
+    if (errors[fieldName as keyof IFormErrors]) {
+      setErrors(prev => ({ ...prev, [fieldName]: undefined }));
     }
-  }
 
-  const credentialsMutation = useMutation({
-    mutationFn: () => {
-      const { emailOrUsername, password } = formData;
-      return loginWithCredentials(emailOrUsername, emailOrUsername, password);
-    },
-    onSuccess: (data) => {
-
-      console.log("Login successful:", data);
-      if (data) {
-
-        window.location.href = "/dashboard"; // redirect to dashboard
-      } else {
-        toast.error("Invalid credentials. Please check your email/username and password.");
-      }
-    },
-    onError: (error) => {
-      toast.error("Login failed. Please check your credentials and try again.");
-    },
-  })
+    // Clear general error
+    if (errors.general) {
+      setErrors(prev => ({ ...prev, general: undefined }));
+    }
+  };
 
   const validateForm = (): boolean => {
     try {
-      const schema = isSignUp ? signUpSchema : signInSchema
-      // console.log(schema, formData)
-      schema.parse(formData)
-      setErrors({})
-      return true
+      const schema = isSignUp ? signUpSchema : signInSchema;
+
+      // Prepare data for validation
+      const dataToValidate = isSignUp
+        ? formData
+        : { email: formData.email, password: formData.password };
+
+      schema.parse(dataToValidate);
+      setErrors({});
+      return true;
     } catch (error) {
       if (error instanceof z.ZodError) {
-        const newErrors: IFormErrors = {}
+        const newErrors: IFormErrors = {};
         error.errors.forEach(err => {
-          const fieldName = err.path[0] as keyof IFormErrors
-          newErrors[fieldName] = err.message
-        })
-        setErrors(newErrors)
+          const fieldName = err.path[0] as keyof IFormErrors;
+          newErrors[fieldName] = err.message;
+        });
+        setErrors(newErrors);
       }
-      return false
+      return false;
     }
-  }
+  };
 
-  const handleSubmit = async () => {
-    if (validateForm()) {
-      const submissionData = isSignUp
-        ? formData as SignUpData
-        : {
-          email: formData.email,
-          username: formData.username,
-          password: formData.password,
-        } as SignInData
+  const handleSubmit = async (e?: React.FormEvent) => {
+    e?.preventDefault();
 
-      // Handle form submission here - you can call your API
-
-
-      // Example: 
-      if (isSignUp) {
-
-      } else {
-        "use server"
-        try {
-          const result = await credentialsMutation.mutateAsync();
-        } catch (error) {
-          toast.error("user doesn't exit");
-        }
-      }
-
+    if (!validateForm()) {
+      return;
     }
-  }
+
+    setIsLoading(true);
+
+    try {
+      await credentialsMutation.mutateAsync();
+    } catch (error) {
+      // Error is already handled in the mutation
+      console.error('Submit error:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const switchMode = (): void => {
-    setIsSignUp(!isSignUp)
+    setIsSignUp(!isSignUp);
     setFormData({
-      emailOrUsername: '',
       email: '',
-      username: '',
       password: '',
       confirmPassword: '',
-    })
-    setErrors({})
-  }
+      username: '',
+    });
+    setErrors({});
+    setShowPassword(false);
+    setShowConfirmPassword(false);
+  };
+
   const togglePasswordVisibility = (): void => {
-    setShowPassword(!showPassword)
-  }
+    setShowPassword(!showPassword);
+  };
 
   const toggleConfirmPasswordVisibility = (): void => {
-    setShowConfirmPassword(!showConfirmPassword)
-  }
+    setShowConfirmPassword(!showConfirmPassword);
+  };
 
-  async function handleSocialLogin(name: Providers) {
-    // await signIn(name, { redirect: true, callbackUrl: "/dashboard" });
-    await googleMutation.mutateAsync();
-  }
+  const handleSocialLogin = async (provider: Providers) => {
+    try {
+      setIsLoading(true);
 
+      switch (provider) {
+        case Providers.GOOGLE:
+          await googleMutation.mutateAsync();
+          break;
+        default:
+          toast.error(`${provider} login is not implemented yet.`);
+      }
+    } catch (error) {
+      console.error(`${provider} login error:`, error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Social providers configuration
   const socialProviders = [
-    { name: Providers.GOOGLE, icon: FaGoogle, color: 'from-red-500 to-yellow-500', hoverColor: 'hover:shadow-red-500/20' },
-    { name: Providers.INSAGRAM, icon: FaInstagram, color: 'from-pink-500 to-purple-600', hoverColor: 'hover:shadow-pink-500/20' },
-    { name: Providers.META, icon: FaMeta, color: 'from-blue-600 to-blue-700', hoverColor: 'hover:shadow-blue-500/20' },
-    { name: Providers.X, icon: FaXTwitter, color: 'from-sky-400 to-sky-600', hoverColor: 'hover:shadow-sky-500/20' },
-    { name: Providers.APPLE, icon: FaApple, color: 'from-gray-800 to-black', hoverColor: 'hover:shadow-gray-500/20' },
-  ]
+    {
+      name: Providers.GOOGLE,
+      icon: FaGoogle,
+      color: 'from-red-500 to-yellow-500',
+      hoverColor: 'hover:shadow-red-500/20',
+      enabled: true
+    },
+    {
+      name: Providers.INSAGRAM,
+      icon: FaInstagram,
+      color: 'from-pink-500 to-purple-600',
+      hoverColor: 'hover:shadow-pink-500/20',
+      enabled: false
+    },
+    {
+      name: Providers.META,
+      icon: FaMeta,
+      color: 'from-blue-600 to-blue-700',
+      hoverColor: 'hover:shadow-blue-500/20',
+      enabled: false
+    },
+    {
+      name: Providers.X,
+      icon: FaXTwitter,
+      color: 'from-sky-400 to-sky-600',
+      hoverColor: 'hover:shadow-sky-500/20',
+      enabled: false
+    },
+    {
+      name: Providers.APPLE,
+      icon: FaApple,
+      color: 'from-gray-800 to-black',
+      hoverColor: 'hover:shadow-gray-500/20',
+      enabled: false
+    },
+  ];
+
+  const iconErrorClass = "-translate-y-[110%]";
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-900 relative overflow-hidden">
@@ -251,7 +354,7 @@ const AuthPages: React.FC = () => {
           </motion.div>
 
           {/* Social Login Buttons */}
-          <motion.div
+          {/* <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.15 }}
@@ -263,16 +366,21 @@ const AuthPages: React.FC = () => {
                   key={provider.name}
                   type="button"
                   onClick={() => handleSocialLogin(provider.name)}
-                  whileHover={{ scale: 1.05, y: -2 }}
-                  whileTap={{ scale: 0.95 }}
+                  disabled={!provider.enabled || isLoading}
+                  whileHover={provider.enabled && !isLoading ? { scale: 1.05, y: -2 } : {}}
+                  whileTap={provider.enabled && !isLoading ? { scale: 0.95 } : {}}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, delay: 0.2 + index * 0.1 }}
-                  className={`cursor-pointer p-3 rounded-xl bg-gradient-to-r ${provider.color} text-white flex items-center justify-center hover:shadow-lg ${provider.hoverColor} transition-all group relative overflow-hidden`}
+                  className={`p-3 rounded-xl bg-gradient-to-r ${provider.color} text-white flex items-center justify-center hover:shadow-lg ${provider.hoverColor} transition-all group relative overflow-hidden ${
+                    provider.enabled && !isLoading 
+                      ? 'cursor-pointer' 
+                      : 'cursor-not-allowed opacity-50'
+                  }`}
                   aria-label={`Sign ${isSignUp ? 'up' : 'in'} with ${provider.name}`}
                 >
                   <motion.div
-                    whileHover={{ rotate: [0, -10, 10, 0] }}
+                    whileHover={provider.enabled && !isLoading ? { rotate: [0, -10, 10, 0] } : {}}
                     transition={{ duration: 0.6 }}
                   >
                     <provider.icon className="w-5 h-5" />
@@ -280,7 +388,7 @@ const AuthPages: React.FC = () => {
                   <motion.div
                     className="absolute inset-0 bg-white/20 rounded-xl"
                     initial={{ scale: 0, opacity: 0 }}
-                    whileHover={{ scale: 1, opacity: 1 }}
+                    whileHover={provider.enabled && !isLoading ? { scale: 1, opacity: 1 } : {}}
                     transition={{ duration: 0.3 }}
                   />
                 </motion.button>
@@ -292,47 +400,10 @@ const AuthPages: React.FC = () => {
               <span className="px-4 text-gray-400 text-sm">or continue with</span>
               <div className="flex-1 h-px bg-gray-600"></div>
             </div>
-          </motion.div>
-
-          {/* Sign In Mode Toggle */}
-          {!isSignUp && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="mb-6"
-            >
-              <div className="flex bg-gray-800/50 rounded-xl p-1 border border-gray-600">
-                <motion.button
-                  type="button"
-                  onClick={() => setSignInMode('email')}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className={`cursor-pointer flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all ${signInMode === 'email'
-                    ? 'bg-gradient-to-r from-purple-600 to-cyan-600 text-white shadow-lg'
-                    : 'text-gray-400 hover:text-white'
-                    }`}
-                >
-                  Email
-                </motion.button>
-                <motion.button
-                  type="button"
-                  onClick={() => setSignInMode('username')}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className={`cursor-pointer flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all ${signInMode === 'username'
-                    ? 'bg-gradient-to-r from-purple-600 to-cyan-600 text-white shadow-lg'
-                    : 'text-gray-400 hover:text-white'
-                    }`}
-                >
-                  Username
-                </motion.button>
-              </div>
-            </motion.div>
-          )}
+          </motion.div> */}
 
           {/* Form */}
-          <div className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
             {/* Email Field for Sign Up */}
             <AnimatePresence mode="wait">
               {isSignUp && (
@@ -344,17 +415,18 @@ const AuthPages: React.FC = () => {
                   transition={{ duration: 0.3 }}
                 >
                   <div className="relative">
-                    <Mail className={`absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 ${errors.email ? iconError : ""}`} />
+                    <Mail className={`absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 ${errors.email ? iconErrorClass : ""}`} />
                     <input
                       type="email"
                       name="email"
                       placeholder="Email address"
                       value={formData.email}
                       onChange={handleInputChange}
+                      disabled={isLoading}
                       className={`w-full pl-10 pr-4 py-3 bg-gray-800/50 border rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-all ${errors.email
                         ? 'border-red-500 focus:ring-red-500/20'
                         : 'border-gray-600 focus:ring-purple-500/20 focus:border-purple-500'
-                        }`}
+                        } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                     />
                     {errors.email && (
                       <motion.p
@@ -381,17 +453,18 @@ const AuthPages: React.FC = () => {
                   transition={{ duration: 0.3 }}
                 >
                   <div className="relative">
-                    <User className={`absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 ${errors.username ? iconError : ""}`} />
+                    <User className={`absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 ${errors.username ? iconErrorClass : ""}`} />
                     <input
                       type="text"
                       name="username"
                       placeholder="Username"
                       value={formData.username}
                       onChange={handleInputChange}
+                      disabled={isLoading}
                       className={`w-full pl-10 pr-4 py-3 bg-gray-800/50 border rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-all ${errors.username
                         ? 'border-red-500 focus:ring-red-500/20'
                         : 'border-gray-600 focus:ring-purple-500/20 focus:border-purple-500'
-                        }`}
+                        } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                     />
                     {errors.username && (
                       <motion.p
@@ -411,36 +484,33 @@ const AuthPages: React.FC = () => {
             <AnimatePresence mode="wait">
               {!isSignUp && (
                 <motion.div
-                  key={`signin-${signInMode}`}
-                  initial={{ opacity: 0, x: signInMode === 'email' ? -20 : 20 }}
+                  key="signin-email"
+                  initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: signInMode === 'email' ? 20 : -20 }}
+                  exit={{ opacity: 0, x: 20 }}
                   transition={{ duration: 0.3 }}
                 >
                   <div className="relative">
-                    {signInMode === 'email' ? (
-                      <Mail className={`absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 ${errors.emailOrUsername ? iconError : ""}`} />
-                    ) : (
-                      <User className={`absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 ${errors.emailOrUsername ? iconError : ""}`} />
-                    )}
+                    <Mail className={`absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 ${errors.email ? iconErrorClass : ""}`} />
                     <input
-                      type={signInMode === 'email' ? 'email' : 'text'}
+                      type="email"
                       name="emailOrUsername"
-                      placeholder={signInMode === 'email' ? 'Email address' : 'Username'}
-                      value={formData.emailOrUsername}
+                      placeholder="Email address"
+                      value={formData.email}
                       onChange={handleInputChange}
-                      className={`w-full pl-10 pr-4 py-3 bg-gray-800/50 border rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-all ${errors.emailOrUsername
+                      disabled={isLoading}
+                      className={`w-full pl-10 pr-4 py-3 bg-gray-800/50 border rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-all ${errors.email
                         ? 'border-red-500 focus:ring-red-500/20'
                         : 'border-gray-600 focus:ring-purple-500/20 focus:border-purple-500'
-                        }`}
+                        } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                     />
-                    {errors.emailOrUsername && (
+                    {errors.email && (
                       <motion.p
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
                         className="text-red-400 text-sm mt-1"
                       >
-                        {errors.emailOrUsername}
+                        {errors.email}
                       </motion.p>
                     )}
                   </div>
@@ -455,24 +525,27 @@ const AuthPages: React.FC = () => {
               transition={{ duration: 0.5, delay: 0.3 }}
             >
               <div className="relative">
-                <Lock className={`absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 ${errors.password ? iconError : ""}`} />
+                <Lock className={`absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 ${errors.password ? iconErrorClass : ""}`} />
                 <input
                   type={showPassword ? "text" : "password"}
                   name="password"
                   placeholder="Password"
                   value={formData.password}
                   onChange={handleInputChange}
+                  disabled={isLoading}
                   className={`w-full pl-10 pr-12 py-3 bg-gray-800/50 border rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-all ${errors.password
                     ? 'border-red-500 focus:ring-red-500/20'
                     : 'border-gray-600 focus:ring-purple-500/20 focus:border-purple-500'
-                    }`}
+                    } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                 />
                 <motion.button
                   type="button"
                   onClick={togglePasswordVisibility}
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  className="cursor-pointer absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+                  disabled={isLoading}
+                  whileHover={!isLoading ? { scale: 1.1 } : {}}
+                  whileTap={!isLoading ? { scale: 0.9 } : {}}
+                  className={`absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors ${isLoading ? 'cursor-not-allowed' : 'cursor-pointer'
+                    }`}
                   aria-label={showPassword ? "Hide password" : "Show password"}
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
@@ -500,24 +573,27 @@ const AuthPages: React.FC = () => {
                   transition={{ duration: 0.3 }}
                 >
                   <div className="relative">
-                    <Lock className={`absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 ${errors.confirmPassword ? iconError : ""}`} />
+                    <Lock className={`absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 ${errors.confirmPassword ? iconErrorClass : ""}`} />
                     <input
                       type={showConfirmPassword ? "text" : "password"}
                       name="confirmPassword"
                       placeholder="Confirm Password"
                       value={formData.confirmPassword}
                       onChange={handleInputChange}
+                      disabled={isLoading}
                       className={`w-full pl-10 pr-12 py-3 bg-gray-800/50 border rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-all ${errors.confirmPassword
                         ? 'border-red-500 focus:ring-red-500/20'
                         : 'border-gray-600 focus:ring-purple-500/20 focus:border-purple-500'
-                        }`}
+                        } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                     />
                     <motion.button
                       type="button"
                       onClick={toggleConfirmPasswordVisibility}
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                      className="cursor-pointer absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+                      disabled={isLoading}
+                      whileHover={!isLoading ? { scale: 1.1 } : {}}
+                      whileTap={!isLoading ? { scale: 0.9 } : {}}
+                      className={`absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors ${isLoading ? 'cursor-not-allowed' : 'cursor-pointer'
+                        }`}
                       aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
                     >
                       {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
@@ -536,27 +612,48 @@ const AuthPages: React.FC = () => {
               )}
             </AnimatePresence>
 
+            {/* General Error Message */}
+            {errors.general && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-red-400 text-sm text-center bg-red-500/10 border border-red-500/20 rounded-lg p-3"
+              >
+                {errors.general}
+              </motion.div>
+            )}
+
             {/* Submit Button */}
             <motion.button
-              type="button"
-              onClick={handleSubmit}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              type="submit"
+              disabled={isLoading}
+              whileHover={!isLoading ? { scale: 1.02 } : {}}
+              whileTap={!isLoading ? { scale: 0.98 } : {}}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.4 }}
-              className="cursor-pointer w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-cyan-600 text-white font-medium flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-purple-500/20 transition-all group"
+              className={`w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-cyan-600 text-white font-medium flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-purple-500/20 transition-all group ${isLoading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
+                }`}
               aria-label={isSignUp ? 'Create new account' : 'Sign in to account'}
             >
-              {isSignUp ? 'Create Account' : 'Sign In'}
-              <motion.div
-                className="group-hover:translate-x-1 transition-transform"
-                whileHover={{ x: 3 }}
-              >
-                <ArrowRight className="w-4 h-4" />
-              </motion.div>
+              {isLoading ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+                  {isSignUp ? 'Creating Account...' : 'Signing In...'}
+                </>
+              ) : (
+                <>
+                  {isSignUp ? 'Create Account' : 'Sign In'}
+                  <motion.div
+                    className="group-hover:translate-x-1 transition-transform"
+                    whileHover={{ x: 3 }}
+                  >
+                    <ArrowRight className="w-4 h-4" />
+                  </motion.div>
+                </>
+              )}
             </motion.button>
-          </div>
+          </form>
 
           {/* Switch Mode */}
           <motion.div
@@ -570,20 +667,62 @@ const AuthPages: React.FC = () => {
               <motion.button
                 type="button"
                 onClick={switchMode}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="cursor-pointer text-purple-400 hover:text-purple-300 font-medium ml-2 transition-colors"
+                disabled={isLoading}
+                whileHover={!isLoading ? { scale: 1.05 } : {}}
+                whileTap={!isLoading ? { scale: 0.95 } : {}}
+                className={`font-medium ml-2 transition-colors ${isLoading
+                  ? 'text-gray-500 cursor-not-allowed'
+                  : 'text-purple-400 hover:text-purple-300 cursor-pointer'
+                  }`}
                 aria-label={isSignUp ? 'Switch to sign in' : 'Switch to sign up'}
               >
                 {isSignUp ? 'Sign In' : 'Sign Up'}
               </motion.button>
             </p>
           </motion.div>
-        </div>
 
+          {/* dialog for otp */}
+          <Dialog open={openotp} >
+            <DialogOverlay className="fixed inset-0 bg-black/50 backdrop-blur-sm" />
+            <DialogContent className="fixed left-1/2 top-1/2 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-lg bg-white p-6 shadow-lg dark:bg-gray-800">
+              <DialogHeader>
+                <DialogTitle className="text-2xl font-bold text-gray-900 dark:text-white">
+                  Verify Your Email
+                </DialogTitle>
+              </DialogHeader>
+
+              <div className="mt-4 text-gray-600 dark:text-gray-300">
+                <p className="mb-3">
+                  We sent a 6-digit code to <span className="font-medium text-gray-900 dark:text-white">{formData.email}</span>
+                </p>
+                <p className="mb-6">Please enter it below to continue.</p>
+
+                <div className="flex justify-center gap-3 mb-6">
+                  <OtpInput setOtp={setotp} otp={otp} length={6} />
+                </div>
+              </div>
+
+              <DialogFooter>
+
+                <DialogClose asChild>
+                  <button
+                    className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 dark:bg-blue-500 dark:hover:bg-blue-600"
+
+                    onClick={async () => {
+                      await checkOtpMutation.mutateAsync(otp);
+                      setopenotp(false);
+                    }}
+                  >
+                    Verify
+                  </button>
+                </DialogClose>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </div>
       </motion.div>
     </div>
-  )
-}
+  );
+};
 
-export default AuthPages
+export default AuthPages;

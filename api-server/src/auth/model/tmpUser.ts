@@ -16,15 +16,15 @@ const UserSchema = new Schema({
     enum: Provider,
     default: Provider.CREDENTIALS, 
   },
-  username:{
+  otp : {
+    type: String,
+    default: null,
+  },
+  username: {
     type: String,
     required: true,
-  },
-  points : {
-    type: Number,
-    default: 50,
   }
 })
 
 
-export const User = mongoose.models.User || mongoose.model("User", UserSchema);
+export const TmpUser = mongoose.models.TmpUser || mongoose.model("TmpUser", UserSchema);

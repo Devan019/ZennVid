@@ -6,3 +6,4 @@ export const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/zen
 export const AUTH_SECRET = process.env.AUTH_SECRET
 export const AUTH_GOOGLE_ID = process.env.AUTH_GOOGLE_ID
 export const AUTH_GOOGLE_SECRET = process.env.AUTH_GOOGLE_SECRET
+export const RESEND_KEY = process.env.RESEND_KEY

@@ -1,7 +1,5 @@
 import { z } from "zod"
 import { object, string }  from "zod"
-import { email } from "zod/v4"
-
 // export enum Role{
 //   ADMIN = 'admin',
 //   USER = 'user'
@@ -18,7 +16,6 @@ export enum Providers{
  
 export const signInSchema = object({
   email: string().optional(),
-  username: string().optional(),
   password: string({ required_error: "Password is required" })
     .min(1, "Password is required")
     .min(8, "Password must be more than 8 characters")
@@ -30,9 +27,6 @@ export const signUpSchema = z.object({
   email: z.string()
     .min(1, "Email is required")
     .email("Invalid email"),
-  username: z.string()
-    .min(1, "Username is required")
-    .min(3, "Username must be at least 3 characters"),
   password: z.string()
     .min(1, "Password is required")
     .min(8, "Password must be more than 8 characters")

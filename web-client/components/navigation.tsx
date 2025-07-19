@@ -6,11 +6,13 @@ import { Button } from "@/components/ui/button"
 import { ModeToggle } from "@/components/mode-toggle"
 import { Menu, X, Zap } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { useAuthStore } from "@/store/UserStore"
 
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const router = useRouter();
+  const { user, logout, isAuthenticated, isLoading} = useAuthStore();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -19,6 +21,10 @@ export function Navigation() {
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
+
+  if (isLoading) {
+    return null; // or a loading spinner
+  }
 
   return (
     <motion.nav
@@ -61,16 +67,36 @@ export function Navigation() {
               Reviews
             </a>
             <ModeToggle />
-            <Button
-              variant="outline"
-              className="border-purple-500 text-purple-600 hover:bg-purple-500 hover:text-white bg-transparent dark:text-purple-400"
-              onClick={() => router.push('/auth')}
-            >
-              Sign In
-            </Button>
-            <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600">
-              Get Started
-            </Button>
+            { !isAuthenticated && (
+              <Button
+                variant="outline"
+                className="border-purple-500 text-purple-600 hover:bg-purple-500 hover:text-white bg-transparent dark:text-purple-400"
+                onClick={() => router.push('/auth')}
+              >
+                Sign In
+              </Button>
+            )}
+            { isAuthenticated && (
+              <Button
+                variant="outline"
+                className="border-purple-500 text-purple-600 hover:bg-purple-500 hover:text-white bg-transparent dark:text-purple-400"
+                onClick={logout}
+              >
+                Logout
+              </Button>
+            )}
+            {!isAuthenticated && (
+              <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600">
+                Get Started
+              </Button>
+            )}
+            {isAuthenticated && (
+              <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+                onClick={() => router.push('/dashboard')}
+              >
+                Dashboard
+              </Button>
+            )}
           </div>
 
           <div className="md:hidden flex items-center space-x-2">
@@ -111,12 +137,23 @@ export function Navigation() {
               >
                 Reviews
               </a>
-              <Button
-                variant="outline"
-                className="border-purple-500 text-purple-600 bg-transparent dark:text-purple-400"
-              >
-                Sign In
-              </Button>
+              {!isAuthenticated && (
+                <Button
+                  variant="outline"
+                  className="border-purple-500 text-purple-600 bg-transparent dark:text-purple-400"
+                >
+                  Sign In
+                </Button>
+              )}
+              {isAuthenticated && (
+                <Button
+                  variant="outline"
+                  className="border-purple-500 text-purple-600 bg-transparent dark:text-purple-400"
+                  onClick={logout}
+                >
+                  Logout
+                </Button>
+              )}
               <Button className="bg-gradient-to-r from-purple-500 to-pink-500">Get Started</Button>
             </div>
           </motion.div>
