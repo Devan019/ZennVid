@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import expressAsyncHandler from "../types/expressAsync";
+import expressAsyncHandler from "../utils/expressAsync";
 import connectToMongo from "../utils/mongoConnection";
 import { CheckUserValidation, SignInValidation, UserValidation } from "./schema/zodschema";
 import { User } from "./model/User";
@@ -41,8 +41,8 @@ export const createUserService = expressAsyncHandler(async (req: Request, res: R
     await newUser.save();
 
     await sendMail({
-      from : "onboarding@resend.dev",
-      to : email,
+      from: "onboarding@resend.dev",
+      to: email,
       subject: "ZennVid - Verify your email",
       html: `<p>Hi, ${username} </p>
              <p>Thank you for signing up on ZennVid. Please verify your email by entering the following OTP:</p>
