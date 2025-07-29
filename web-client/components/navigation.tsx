@@ -12,7 +12,7 @@ export function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const router = useRouter();
-  const { user, logout, isAuthenticated, isLoading} = useAuthStore();
+  const { user, logout, isAuthenticated, isLoading } = useAuthStore();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -30,11 +30,10 @@ export function Navigation() {
     <motion.nav
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-        scrolled
+      className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled
           ? "bg-white/90 dark:bg-black/10 backdrop-blur-md border-b border-gray-200 dark:border-white/10"
           : "bg-transparent"
-      }`}
+        }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
@@ -67,7 +66,7 @@ export function Navigation() {
               Reviews
             </a>
             <ModeToggle />
-            { !isAuthenticated && (
+            {!isAuthenticated && (
               <Button
                 variant="outline"
                 className="border-purple-500 text-purple-600 hover:bg-purple-500 hover:text-white bg-transparent dark:text-purple-400"
@@ -76,7 +75,7 @@ export function Navigation() {
                 Sign In
               </Button>
             )}
-            { isAuthenticated && (
+            {isAuthenticated && (
               <Button
                 variant="outline"
                 className="border-purple-500 text-purple-600 hover:bg-purple-500 hover:text-white bg-transparent dark:text-purple-400"
@@ -101,7 +100,9 @@ export function Navigation() {
 
           <div className="md:hidden flex items-center space-x-2">
             <ModeToggle />
-            <Button variant="ghost" size="icon" onClick={() => setIsOpen(!isOpen)}>
+            <Button variant="ghost" size="icon" onClick={() => {
+              setIsOpen(!isOpen)
+            }}>
               {isOpen ? (
                 <X className="text-gray-700 dark:text-white" />
               ) : (
