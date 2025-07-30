@@ -12,6 +12,7 @@ import { passwordCompare } from "../utils/passwordCompare";
 import { AUTH_SECRET } from "../env_var";
 import jwt from "jsonwebtoken"
 import { sendMail } from "../utils/SendMail";
+import { generateJWTtoken } from "../utils/jwtAssign";
 
 export const createUserService = expressAsyncHandler(async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -111,12 +112,12 @@ export const signInUserService = expressAsyncHandler(async (req: Request, res: R
 
     // Here you would typically create a session or JWT token
 
-    const token = jwt.sign({
-      _id: user._id,
+    const token = generateJWTtoken({
+      userId: user._id.toString(),
       email: user.email,
       provider: user.provider,
       username: user.username
-    }, AUTH_SECRET ?? "", { expiresIn: "7d" })
+    });
 
     res.cookie("token", token, {
       httpOnly: true,

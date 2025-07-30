@@ -2,7 +2,7 @@
 import { Providers, signInSchema, signUpSchema } from "@/types/auth";
 import { motion, AnimatePresence } from "framer-motion"
 import { Mail, User, Shield, EyeOff, Eye, ArrowRight, Lock, InstagramIcon, Facebook } from "lucide-react"
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { useEffect, useState } from "react"
 import { z } from "zod";
 import { FaApple, FaGoogle, FaInstagram, FaTwitter } from "react-icons/fa"
@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { useAuthStore } from "@/store/UserStore";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogOverlay, DialogTitle } from "@/components/ui/dialog";
 import { OtpInput } from "@/components/OtpInput";
+import { AUTH_CREDENTIALS_URI, AUTH_GOOGLE_OAUTH_URI } from "@/constants/backend_routes";
 
 
 // Types
@@ -223,13 +224,29 @@ const AuthPages: React.FC = () => {
     setShowConfirmPassword(!showConfirmPassword);
   };
 
+  const socialProviders = [
+    {
+      name: Providers.GOOGLE,
+      icon: FaGoogle,
+      color: 'from-red-500 to-yellow-500',
+      hoverColor: 'hover:shadow-red-500/20',
+      enabled: true,
+      redirectUrl : `${AUTH_GOOGLE_OAUTH_URI}`
+    }
+  ];
+
   const handleSocialLogin = async (provider: Providers) => {
     try {
       setIsLoading(true);
-
+      console.log(`Attempting to login with ${provider}...`);
+      const socialProvider = socialProviders.find(p => p.name === provider);
+      console.log(socialProvider)
       switch (provider) {
         case Providers.GOOGLE:
-          await googleMutation.mutateAsync();
+          console.log("i ger6", socialProvider?.redirectUrl)
+          if(socialProvider?.redirectUrl){
+            router.push(socialProvider?.redirectUrl);
+          }
           break;
         default:
           toast.error(`${provider} login is not implemented yet.`);
@@ -242,43 +259,7 @@ const AuthPages: React.FC = () => {
   };
 
   // Social providers configuration
-  const socialProviders = [
-    {
-      name: Providers.GOOGLE,
-      icon: FaGoogle,
-      color: 'from-red-500 to-yellow-500',
-      hoverColor: 'hover:shadow-red-500/20',
-      enabled: true
-    },
-    {
-      name: Providers.INSAGRAM,
-      icon: FaInstagram,
-      color: 'from-pink-500 to-purple-600',
-      hoverColor: 'hover:shadow-pink-500/20',
-      enabled: false
-    },
-    {
-      name: Providers.META,
-      icon: FaMeta,
-      color: 'from-blue-600 to-blue-700',
-      hoverColor: 'hover:shadow-blue-500/20',
-      enabled: false
-    },
-    {
-      name: Providers.X,
-      icon: FaXTwitter,
-      color: 'from-sky-400 to-sky-600',
-      hoverColor: 'hover:shadow-sky-500/20',
-      enabled: false
-    },
-    {
-      name: Providers.APPLE,
-      icon: FaApple,
-      color: 'from-gray-800 to-black',
-      hoverColor: 'hover:shadow-gray-500/20',
-      enabled: false
-    },
-  ];
+  
 
   const iconErrorClass = "-translate-y-[110%]";
 
@@ -354,7 +335,7 @@ const AuthPages: React.FC = () => {
           </motion.div>
 
           {/* Social Login Buttons */}
-          {/* <motion.div
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.15 }}
@@ -400,7 +381,7 @@ const AuthPages: React.FC = () => {
               <span className="px-4 text-gray-400 text-sm">or continue with</span>
               <div className="flex-1 h-px bg-gray-600"></div>
             </div>
-          </motion.div> */}
+          </motion.div> 
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6">

@@ -3,6 +3,7 @@ import cookieParser from "cookie-parser";
 import { AuthRouter } from "./auth/route";
 import cors from "cors"
 import { TestRouter } from "./test/route";
+import { OAuthRouter } from "./oauth/route";
 const app = e();
 app.use(e.json());
 const corsOptions = {
@@ -19,6 +20,7 @@ app.set("trust proxy", true)
 
 app.use("/auth", AuthRouter);
 app.use("/test", TestRouter);
+app.use("/oauth", OAuthRouter);
 
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
