@@ -13,6 +13,7 @@ import { AUTH_SECRET } from "../env_var";
 import jwt from "jsonwebtoken"
 import { sendMail } from "../utils/SendMail";
 import { generateJWTtoken } from "../utils/jwtAssign";
+import { SetCookie } from "../utils/setCookie";
 
 export const createUserService = expressAsyncHandler(async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -113,17 +114,13 @@ export const signInUserService = expressAsyncHandler(async (req: Request, res: R
     // Here you would typically create a session or JWT token
 
     const token = generateJWTtoken({
-      userId: user._id.toString(),
+      id: user._id.toString(),
       email: user.email,
       provider: user.provider,
       username: user.username
     });
 
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict"
-    });
+    SetCookie(res, "token", token);
 
     const sendUser = {
       _id: user._id,
@@ -164,7 +161,7 @@ export const getUserService = expressAsyncHandler(async (req: Request, res: Resp
     }
 
     const decoded = jwt.verify(token, AUTH_SECRET ?? "");
-    const user = await User.findById((decoded as any)._id).select("-password");
+    const user = await User.findById((decoded as any).id).select("-password");
 
     if (!user) {
       return formatResponse(res, 404, "User not found", false, null);

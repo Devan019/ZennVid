@@ -2,17 +2,17 @@ import jwt from "jsonwebtoken";
 import { AUTH_SECRET } from "../env_var";
 import ExpressError from "./ExpressError";
 export interface JWTPayload {
-  userId: string;
+  id: string;
   email: string;
   provider: string;
   username: string;
 }
 export const generateJWTtoken = (payload: JWTPayload) => {
-  const { userId, email, provider, username } = payload;
-  if (!userId || !email || !provider || !username) {
+  const { id, email, provider, username } = payload;
+  if (!id || !email || !provider || !username) {
     throw new ExpressError(400, "Invalid payload for JWT generation");
   }
-  if (typeof userId !== "string" || typeof email !== "string" || typeof provider !== "string" || typeof username !== "string") {
+  if (typeof id !== "string" || typeof email !== "string" || typeof provider !== "string" || typeof username !== "string") {
     throw new ExpressError(400, "Invalid payload types for JWT generation");
   }
 

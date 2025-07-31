@@ -20,18 +20,33 @@ export const getGoogleAuthUrl = () => {
   return oauthClient.generateAuthUrl({
     access_type: "offline",
     scope: scopes,
+    include_granted_scopes: true,
+    prompt: 'consent'
   });
 };
 
-export const getOAuthUser = async (code: string) => {
-  const {tokens} = await oauthClient.getToken(code);
-  oauthClient.setCredentials(tokens);
-  
+export const getTokens = async (code: string) => {
+  try {
+    const { tokens } = await oauthClient.getToken(code);
+    if (!tokens.access_token || !tokens.id_token) {
+      throw new Error('Missing required tokens in response');
+    }
+    return {
+      token: tokens.access_token,
+      refreshToken: tokens.refresh_token, // Fixed typo
+      idToken: tokens.id_token, // Changed to lowercase for consistency
+    };
+  } catch (error) {
+    console.error('Error exchanging code for tokens:', error);
+    throw error; // Re-throw for controller to handle
+  }
+}
 
-  const { data } = await oauth2.userinfo.get();
+export const getOAuthUser = async (idToken: any) => {
+  const data = await oauthClient.verifyIdToken({idToken});
   return {data};
 }
 
-export const resetOAuthClient = () => {
-  oauthClient.setCredentials({});
-};
+export const refreshToken = async (refreshToken: string) => {
+  oauthClient.revokeToken(refreshToken);
+}

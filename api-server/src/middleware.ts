@@ -6,7 +6,12 @@ import jwt from "jsonwebtoken";
 declare global {
   namespace Express {
     interface Request {
-      user?: { id: string; email: string };
+      user: {
+        id: string;
+        email: string;
+        provider: string;
+        username: string;
+      }
     }
   }
 }
@@ -15,11 +20,17 @@ export const isAuthenticated = expressAsyncHandler((req: Request, res: Response,
   if (!token) {
     return formatResponse(res, 401, "Unauthorized", false, null, "You must be logged in to access this resource");
   }
-  const {user} = jwt.decode(token) as { user: { id: string, email: string } };
-  if (!user) {
+  const decoded = jwt.decode(token)
+  console.log("Decoded user from token:", decoded);
+  if (!decoded || typeof decoded === 'string') {
     return formatResponse(res, 401, "Unauthorized", false, null, "Invalid token");
-  } else if (user.id && user.email) {
-    req.user = user;
   }
+  
+  req.user = {
+    id: decoded.id as string,
+    email: decoded.email as string,
+    provider: decoded.provider as string,
+    username: decoded.username as string
+  };
   return next();
 })

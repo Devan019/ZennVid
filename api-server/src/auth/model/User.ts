@@ -23,7 +23,10 @@ const UserSchema = new Schema({
   points : {
     type: Number,
     default: 50,
-  }
+  },
+  profilePicture: {
+    type: String,
+  },
 })
 
 

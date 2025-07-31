@@ -1,13 +1,14 @@
 import { Request, Response } from "express";
 import expressAsyncHandler from "../utils/expressAsync";
-import { getGoogleAuthUrl, getOAuthUser, resetOAuthClient } from "./service";
+import { getGoogleAuthUrl, getOAuthUser, getTokens } from "./service";
 import { formatResponse } from "../utils/formateResponse";
-import jwt from "jsonwebtoken";
 import { AUTH_SECRET } from "../env_var";
 import { generateJWTtoken } from "../utils/jwtAssign";
 import { User } from "../auth/model/User";
 import { Provider } from "../constants/provider";
 import connectToMongo from "../utils/mongoConnection";
+import { SetCookie } from "../utils/setCookie";
+import { profile } from "console";
 
 export const loginWithGoogle = expressAsyncHandler((req: Request, res: Response) => {
   try {
@@ -19,58 +20,61 @@ export const loginWithGoogle = expressAsyncHandler((req: Request, res: Response)
 })
 
 export const oauthCallback = expressAsyncHandler(async (req: Request, res: Response) => {
-  const { code } = req.query;
-  if (typeof code !== "string") {
-    return formatResponse(res, 400, "Invalid request", false, "Error ");
-  }
-
   try {
-    const { data } = await getOAuthUser(code);
-    if (!AUTH_SECRET) {
-      console.log("Authentication secret is not defined");
 
-      return formatResponse(res, 500, "Authentication secret not configured", false, "Error ");
+    if(req.cookies.token) {
+      return res.redirect("/auth/user");
     }
 
+    const { code } = req.query;
+    const { idToken } = await getTokens(code as string);
+    const { data } = await getOAuthUser(idToken);
     await connectToMongo();
-
-    const user = await User.findOne({ email: data.email });
-    console.log("User found:", user);
-    if (user.provider !== Provider.GOOGLE) {
-      resetOAuthClient()
-      return formatResponse(res, 400, "User already exists with different provider", false, "Error ");
+    const { email, name, picture } = data.getPayload() || {};
+    
+    let exitUser = await User.findOne({ email});
+    if(exitUser && exitUser.provider !== Provider.GOOGLE) {
+      return formatResponse(res, 400, "User already exists with different provider", false);
     }
-
-    if (!user) {
+    if(!exitUser){
       const newUser = new User({
-        email: data.email,
-        username: data.name,
+        email,
+        username: name,
         provider: Provider.GOOGLE,
-        profilePicture: data.picture
+        profilePicture: picture,
       });
       await newUser.save();
+      exitUser = newUser;
     }
-
-    const token = generateJWTtoken({
-      userId: user._id.toString(),
-      email: user.email,
-      provider: user.provider,
-      username: user.username
+    const jwtToken = generateJWTtoken({
+      id: exitUser._id.toString(),
+      email: email || exitUser.email,
+      provider: Provider.GOOGLE,
+      username: exitUser.username,
     });
-
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict"
-    });
-
-    return formatResponse(res, 200, "User authenticated successfully", true, { user: data });
+    SetCookie(res, "token", jwtToken);
+    return res.redirect("/auth/user");
   } catch (error: any) {
-    if (error.message.includes("invalid_grant")) {
-      console.log("Code expired or already used. Redirecting...");
-      resetOAuthClient();
-      return res.redirect("/oauth/login/google");
+    console.log(error)
+    if (error instanceof Error && error.message.includes('invalid_grant')) {
+      return res.redirect("/oauth/login/google")
     }
-    return formatResponse(res, 500, "Failed to authenticate user", false, "Error ");
+    return formatResponse(res, 500, "Failed to retrieve user data from Google", false, "Error");
   }
 });
+
+// "payload": {
+//       "iss": "https://accounts.google.com",
+//       "azp": "349832524304-sj0k60nu0jd67peeujhbr6jmk9fm55gv.apps.googleusercontent.com",
+//       "aud": "349832524304-sj0k60nu0jd67peeujhbr6jmk9fm55gv.apps.googleusercontent.com",
+//       "sub": "103451832644510589179",
+//       "hd": "ddu.ac.in",
+//       "email": "23ceubs023@ddu.ac.in",
+//       "email_verified": true,
+//       "at_hash": "q51tqI1CknadtSDKWq-rRA",
+//       "name": "A4_CE068_Devan Chauhan",
+//       "picture": "https://lh3.googleusercontent.com/a/ACg8ocJYkUUAbAkMWHtD_2V8uA3i1mGD3UnlljuFfzbLWYsdwYQwqA=s96-c",
+//       "given_name": "A4_CE068_Devan Chauhan",
+//       "iat": 1753954615,
+//       "exp": 1753958215
+//     }
