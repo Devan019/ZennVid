@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Play, Sparkles, ArrowRight } from "lucide-react"
 import { Canvas } from "@react-three/fiber"
 import { OrbitControls, Sphere, MeshDistortMaterial, Environment } from "@react-three/drei"
+import { HoleBackground } from "./animate-ui/backgrounds/hole"
 
 function AnimatedSphere() {
   return (
@@ -18,18 +19,11 @@ export function Hero() {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background Video/3D Scene */}
-      <div className="absolute inset-0 w-full h-full">
-        <Canvas camera={{ position: [0, 0, 5] }}>
-          <ambientLight intensity={0.5} />
-          <pointLight position={[10, 10, 10]} />
-          <AnimatedSphere />
-          <Environment preset="dawn" />
-          <OrbitControls enableZoom={false} autoRotate autoRotateSpeed={0.5} />
-        </Canvas>
-      </div>
+
 
       {/* Gradient Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-r from-purple-100/80 to-pink-100/80 dark:from-purple-900/50 dark:to-pink-900/50" />
+      {/* <div className="absolute inset-0 bg-gradient-to-r from-purple-100/80 to-pink-100/80 dark:from-purple-900/50 dark:to-pink-900/50" /> */}
+      <HoleBackground className="absolute inset-0 flex items-center justify-center rounded-xl" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <motion.div
@@ -52,14 +46,10 @@ export function Hero() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.8 }}
-            className="text-5xl md:text-7xl font-bold text-gray-800 dark:text-white leading-tight"
+            className="text-5xl  font-bold text-gray-800 dark:text-white leading-tight"
           >
             Create Stunning
-            <br />
-            <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-red-500 bg-clip-text text-transparent">
-              AI Videos
-            </span>
-            <br />
+            AI Videos
             in Seconds
           </motion.h1>
 
@@ -98,7 +88,7 @@ export function Hero() {
           </motion.div>
 
           {/* Feature Cards */}
-          
+
 
           <motion.div
             initial={{ opacity: 0 }}
