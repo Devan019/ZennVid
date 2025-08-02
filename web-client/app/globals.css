@@ -2,3 +2,7 @@
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
 
+@theme {
+  --breakpoint-xlg : 1180px;
+  --breakpoint-desktop: 1400px;
+}

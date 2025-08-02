@@ -33,12 +33,12 @@ export const getTokens = async (code: string) => {
     }
     return {
       token: tokens.access_token,
-      refreshToken: tokens.refresh_token, // Fixed typo
-      idToken: tokens.id_token, // Changed to lowercase for consistency
+      refreshToken: tokens.refresh_token, 
+      idToken: tokens.id_token,
     };
   } catch (error) {
     console.error('Error exchanging code for tokens:', error);
-    throw error; // Re-throw for controller to handle
+    throw error;
   }
 }
 

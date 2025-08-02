@@ -3,17 +3,8 @@
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Play, Sparkles, ArrowRight } from "lucide-react"
-import { Canvas } from "@react-three/fiber"
-import { OrbitControls, Sphere, MeshDistortMaterial, Environment } from "@react-three/drei"
 import { HoleBackground } from "./animate-ui/backgrounds/hole"
 
-function AnimatedSphere() {
-  return (
-    <Sphere visible args={[1, 100, 200]} scale={2}>
-      <MeshDistortMaterial color="#8b5cf6" attach="material" distort={0.5} speed={2} roughness={0.2} />
-    </Sphere>
-  )
-}
 
 export function Hero() {
   return (

@@ -5,16 +5,16 @@ import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Menu, X, Zap } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { useAuthStore } from "@/store/UserStore"
 import ModeToggle from "./mode-toggle"
 import FlipLink from "./ui/text-effect-flipper"
 import Link from "next/link"
+import { useUser } from "@/context/UserProvider"
 
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const router = useRouter()
-  const { user, logout, isAuthenticated, isLoading } = useAuthStore()
+  const { user, isAuthenticated, isLoading } = useUser()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -99,13 +99,13 @@ export function Navigation() {
                   <Button
                     variant="outline"
                     className="border-purple-500 text-purple-600 hover:bg-purple-500 hover:text-white dark:text-purple-400 dark:hover:bg-purple-600 dark:hover:text-white"
-                    onClick={logout}
+                    // onClick={logout}
                   >
                     Logout
                   </Button>
                   <Button 
                     className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
-                    onClick={() => router.push('/dashboard')}
+                    onClick={() => router.push('/dashboard/Prompt2Video')}
                   >
                     Dashboard
                   </Button>
@@ -176,13 +176,13 @@ export function Navigation() {
                     <Button
                       variant="outline"
                       className="border-purple-500 text-purple-600 hover:bg-purple-500 hover:text-white dark:text-purple-400 dark:hover:bg-purple-600 dark:hover:text-white"
-                      onClick={logout}
+                      // onClick={logout}
                     >
                       Logout
                     </Button>
                     <Button 
                       className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
-                      onClick={() => router.push('/dashboard')}
+                      onClick={() => router.push('/dashboard/Prompt2Video')}
                     >
                       Dashboard
                     </Button>

@@ -5,6 +5,7 @@ import { QueryClientProviderWrapper } from "@/context/queryProvider";
 import { ToastProvider } from "@/components/ui/toast";
 import { Toaster } from "sonner";
 import { ThemeProvider } from "next-themes";
+import { UserProvider } from "@/context/UserProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,7 +39,9 @@ export default function RootLayout({
           disableTransitionOnChange={false}
         >
           <QueryClientProviderWrapper>
-            {children}
+            <UserProvider>
+              {children}
+            </UserProvider>
           </QueryClientProviderWrapper>
           <Toaster position="top-center" />
         </ThemeProvider>

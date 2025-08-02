@@ -10,10 +10,10 @@ import { FaMeta, FaSquareXTwitter, FaX, FaXTwitter } from "react-icons/fa6"
 import { useMutation } from "@tanstack/react-query";
 import { checkUserWithOtp, loginWithCredentials, loginWithGoogle, signUpWithCredentials } from "@/lib/apiProvider";
 import { toast } from "sonner";
-import { useAuthStore } from "@/store/UserStore";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogOverlay, DialogTitle } from "@/components/ui/dialog";
 import { OtpInput } from "@/components/OtpInput";
 import { AUTH_CREDENTIALS_URI, AUTH_GOOGLE_OAUTH_URI } from "@/constants/backend_routes";
+import { useUser } from "@/context/UserProvider";
 
 
 // Types
@@ -50,7 +50,6 @@ const AuthPages: React.FC = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { login } = useAuthStore();
 
   const [openotp, setopenotp] = useState(false)
   const [otp, setotp] = useState<string>("")
@@ -96,10 +95,9 @@ const AuthPages: React.FC = () => {
       console.log(`${isSignUp ? 'Sign up' : 'Sign in'} successful:`, data);
       toast.success(`${isSignUp ? 'Send OTP' : 'Welcome back'}!`);
       if (!isSignUp) {
-        login(data?.DATA?.user);
         console.log("Redirecting to dashboard...");
         setTimeout(() => {
-          router.push("/dashboard");
+          router.push("/dashboard/prompt2video");
         },1500);
       } else {
         setopenotp(true)
@@ -125,9 +123,8 @@ const AuthPages: React.FC = () => {
     onSuccess: (data) => {
       console.log("OTP verification successful:", data);
       toast.success("OTP verified successfully! redirecting to home page...");
-      login(data?.DATA?.user);
       setTimeout(() => {
-          router.push("/dashboard");
+          router.push("/dashboard/prompt2video");
         },1500);
     },
     onError: (error: any) => {

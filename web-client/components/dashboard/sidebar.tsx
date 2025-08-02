@@ -1,6 +1,6 @@
 "use client"
 
-import { Moon, Sun, Home, Video, LogOut } from "lucide-react";
+import { Moon, Sun, Home, Video, LogOut, MenuIcon, Menu } from "lucide-react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -16,16 +16,16 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarProvider,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { GiLipstick } from "react-icons/gi";
+import ModeToggle from "../mode-toggle";
 
 export function AppSidebar() {
-  const { theme, setTheme } = useTheme();
   const pathname = usePathname();
+  const { openMobile, setOpenMobile, isMobile } = useSidebar();
 
-  const toggleTheme = () => {
-    setTheme(theme === "dark" ? "light" : "dark");
-  };
+
 
   const menuItems = [
     {
@@ -83,13 +83,21 @@ export function AppSidebar() {
   };
 
   return (
-    <Sidebar 
-      variant="floating" 
+    <Sidebar
+      variant="inset"
       collapsible="icon"
-      className=" dark:border-gray-800  dark:bg-gray-900 shadow-lg dark:shadow-2xl transition-all duration-300"
+      className="dark:bg-zinc-950 bg-white  shadow-lg dark:shadow-2xl transition-all duration-300"
     >
+      {isMobile && (
+        <button
+          onClick={() => setOpenMobile(true)}
+          className="md:hidden fixed top-4 left-4 z-50 p-2 rounded-lg bg-gray-100 dark:bg-gray-800"
+        >
+          <Menu className="w-5 h-5" />
+        </button>
+      )}
       <SidebarHeader className="flex items-center justify-center p-4 border-b border-gray-100 dark:border-gray-800">
-        <motion.span 
+        <motion.span
           // variants={logoVariants}
           initial="hidden"
           animate="visible"
@@ -110,7 +118,7 @@ export function AppSidebar() {
               {menuItems.map((item, index) => {
                 const Icon = item.icon;
                 const isActive = pathname === item.href;
-                
+
                 return (
                   <motion.div
                     key={item.href}
@@ -126,8 +134,8 @@ export function AppSidebar() {
                           className={`
                             relative group w-full transition-all duration-200 ease-in-out
                             hover:bg-gray-100 dark:hover:bg-gray-800
-                            ${isActive 
-                              ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border-r-2 border-blue-600 dark:border-blue-400' 
+                            ${isActive
+                              ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border-r-2 border-blue-600 dark:border-blue-400'
                               : 'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100'
                             }
                             rounded-lg mx-1 px-3 py-2
@@ -139,22 +147,22 @@ export function AppSidebar() {
                           >
                             <Icon className={`
                               size-4 transition-colors duration-200
-                              ${isActive 
-                                ? 'text-blue-600 dark:text-blue-400' 
+                              ${isActive
+                                ? 'text-blue-600 dark:text-blue-400'
                                 : 'text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-200'
                               }
                             `} />
                           </motion.div>
                           <span className={`
                             font-medium transition-colors duration-200
-                            ${isActive 
-                              ? 'text-blue-600 dark:text-blue-400' 
+                            ${isActive
+                              ? 'text-blue-600 dark:text-blue-400'
                               : 'text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-gray-100'
                             }
                           `}>
                             {item.label}
                           </span>
-                          
+
                           {/* Active indicator */}
                           <AnimatePresence>
                             {isActive && (
@@ -184,31 +192,9 @@ export function AppSidebar() {
             whileTap={{ scale: 0.98 }}
           >
             <SidebarMenuItem>
-              <SidebarMenuButton
-                onClick={toggleTheme}
-                tooltip={theme === "dark" ? "Switch to Light mode" : "Switch to Dark mode"}
-                className="
-                  group w-full transition-all duration-200 ease-in-out
-                  hover:bg-gray-100 dark:hover:bg-gray-800
-                  text-gray-700 dark:text-gray-300
-                  hover:text-gray-900 dark:hover:text-gray-100
-                  rounded-lg mx-1 px-3 py-2
-                "
-              >
-                <motion.div
-                  animate={{ rotate: theme === "dark" ? 180 : 0 }}
-                  transition={{ duration: 0.3, ease: "easeInOut" }}
-                >
-                  {theme === "dark" ? (
-                    <Sun className="size-4 text-yellow-500 dark:text-yellow-400" />
-                  ) : (
-                    <Moon className="size-4 text-blue-600 dark:text-blue-400" />
-                  )}
-                </motion.div>
-                <span className="font-medium">
-                  {theme === "dark" ? "Light Mode" : "Dark Mode"}
-                </span>
-              </SidebarMenuButton>
+              <div >
+                <ModeToggle  />
+              </div>
             </SidebarMenuItem>
           </motion.div>
 
@@ -218,7 +204,7 @@ export function AppSidebar() {
           >
             <SidebarMenuItem>
               <Link href="/logout" passHref >
-                <SidebarMenuButton 
+                <SidebarMenuButton
                   tooltip="Logout"
                   className="
                     group w-full transition-all duration-200 ease-in-out

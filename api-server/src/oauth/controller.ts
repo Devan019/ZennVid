@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import expressAsyncHandler from "../utils/expressAsync";
 import { getGoogleAuthUrl, getOAuthUser, getTokens } from "./service";
 import { formatResponse } from "../utils/formateResponse";
-import { AUTH_SECRET } from "../env_var";
+import { AUTH_SECRET, FRONTEND_URL } from "../env_var";
 import { generateJWTtoken } from "../utils/jwtAssign";
 import { User } from "../auth/model/User";
 import { Provider } from "../constants/provider";
@@ -53,7 +53,7 @@ export const oauthCallback = expressAsyncHandler(async (req: Request, res: Respo
       username: exitUser.username,
     });
     SetCookie(res, "token", jwtToken);
-    return res.redirect("/auth/user");
+    return res.redirect(`${FRONTEND_URL}/dashboard`);
   } catch (error: any) {
     console.log(error)
     if (error instanceof Error && error.message.includes('invalid_grant')) {

@@ -1,4 +1,4 @@
-import { AUTH_CREDENTIALS_URI, AUTH_GOOGLE_URI } from "@/constants/backend_routes";
+import { AUTH_CREDENTIALS_URI, AUTH_GOOGLE_URI, userProfileRoute } from "@/constants/backend_routes";
 import axios from "axios";
 
 
@@ -40,3 +40,15 @@ export const checkUserWithOtp = async (email: string, otp: string) => {
     throw new Error("OTP verification failed. Please check your OTP and try again.");
   }
 }
+
+//get user
+export const getUser = async () => {
+  try {
+    const api = await axios.get(`${userProfileRoute}`,{
+      withCredentials: true,
+    });
+    return api.data;
+  } catch (error) {
+    throw new Error("Failed to get user. Please try again.");
+  }
+};
