@@ -1,5 +1,6 @@
 from groq import Groq
 import os
+import json
 from dotenv import load_dotenv
 
 # Load .env for GROQ_API_KEY
@@ -10,43 +11,50 @@ client = Groq(
     api_key=os.environ.get("GROQ_API_KEY"),
 )
 
-# Story generator function
-def getScript(theme: str, story: str) -> str:
-    script = ""
+def getScript(title: str, style: str, maxChars: int) -> str:
+    instruction = (
+        f"Generate a short video script titled '{title}' in '{style}' style. "
+        "Break it into 5 visual scenes. For each scene provide:\n"
+        "- `prompt`: Detailed image generation prompt (no length limit)\n"
+        f"- `description`: Scene description (TOTAL of ALL descriptions must be UNDER {maxChars} characters)\n\n"
+        "Return ONLY a JSON array of 5 objects with these keys. "
+        "Count description characters carefully to stay under the limit."
+    )
 
-    # Force JSON-only structured reply
     completion = client.chat.completions.create(
         model="meta-llama/llama-4-scout-17b-16e-instruct",
         messages=[
             {
-                "role": "user",
+                "role": "system",
                 "content": (
-                    f"Generate a short story titled \"{story}\" with the background, scene, and characters based on the theme \"{theme}\". "
-                    "Break it into 5 visual scenes. For each scene, return an object with two keys:\n"
-                    "- `prompt`: the image generation prompt (for tools like DALL·E or SD)\n"
-                    "- `description`: natural description of what's happening in the scene.\n"
-                    "Ensure the story is visually coherent and lasts a maximum of 30 seconds.\n"
-                    "**Only return a valid JSON array of 5 such objects. Do not include any explanation, markdown, or extra text.**\n\n"
-                    "Example format:\n"
-                    "[\n"
-                    "  {\n"
-                    "    \"prompt\": \"a brave knight walking into a glowing enchanted forest at dusk, cinematic lighting\",\n"
-                    "    \"description\": \"The knight enters a glowing forest filled with magical trees.\"\n"
-                    "  },\n"
-                    "  ... (4 more)\n"
-                    "]"
+                    "You are a strict JSON generator. Return exactly 5 scene objects. "
+                    f"Total description text must be under {maxChars} characters. "
+                    "Structure: [{'prompt':'...','description':'...'}]"
                 )
+            },
+            {
+                "role": "user",
+                "content": instruction
             }
         ],
-        temperature=1,
-        max_completion_tokens=1024,
-        top_p=1,
-        stream=True,
-        stop=None,
+        response_format={"type": "json_object"},
+        temperature=0.7,
+        max_tokens=2000,  # Higher limit for longer prompts
     )
 
-    # Accumulate streamed JSON response
-    for chunk in completion:
-        script += chunk.choices[0].delta.content or ""
-
+    script = completion.choices[0].message.content
+    
+    # Verify description length
+    # try:
+    #     data = json.loads(script)
+    #     total_desc_chars = sum(len(scene["description"]) for scene in data)
+    #     if total_desc_chars > maxChars:
+    #         # If over limit, truncate descriptions proportionally
+    #         ratio = maxChars / total_desc_chars
+    #         for scene in data:
+    #             scene["description"] = scene["description"][:int(len(scene["description"])*ratio)]
+    #         script = json.dumps(data, ensure_ascii=False)
+    # except (json.JSONDecodeError, KeyError):
+    #     pass  # Return as-is if JSON parsing fails
+    
     return script

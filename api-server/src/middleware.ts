@@ -17,12 +17,10 @@ declare global {
 }
 export const isAuthenticated = expressAsyncHandler((req: Request, res: Response, next: NextFunction) => {
   const { token } = req.cookies;
-  console.log("Token from cookies:", token);
   if (!token) {
     return formatResponse(res, 401, "Unauthorized", false, null, "You must be logged in to access this resource");
   }
   const decoded = jwt.decode(token)
-  console.log("Decoded user from token:", decoded);
   if (!decoded || typeof decoded === 'string') {
     return formatResponse(res, 401, "Unauthorized", false, null, "Invalid token");
   }

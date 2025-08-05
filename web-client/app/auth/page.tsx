@@ -8,12 +8,11 @@ import { z } from "zod";
 import { FaApple, FaGoogle, FaInstagram, FaTwitter } from "react-icons/fa"
 import { FaMeta, FaSquareXTwitter, FaX, FaXTwitter } from "react-icons/fa6"
 import { useMutation } from "@tanstack/react-query";
-import { checkUserWithOtp, loginWithCredentials, loginWithGoogle, signUpWithCredentials } from "@/lib/apiProvider";
+import { checkUserWithOtp, loginWithCredentials, signUpWithCredentials } from "@/lib/apiProvider";
 import { toast } from "sonner";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogOverlay, DialogTitle } from "@/components/ui/dialog";
 import { OtpInput } from "@/components/OtpInput";
-import { AUTH_CREDENTIALS_URI, AUTH_GOOGLE_OAUTH_URI } from "@/constants/backend_routes";
-import { useUser } from "@/context/UserProvider";
+import { AUTH_GOOGLE_OAUTH_URI } from "@/constants/backend_routes";
 
 
 // Types
@@ -64,19 +63,6 @@ const AuthPages: React.FC = () => {
   const [errors, setErrors] = useState<IFormErrors>({});
 
   // Mutations
-  //google login
-  const googleMutation = useMutation({
-    mutationFn: loginWithGoogle,
-    onSuccess: (redirectUrl) => {
-      if (redirectUrl) {
-        window.location.href = redirectUrl;
-      }
-    },
-    onError: (error: any) => {
-      console.error("Google login error:", error);
-      toast.error("Failed to login with Google. Please try again.");
-    },
-  });
 
   // Credentials mutation for sign in and sign up
   const credentialsMutation = useMutation({
@@ -92,13 +78,12 @@ const AuthPages: React.FC = () => {
       }
     },
     onSuccess: (data) => {
-      console.log(`${isSignUp ? 'Sign up' : 'Sign in'} successful:`, data);
       toast.success(`${isSignUp ? 'Send OTP' : 'Welcome back'}!`);
       if (!isSignUp) {
-        console.log("Redirecting to dashboard...");
+        document.cookie = `is-authenticated=true; path=/; max-age=604800; secure; SameSite=Strict`;
         setTimeout(() => {
           router.push("/dashboard/prompt2video");
-        },1500);
+        }, 1500);
       } else {
         setopenotp(true)
       }
@@ -106,6 +91,7 @@ const AuthPages: React.FC = () => {
       // Redirect to dashboard or appropriate page
     },
     onError: (error: any) => {
+      document.cookie = `is-authenticated=false; path=/; max-age=604800; secure; SameSite=Strict`;
       console.error(`${isSignUp ? 'Sign up' : 'Sign in'} error:`, error);
       const errorMessage = error?.message ||
         (isSignUp ? "Failed to create account. Please try again." :
@@ -121,13 +107,14 @@ const AuthPages: React.FC = () => {
       return await checkUserWithOtp(email, otp);
     },
     onSuccess: (data) => {
-      console.log("OTP verification successful:", data);
       toast.success("OTP verified successfully! redirecting to home page...");
+      document.cookie = `is-authenticated=true; path=/; max-age=604800; secure; SameSite=Strict`;
       setTimeout(() => {
-          router.push("/dashboard/prompt2video");
-        },1500);
+        router.push("/dashboard/prompt2video");
+      }, 1500);
     },
     onError: (error: any) => {
+      document.cookie = `is-authenticated=false; path=/; max-age=604800; secure; SameSite=Strict`;
       console.error("OTP verification error:", error);
       toast.error("Invalid OTP. Please try again.");
     },
@@ -228,20 +215,17 @@ const AuthPages: React.FC = () => {
       color: 'from-red-500 to-yellow-500',
       hoverColor: 'hover:shadow-red-500/20',
       enabled: true,
-      redirectUrl : `${AUTH_GOOGLE_OAUTH_URI}`
+      redirectUrl: `${AUTH_GOOGLE_OAUTH_URI}`
     }
   ];
 
   const handleSocialLogin = async (provider: Providers) => {
     try {
       setIsLoading(true);
-      console.log(`Attempting to login with ${provider}...`);
       const socialProvider = socialProviders.find(p => p.name === provider);
-      console.log(socialProvider)
       switch (provider) {
         case Providers.GOOGLE:
-          console.log("i ger6", socialProvider?.redirectUrl)
-          if(socialProvider?.redirectUrl){
+          if (socialProvider?.redirectUrl) {
             router.push(socialProvider?.redirectUrl);
           }
           break;
@@ -256,14 +240,17 @@ const AuthPages: React.FC = () => {
   };
 
   // Social providers configuration
-  
+
 
   const iconErrorClass = "-translate-y-[110%]";
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-900 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center  relative overflow-hidden">
+
+      <div className="fixed top-1/2 left-1/4 w-64 h-64 bg-purple-200/30 dark:bg-purple-500/10 rounded-full blur-3xl -z-10" />
+      <div className="fixed bottom-1/4 right-1/4 w-96 h-96 bg-pink-200/30 dark:bg-pink-500/10 rounded-full blur-3xl -z-10" />
       {/* Background gradient elements */}
-      <div className="absolute inset-0 overflow-hidden">
+      {/* <div className="absolute inset-0 overflow-hidden">
         <motion.div
           animate={{
             x: [0, 100, 0],
@@ -303,7 +290,7 @@ const AuthPages: React.FC = () => {
           }}
           className="absolute bottom-20 right-1/3 w-64 h-64 bg-pink-500 rounded-full filter blur-3xl opacity-15"
         />
-      </div>
+      </div> */}
 
       {/* Auth Form Container */}
       <motion.div
@@ -312,7 +299,7 @@ const AuthPages: React.FC = () => {
         transition={{ duration: 0.6 }}
         className="relative z-10 w-full max-w-md mx-4"
       >
-        <div className="bg-gray-800/40 backdrop-blur-xl rounded-2xl p-8 border border-gray-700/50 shadow-2xl">
+        <div className=" backdrop-blur-xl rounded-2xl p-8 border border-gray-700/50 shadow-2xl text-black dark:text-white">
           {/* Header */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
@@ -323,7 +310,7 @@ const AuthPages: React.FC = () => {
             <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-cyan-500 mb-2">
               {isSignUp ? 'Create Account' : 'Welcome Back'}
             </h1>
-            <p className="text-gray-400">
+            <p className="">
               {isSignUp
                 ? 'Join us and start your creative journey'
                 : 'Sign in to access your dashboard'
@@ -338,33 +325,35 @@ const AuthPages: React.FC = () => {
             transition={{ duration: 0.5, delay: 0.15 }}
             className="mb-8"
           >
-            <div className="grid grid-cols-5 gap-3">
+            <div className="flex items-center justify-center gap-4 flex-wrap">
               {socialProviders.map((provider, index) => (
                 <motion.button
                   key={provider.name}
                   type="button"
                   onClick={() => handleSocialLogin(provider.name)}
                   disabled={!provider.enabled || isLoading}
-                  whileHover={provider.enabled && !isLoading ? { scale: 1.05, y: -2 } : {}}
+                  whileHover={provider.enabled && !isLoading ? { scale: 1.05 } : {}}
                   whileTap={provider.enabled && !isLoading ? { scale: 0.95 } : {}}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, delay: 0.2 + index * 0.1 }}
-                  className={`p-3 rounded-xl bg-gradient-to-r ${provider.color} text-white flex items-center justify-center hover:shadow-lg ${provider.hoverColor} transition-all group relative overflow-hidden ${
-                    provider.enabled && !isLoading 
-                      ? 'cursor-pointer' 
-                      : 'cursor-not-allowed opacity-50'
-                  }`}
+                  className={`dark:border-white border-black p-3 rounded-xl  dark:text-white text-black flex items-center justify-center hover:shadow-lg ${provider.hoverColor} transition-all group relative overflow-hidden ${provider.enabled && !isLoading
+                    ? 'cursor-pointer'
+                    : 'cursor-not-allowed opacity-50'
+                    }`}
                   aria-label={`Sign ${isSignUp ? 'up' : 'in'} with ${provider.name}`}
                 >
                   <motion.div
-                    whileHover={provider.enabled && !isLoading ? { rotate: [0, -10, 10, 0] } : {}}
+
                     transition={{ duration: 0.6 }}
                   >
-                    <provider.icon className="w-5 h-5" />
+                    <div className="flex items-center w-full h-full">
+                      <provider.icon className="w-5 h-5" />
+                      <h1 className="ml-2">Login with {provider.name}</h1>
+                    </div>
                   </motion.div>
                   <motion.div
-                    className="absolute inset-0 bg-white/20 rounded-xl"
+                    className="absolute inset-0  rounded-xl"
                     initial={{ scale: 0, opacity: 0 }}
                     whileHover={provider.enabled && !isLoading ? { scale: 1, opacity: 1 } : {}}
                     transition={{ duration: 0.3 }}
@@ -375,10 +364,10 @@ const AuthPages: React.FC = () => {
 
             <div className="flex items-center my-6">
               <div className="flex-1 h-px bg-gray-600"></div>
-              <span className="px-4 text-gray-400 text-sm">or continue with</span>
+              <span className="px-4  text-sm">or continue with</span>
               <div className="flex-1 h-px bg-gray-600"></div>
             </div>
-          </motion.div> 
+          </motion.div>
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -393,7 +382,7 @@ const AuthPages: React.FC = () => {
                   transition={{ duration: 0.3 }}
                 >
                   <div className="relative">
-                    <Mail className={`absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 ${errors.email ? iconErrorClass : ""}`} />
+                    <Mail className={`absolute left-3 top-1/2 transform -translate-y-1/2  w-5 h-5 ${errors.email ? iconErrorClass : ""}`} />
                     <input
                       type="email"
                       name="email"
@@ -401,7 +390,7 @@ const AuthPages: React.FC = () => {
                       value={formData.email}
                       onChange={handleInputChange}
                       disabled={isLoading}
-                      className={`w-full pl-10 pr-4 py-3 bg-gray-800/50 border rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-all ${errors.email
+                      className={`w-full pl-10 pr-4 py-3  border rounded-xl   focus:outline-none focus:ring-2 transition-all ${errors.email
                         ? 'border-red-500 focus:ring-red-500/20'
                         : 'border-gray-600 focus:ring-purple-500/20 focus:border-purple-500'
                         } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
@@ -431,7 +420,7 @@ const AuthPages: React.FC = () => {
                   transition={{ duration: 0.3 }}
                 >
                   <div className="relative">
-                    <User className={`absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 ${errors.username ? iconErrorClass : ""}`} />
+                    <User className={`absolute left-3 top-1/2 transform -translate-y-1/2  w-5 h-5 ${errors.username ? iconErrorClass : ""}`} />
                     <input
                       type="text"
                       name="username"
@@ -439,7 +428,7 @@ const AuthPages: React.FC = () => {
                       value={formData.username}
                       onChange={handleInputChange}
                       disabled={isLoading}
-                      className={`w-full pl-10 pr-4 py-3 bg-gray-800/50 border rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-all ${errors.username
+                      className={`w-full pl-10 pr-4 py-3  border rounded-xl   focus:outline-none focus:ring-2 transition-all ${errors.username
                         ? 'border-red-500 focus:ring-red-500/20'
                         : 'border-gray-600 focus:ring-purple-500/20 focus:border-purple-500'
                         } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
@@ -469,7 +458,7 @@ const AuthPages: React.FC = () => {
                   transition={{ duration: 0.3 }}
                 >
                   <div className="relative">
-                    <Mail className={`absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 ${errors.email ? iconErrorClass : ""}`} />
+                    <Mail className={`absolute left-3 top-1/2 transform -translate-y-1/2  w-5 h-5 ${errors.email ? iconErrorClass : ""}`} />
                     <input
                       type="email"
                       name="emailOrUsername"
@@ -477,7 +466,7 @@ const AuthPages: React.FC = () => {
                       value={formData.email}
                       onChange={handleInputChange}
                       disabled={isLoading}
-                      className={`w-full pl-10 pr-4 py-3 bg-gray-800/50 border rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-all ${errors.email
+                      className={`w-full pl-10 pr-4 py-3  border rounded-xl  focus:outline-none focus:ring-2 transition-all ${errors.email
                         ? 'border-red-500 focus:ring-red-500/20'
                         : 'border-gray-600 focus:ring-purple-500/20 focus:border-purple-500'
                         } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
@@ -503,7 +492,7 @@ const AuthPages: React.FC = () => {
               transition={{ duration: 0.5, delay: 0.3 }}
             >
               <div className="relative">
-                <Lock className={`absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 ${errors.password ? iconErrorClass : ""}`} />
+                <Lock className={`absolute left-3 top-1/2 transform -translate-y-1/2  w-5 h-5 ${errors.password ? iconErrorClass : ""}`} />
                 <input
                   type={showPassword ? "text" : "password"}
                   name="password"
@@ -511,7 +500,7 @@ const AuthPages: React.FC = () => {
                   value={formData.password}
                   onChange={handleInputChange}
                   disabled={isLoading}
-                  className={`w-full pl-10 pr-12 py-3 bg-gray-800/50 border rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-all ${errors.password
+                  className={`w-full pl-10 pr-12 py-3  border rounded-xl   focus:outline-none focus:ring-2 transition-all ${errors.password
                     ? 'border-red-500 focus:ring-red-500/20'
                     : 'border-gray-600 focus:ring-purple-500/20 focus:border-purple-500'
                     } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
@@ -522,7 +511,7 @@ const AuthPages: React.FC = () => {
                   disabled={isLoading}
                   whileHover={!isLoading ? { scale: 1.1 } : {}}
                   whileTap={!isLoading ? { scale: 0.9 } : {}}
-                  className={`absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors ${isLoading ? 'cursor-not-allowed' : 'cursor-pointer'
+                  className={`absolute right-3 top-1/2 transform -translate-y-1/2  hover:text-white transition-colors ${isLoading ? 'cursor-not-allowed' : 'cursor-pointer'
                     }`}
                   aria-label={showPassword ? "Hide password" : "Show password"}
                 >
@@ -551,7 +540,7 @@ const AuthPages: React.FC = () => {
                   transition={{ duration: 0.3 }}
                 >
                   <div className="relative">
-                    <Lock className={`absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 ${errors.confirmPassword ? iconErrorClass : ""}`} />
+                    <Lock className={`absolute left-3 top-1/2 transform -translate-y-1/2  w-5 h-5 ${errors.confirmPassword ? iconErrorClass : ""}`} />
                     <input
                       type={showConfirmPassword ? "text" : "password"}
                       name="confirmPassword"
@@ -559,7 +548,7 @@ const AuthPages: React.FC = () => {
                       value={formData.confirmPassword}
                       onChange={handleInputChange}
                       disabled={isLoading}
-                      className={`w-full pl-10 pr-12 py-3 bg-gray-800/50 border rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-all ${errors.confirmPassword
+                      className={`w-full pl-10 pr-12 py-3  border rounded-xl   focus:outline-none focus:ring-2 transition-all ${errors.confirmPassword
                         ? 'border-red-500 focus:ring-red-500/20'
                         : 'border-gray-600 focus:ring-purple-500/20 focus:border-purple-500'
                         } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
@@ -570,7 +559,7 @@ const AuthPages: React.FC = () => {
                       disabled={isLoading}
                       whileHover={!isLoading ? { scale: 1.1 } : {}}
                       whileTap={!isLoading ? { scale: 0.9 } : {}}
-                      className={`absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors ${isLoading ? 'cursor-not-allowed' : 'cursor-pointer'
+                      className={`absolute right-3 top-1/2 transform -translate-y-1/2  hover:text-white transition-colors ${isLoading ? 'cursor-not-allowed' : 'cursor-pointer'
                         }`}
                       aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
                     >
@@ -610,7 +599,7 @@ const AuthPages: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.4 }}
-              className={`w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-cyan-600 text-white font-medium flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-purple-500/20 transition-all group ${isLoading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
+              className={`w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-cyan-600  font-medium flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-purple-500/20 transition-all group ${isLoading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
                 }`}
               aria-label={isSignUp ? 'Create new account' : 'Sign in to account'}
             >
@@ -640,7 +629,7 @@ const AuthPages: React.FC = () => {
             transition={{ duration: 0.5, delay: 0.5 }}
             className="text-center mt-6"
           >
-            <p className="text-gray-400">
+            <p className="">
               {isSignUp ? 'Already have an account?' : "Don't have an account?"}
               <motion.button
                 type="button"
@@ -684,7 +673,7 @@ const AuthPages: React.FC = () => {
 
                 <DialogClose asChild>
                   <button
-                    className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 dark:bg-blue-500 dark:hover:bg-blue-600"
+                    className="rounded-lg bg-blue-600 px-4 py-2  hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 dark:bg-blue-500 dark:hover:bg-blue-600"
 
                     onClick={async () => {
                       await checkOtpMutation.mutateAsync(otp);

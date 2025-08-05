@@ -120,7 +120,7 @@ export const signInUserService = expressAsyncHandler(async (req: Request, res: R
       username: user.username
     });
 
-    SetCookie(res, "token", token);
+    SetCookie(res, "token", token, 60 * 60 * 24 * 7); // 7 days
 
     const sendUser = {
       _id: user._id,
@@ -141,6 +141,12 @@ export const signInUserService = expressAsyncHandler(async (req: Request, res: R
 export const logoutUserService = expressAsyncHandler(async (req: Request, res: Response, next: NextFunction) => {
   try {
     res.clearCookie("token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict"
+    });
+
+    res.clearCookie("is-authenticated", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict"

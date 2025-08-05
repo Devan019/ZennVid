@@ -1,17 +1,10 @@
-import { AUTH_CREDENTIALS_URI, AUTH_GOOGLE_URI, userProfileRoute } from "@/constants/backend_routes";
+import { AUTH_CREDENTIALS_URI, generateVideoScript, userProfileRoute } from "@/constants/backend_routes";
 import axios from "axios";
 
-
-//redirect with auth provider
-export const loginWithGoogle = async () => {
-  const api = await axios.get(`${AUTH_GOOGLE_URI}`);
-  return api.data;
-};
 
 //redirect with credentials
 export const loginWithCredentials = async ( email: string, password: string) => {
   try {
-    console.log("Logging in with credentials:", { email, password });
     const api = await axios.post(`${AUTH_CREDENTIALS_URI}/signin`, { email, password });
     return api.data;
   } catch (error) {
@@ -22,7 +15,6 @@ export const loginWithCredentials = async ( email: string, password: string) => 
 //sign up with credentials
 export const signUpWithCredentials = async (email: string, password: string, username: string) => {
   try {
-    console.log("Signing up with credentials:", { email, password, username });
     const api = await axios.post(`${AUTH_CREDENTIALS_URI}/signup`, { email, password, username });
     return api.data;
   } catch (error) {
@@ -33,13 +25,24 @@ export const signUpWithCredentials = async (email: string, password: string, use
 //check user with otp
 export const checkUserWithOtp = async (email: string, otp: string) => {
   try {
-    console.log("Checking user with OTP:", { email, otp });
     const api = await axios.post(`${AUTH_CREDENTIALS_URI}/checkuser`, { email, otp });
     return api.data;
   } catch (error) {
     throw new Error("OTP verification failed. Please check your OTP and try again.");
   }
 }
+
+//logout user
+export const logoutUser = async () => {
+  try {
+    const api = await axios.get(`${AUTH_CREDENTIALS_URI}/logout`, {
+      withCredentials: true,
+    });
+    return api.data;
+  } catch (error) {
+    throw new Error("Logout failed. Please try again.");
+  }
+};
 
 //get user
 export const getUser = async () => {
@@ -52,3 +55,21 @@ export const getUser = async () => {
     throw new Error("Failed to get user. Please try again.");
   }
 };
+
+//script generater
+export const scriptGen = async ({title, style, maxChars} : {
+  title : string,
+  style: string,
+  maxChars : number
+}) => {
+  try {
+    const api = await axios.post(`${generateVideoScript}`,{
+      title, style, maxChars
+    })    
+    return api.data;
+  } catch (error) {
+    console.log(error)
+    throw new Error("script service error");
+  }
+}
+

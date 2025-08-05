@@ -8,7 +8,6 @@ import { User } from "../auth/model/User";
 import { Provider } from "../constants/provider";
 import connectToMongo from "../utils/mongoConnection";
 import { SetCookie } from "../utils/setCookie";
-import { profile } from "console";
 
 export const loginWithGoogle = expressAsyncHandler((req: Request, res: Response) => {
   try {
@@ -52,8 +51,9 @@ export const oauthCallback = expressAsyncHandler(async (req: Request, res: Respo
       provider: Provider.GOOGLE,
       username: exitUser.username,
     });
-    SetCookie(res, "token", jwtToken);
-    return res.redirect(`${FRONTEND_URL}/dashboard`);
+    SetCookie(res, "token", jwtToken, 60 * 60 * 24 * 7); // 7 days
+    SetCookie(res, "is-authenticated", "true", 60 * 60 * 24 * 7); // 7 days
+    return res.redirect(`${FRONTEND_URL}`);
   } catch (error: any) {
     console.log(error)
     if (error instanceof Error && error.message.includes('invalid_grant')) {

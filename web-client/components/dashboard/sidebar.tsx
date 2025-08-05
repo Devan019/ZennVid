@@ -20,11 +20,12 @@ import {
 } from "@/components/ui/sidebar";
 import { GiLipstick } from "react-icons/gi";
 import ModeToggle from "../mode-toggle";
+import { useUser } from "@/context/UserProvider";
 
 export function AppSidebar() {
   const pathname = usePathname();
   const { openMobile, setOpenMobile, isMobile } = useSidebar();
-
+  const { logout } = useUser();
 
 
   const menuItems = [
@@ -203,8 +204,8 @@ export function AppSidebar() {
             whileTap={{ scale: 0.98 }}
           >
             <SidebarMenuItem>
-              <Link href="/logout" passHref >
                 <SidebarMenuButton
+                onClick=  {logout}
                   tooltip="Logout"
                   className="
                     group w-full transition-all duration-200 ease-in-out
@@ -224,7 +225,6 @@ export function AppSidebar() {
                     Logout
                   </span>
                 </SidebarMenuButton>
-              </Link>
             </SidebarMenuItem>
           </motion.div>
         </SidebarMenu>

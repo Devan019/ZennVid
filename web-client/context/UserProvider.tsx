@@ -1,8 +1,8 @@
 "use client"
 
-import { getUser } from "@/lib/apiProvider";
+import { getUser, logoutUser } from "@/lib/apiProvider";
 import { useMutation } from "@tanstack/react-query";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
 
 export type User = {
   username: string;
@@ -12,6 +12,7 @@ export type User = {
   points?: number;
   _id?: string;
   provider?: string;
+  logout?: () => void;
 }
 interface UserContextType {
   user: User | null;
@@ -22,6 +23,7 @@ interface UserContextType {
   setIsLoading: (isLoading: boolean) => void;
   error: string | null;
   setError: (error: string | null) => void;
+  logout: () => void;
 }
 
 export const userContext = createContext<UserContextType | null>(null);
@@ -41,7 +43,6 @@ export const UserProvider = ({ children }: {
       setIsLoading(true);
       setError(null);
       const data = await getUser();
-      console.log("User data fetched:", data);
       if (data) {
         setUser(data.DATA);
         setIsAuthenticated(true);
@@ -52,16 +53,32 @@ export const UserProvider = ({ children }: {
       return data;
     },
     onSuccess: (data) => {
-      console.log("User fetched successfully:", data);
     },
     onError: (error: any) => {
-      console.log("Error fetching user:", error);
       setError(error.message || "Failed to fetch user");
       setIsAuthenticated(false);
     },
     onSettled:() =>{
       setIsLoading(false)
     }
+  });
+
+  const doLogout = useMutation({
+    mutationFn: async () => {
+      setIsLoading(true);
+      setError(null);
+      await logoutUser();
+      setIsAuthenticated(false);
+      setUser(null);
+      setIsLoading(false);
+    },
+    onSuccess: () => {
+      setUser(null);
+      setIsAuthenticated(false);
+    },
+    onError: (error: any) => {
+      setError(error.message || "Failed to logout");
+    },
   });
 
   useEffect(() => {
@@ -72,8 +89,13 @@ export const UserProvider = ({ children }: {
     }
   }, []);
 
+  const logout = useCallback(() => {
+    doLogout.mutate();
+    window.location.href = '/';
+  }, [doLogout]);
+
   return (
-    <userContext.Provider value={{ user, setUser, isAuthenticated, setIsAuthenticated, isLoading, setIsLoading, error, setError }}>
+    <userContext.Provider value={{ user, setUser, isAuthenticated, setIsAuthenticated, isLoading, setIsLoading, error, setError, logout  }}>
       {children}
     </userContext.Provider>
   );

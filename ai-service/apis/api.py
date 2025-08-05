@@ -77,13 +77,15 @@ async def root():
     return {"message": "Welcome to the AI Services API"}
 
 class GroqScript(BaseModel):
-    theme: str
-    story: str
+    style: str
+    title: str
+    maxChars : int
 
-@app.post("/groq-script")
-async def groq_script(scipt: GroqScript):
+
+@app.post("/script-gen")
+async def groq_script(req: GroqScript):
     from helpers.groq_script  import getScript  
-    script = getScript(scipt.theme, scipt.story)
+    script = getScript(req.title, req.style, req.maxChars)
     script = script.replace("```json", '')
     script = script.replace("```", '')
 
