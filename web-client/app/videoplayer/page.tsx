@@ -3,7 +3,8 @@ import React from 'react'
 
 const page = () => {
   return (
-    <Videomotion />
+    // <Videomotion />
+    <h1>WOW</h1>
   )
 }
 

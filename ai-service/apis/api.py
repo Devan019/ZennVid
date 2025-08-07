@@ -1,10 +1,10 @@
 import json
 import os
 
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.responses import FileResponse, JSONResponse 
 import edge_tts
-
+from typing import Any
 from pydantic import BaseModel
 from classes.pydentic_class import VoiceRequest
 app = FastAPI()
@@ -24,41 +24,87 @@ tmp_image_description = [
     "the sky pirate's airship flying through a narrow, neon-lit tunnel beneath the floating cities, with the ship's engines glowing bright blue as it picks up speed"
 ]
 
-Audio_Mapper = {
-    "gujarati" : "gu",
-    "bengali" : "bn",
-    "tamil" : "ta",
-    "telugu" : "te",
-    "marathi" : "mr",
-    "malayalam" : "ml",
-    "punjabi" : "pa",
-    "urdu" : "ur",
-    "kannada" : "kn",
-    "assamese" : "as",
-    "maithili" : "mai",
-    "sindhi" : "sd",
-    "sanskrit" : "sa",
-    "english" : "en",
-    "french" : "fr",
-    "spanish" : "es",
-    "german" : "de",
-    "italian" : "it",
-    "japanese" : "ja",
-    "korean" : "ko",
-    "portuguese" : "pt",
-    "russian" : "ru",
-    "hindi" : "hi",
-    "arabic" : "ar",
-    "turkish" : "tr",
-    "dutch" : "nl",
-    "polish" : "pl",
-    "swedish" : "sv",
-    "norwegian" : "no",
-    "danish" : "da",
-    "finnish" : "fi",
-    "chinese" : "zh-CN",
+Audio_Mapper: dict[str, str] = {
+    "afrikaans": "af",
+    "albanian": "sq",
+    "amharic": "am",
+    "arabic": "ar",
+    "azerbaijani": "az",
+    "bengali": "bn",
+    "bosnian": "bs",
+    "bulgarian": "bg",
+    "burmese": "my",
+    "catalan": "ca",
+    "chinese": "zh-CN",
+    "croatian": "hr",
+    "czech": "cs",
+    "danish": "da",
+    "dutch": "nl",
+    "english": "en",
+    "estonian": "et",
+    "filipino": "fil",
+    "finnish": "fi",
+    "french": "fr",
+    "galician": "gl",
+    "georgian": "ka",
+    "german": "de",
+    "greek": "el",
+    "gujarati": "gu",
+    "hebrew": "he",
+    "hindi": "hi",
+    "hungarian": "hu",
+    "icelandic": "is",
+    "indonesian": "id",
+    "irish": "ga",
+    "italian": "it",
+    "japanese": "ja",
+    "javanese": "jv",
+    "kannada": "kn",
+    "kazakh": "kk",
+    "khmer": "km",
+    "korean": "ko",
+    "lao": "lo",
+    "latvian": "lv",
+    "lithuanian": "lt",
+    "macedonian": "mk",
+    "malay": "ms",
+    "malayalam": "ml",
+    "maltese": "mt",
+    "marathi": "mr",
+    "mongolian": "mn",
+    "nepali": "ne",
+    "norwegian": "no",
+    "pashto": "ps",
+    "persian": "fa",
+    "polish": "pl",
+    "portuguese": "pt",
+    "romanian": "ro",
+    "russian": "ru",
+    "serbian": "sr",
+    "sinhala": "si",
+    "slovak": "sk",
+    "slovenian": "sl",
+    "somali": "so",
+    "spanish": "es",
+    "sundanese": "su",
+    "swahili": "sw",
+    "swedish": "sv",
+    "tamil": "ta",
+    "telugu": "te",
+    "thai": "th",
+    "turkish": "tr",
+    "ukrainian": "uk",
+    "urdu": "ur",
+    "uzbek": "uz",
+    "vietnamese": "vi",
+    "welsh": "cy",
+    "zulu": "zu",
+    "maithili": "mai",
+    "sindhi": "sd",
+    "sanskrit": "sa",
+    "assamese": "as",
+    "punjabi": "pa",
 }
-
 
 # Folder structure
 BASE_DIR = "media"
@@ -79,19 +125,20 @@ async def root():
 class GroqScript(BaseModel):
     style: str
     title: str
-    maxChars : int
+    seconds: int
+    language: str = "english"
 
 
 @app.post("/script-gen")
 async def groq_script(req: GroqScript):
-    from helpers.groq_script  import getScript  
-    script = getScript(req.title, req.style, req.maxChars)
-    script = script.replace("```json", '')
-    script = script.replace("```", '')
+    from helpers.gemini_script import generate_story_script
 
-    raw_string = script.encode().decode('unicode_escape')
-    parsed_json = json.loads(raw_string)
-    return parsed_json
+    script = generate_story_script(req.title, req.style, req.seconds, req.language)
+
+    # Clean markdown fencing if present
+    
+    return {"script": script}
+
 
 class VoiceRequestWithText(BaseModel):
     gender: str
@@ -173,7 +220,7 @@ async def generate_image_gemini_test(request: ImageRequest):
 class CaptionRequest(BaseModel):
     audio_file: str
 
-@app.post("/generate-capations")
+@app.post("/generate-captions")
 def create_captions(req: CaptionRequest) -> str:
     from helpers.wisper_model import generate_captions
     srt_path = generate_captions(req.audio_file)
@@ -202,24 +249,68 @@ class VideoPro(BaseModel):
     theme: str
     voice: str
     image_size: str = "1024x1024"
-    language: str = "en"
+    language: str = "english"
+    seconds: int
 
-@app.post("/video-gen-pro")
+@app.post("/video-gen-pro") #with script gen
 async def videoGenPro(req: VideoPro):
 
-    # step  1 groq script
-    from helpers.groq_script import getScript
+    # step  1 gemini script
+    from helpers.gemini_script import generate_story_script
     from helpers.gemini_image_gen import generate_image
     from helpers.translate import getTranslateText
     from helpers.wisper_model import generate_captions
     from helpers.edge_tts import generate_audio_edge
-    from helpers.assembia_captaions import assembia_caption
     
 
-    raw_string = getScript(req.theme, req.topic)
-    groqScriptTmp = raw_string.encode().decode('unicode_escape')
-    groqScript = json.loads(groqScriptTmp)
+    script = generate_story_script(req.topic, req.theme, req.seconds, req.language)
+    
 
+
+    images = []
+    #step 2 gen images
+    idx = 0
+    for item in script:
+        prompt = item['prompt']
+        img_path = generate_image(prompt, req.image_size, idx)
+        idx += 1
+        images.append(img_path)
+
+    # step 3 gen audio
+    audio_desc = ""
+    audio_desc2 = ""
+    for item in script:
+
+        description = getTranslateText(item['description'], Audio_Mapper[req.language])
+        audio_desc += description + ". "
+        audio_desc2 += item['description'] 
+
+    audio = await generate_audio_edge(audio_desc, req.voice,"audio.mp3")
+
+    # step 4 gen captions
+    captions = await generate_captions(audio)
+
+    return {
+        "images": images,
+        "audio": audio,
+        "captions": captions
+    }
+
+class VideoLite(BaseModel):
+    script: Any
+    topic: str
+    theme: str
+    voice: str
+    image_size: str = "1024x1024"
+
+@app.post("/video-gen-lite")
+async def videoGenLite(req: VideoLite): #without script gen
+    from helpers.gemini_image_gen import generate_image
+    from helpers.translate import getTranslateText
+    from helpers.wisper_model import generate_captions
+    from helpers.edge_tts import generate_audio_edge
+
+    groqScript = json.loads(req.script)
 
     images = []
     #step 2 gen images
@@ -242,16 +333,13 @@ async def videoGenPro(req: VideoPro):
     audio = await generate_audio_edge(audio_desc, req.voice,"audio.mp3")
 
     # step 4 gen captions
-    srt_path = await generate_captions(audio)
+    captions = await generate_captions(audio)
 
     return {
-        "script": groqScript,
         "images": images,
         "audio": audio,
-        "captions": srt_path
+        "captions": captions
     }
-
-
 
 class TranslateReq(BaseModel):
     text: str

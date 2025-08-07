@@ -152,7 +152,7 @@ export enum VoiceLanguage {
 
 export enum VoiceGender {
   Male = "male",
-  Female = "female"
+  Female = "female",
 }
 
 export enum FullName {

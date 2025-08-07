@@ -14,13 +14,13 @@ import { interpolate } from "remotion";
 const RemotionVideo = ({
   audioUrl,
   images,
-  capations,
+  captions,
   width,
   height,
 }: {
   audioUrl: string;
   images: string[];
-  capations: {
+  captions: {
     index: number;
     start: number;
     end: number;
@@ -33,12 +33,12 @@ const RemotionVideo = ({
   const { fps } = useVideoConfig();
   const { durationInFrames } = useVideoConfig();
 
-  const endTime = capations[capations.length - 1].end / 1000;
+  const endTime = captions[captions.length - 1].end / 1000;
   const endTimefps = Math.ceil(endTime * fps);
   const oneImageDuration = Math.floor(endTimefps / images.length);
 
   const currentTimeByFrame = (frame / fps) * 1000;
-  const currentCaption = capations.find(
+  const currentCaption = captions.find(
     (caption) =>
       caption.start <= currentTimeByFrame &&
       caption.end >= currentTimeByFrame

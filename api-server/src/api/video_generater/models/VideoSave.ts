@@ -12,6 +12,7 @@ const videoGeneraterSchema = new mongoose.Schema({
   }
 })
 
+
 const VideoGenerater = mongoose.model('VideoGenerater', videoGeneraterSchema);
 
 export default VideoGenerater;

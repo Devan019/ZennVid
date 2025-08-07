@@ -4,29 +4,31 @@ import axios from "axios";
 import { getShortVoiceName } from "../../utils/Voicemappping";
 import { formatResponse } from "../../utils/formateResponse";
 
-
 export const videoGeneraterService = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { title, style, videoLength, voiceGender, voiceLanguage, frameSize } = videogeneraterZodValidation.parse(req.body);
+    console.log(req.body)
+    const { title, style, voiceGender, voiceLanguage, seconds, language} = videogeneraterZodValidation.parse(req.body);
 
     const forShortName = `${voiceLanguage}${voiceGender}`;
 
     const shortName = getShortVoiceName(forShortName);
+    console.log("Short Name:", shortName, "forShortName:", forShortName);
 
     if (!shortName) {
       return formatResponse(res, 400, "Invalid voice name", false, null);
     }
 
-    const genapi = await axios.post(`${process.env.AI_URI}/generate-video`, {
-      title,
-      videoLength,
+
+    const genapi = await axios.post(`${process.env.AI_URI}/video-gen-pro`, {
+      topic: title,
       theme: style,
       voice: shortName,
-      image_size: frameSize
+      language: language.toLowerCase(),
+      seconds: seconds
     })
 
-    return formatResponse(res, 200, "Video generated successfully", true, genapi.data);
+    return genapi.data;
   } catch (error) {
-    return formatResponse(res, 500, "Internal server error", false, error);
+    return error
   }
 }

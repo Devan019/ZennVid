@@ -1,4 +1,4 @@
-import { AUTH_CREDENTIALS_URI, generateVideoScript, userProfileRoute } from "@/constants/backend_routes";
+import { AUTH_CREDENTIALS_URI, generateVideo, generateVideoScript, userProfileRoute } from "@/constants/backend_routes";
 import axios from "axios";
 
 
@@ -56,20 +56,24 @@ export const getUser = async () => {
   }
 };
 
-//script generater
-export const scriptGen = async ({title, style, maxChars} : {
-  title : string,
+//video generater
+export const videoGen = async ({title, style, voiceGender, voiceLanguage, seconds, language} : {
+  title: string,
   style: string,
-  maxChars : number
+  voiceGender: string,
+  voiceLanguage: string,
+  seconds: number,
+  language?: string
 }) => {
   try {
-    const api = await axios.post(`${generateVideoScript}`,{
-      title, style, maxChars
-    })    
+    const api = await axios.post(`${generateVideo}`,{
+      title, style, voiceGender, voiceLanguage, seconds, language
+    },{
+      withCredentials : true
+    })
     return api.data;
   } catch (error) {
     console.log(error)
-    throw new Error("script service error");
+    throw new Error("video service error");
   }
 }
-

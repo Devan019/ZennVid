@@ -19,6 +19,7 @@
     "@types/express": "^5.0.3",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.0.10",
+    "@types/react": "^19.1.9",
     "express": "^5.1.0",
     "ts-node": "^10.9.2",
     "tsx": "^4.20.3",
@@ -26,6 +27,8 @@
   },
   "dependencies": {
     "@auth/express": "^0.11.0",
+    "@remotion/bundler": "^4.0.332",
+    "@remotion/renderer": "^4.0.332",
     "axios": "^1.10.0",
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",

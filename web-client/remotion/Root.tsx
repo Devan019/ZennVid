@@ -1,8 +1,8 @@
 import React from 'react';
-import {Composition} from 'remotion';
+import { Composition } from 'remotion';
 import Videomotion from '@/components/videomotion';
 import RemotionVideo from '@/components/RemotionVideo';
- 
+
 export const RemotionRoot: React.FC = () => {
   return (
     <>
@@ -16,7 +16,7 @@ export const RemotionRoot: React.FC = () => {
         defaultProps={{
           audioUrl: '',
           images: [],
-          capations: [],
+          captions: [],
           width: 1280,
           height: 720,
         }}

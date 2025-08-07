@@ -11,15 +11,15 @@ client = Groq(
     api_key=os.environ.get("GROQ_API_KEY"),
 )
 
-def getScript(title: str, style: str, maxChars: int) -> str:
+def getScript(title: str, style: str, seconds: int) -> str:
     instruction = (
-        f"Generate a short video script titled '{title}' in '{style}' style. "
-        "Break it into 5 visual scenes. For each scene provide:\n"
-        "- `prompt`: Detailed image generation prompt (no length limit)\n"
-        f"- `description`: Scene description (TOTAL of ALL descriptions must be UNDER {maxChars} characters)\n\n"
-        "Return ONLY a JSON array of 5 objects with these keys. "
-        "Count description characters carefully to stay under the limit."
-    )
+    f"Generate a short story video script titled '{title}' in '{style}' style. "
+    "Break it into exactly 5 visual scenes. Each scene must be an object with:\n"
+    "- 'prompt': a detailed image generation prompt (string)\n"
+    "- 'description': a short vivid description (string). Assume 10 words per second.\n"
+    f"The total speaking time for all 5 descriptions must be close to {seconds} seconds without going over.\n\n"
+    "**Return only a valid JSON array of 5 objects. No extra text.**"
+)
 
     completion = client.chat.completions.create(
         model="meta-llama/llama-4-scout-17b-16e-instruct",
@@ -27,9 +27,9 @@ def getScript(title: str, style: str, maxChars: int) -> str:
             {
                 "role": "system",
                 "content": (
-                    "You are a strict JSON generator. Return exactly 5 scene objects. "
-                    f"Total description text must be under {maxChars} characters. "
-                    "Structure: [{'prompt':'...','description':'...'}]"
+                    "You are a strict JSON generator. Return exactly 5 objects in a JSON array. "
+                    "Each object must have 'prompt' and 'description'. Do NOT include any notes, comments, seconds, or extra formatting. "
+                    "Example format: [{'prompt': '...', 'description': '...'}, ...]"
                 )
             },
             {
@@ -39,22 +39,9 @@ def getScript(title: str, style: str, maxChars: int) -> str:
         ],
         response_format={"type": "json_object"},
         temperature=0.7,
-        max_tokens=2000,  # Higher limit for longer prompts
+        max_tokens=2000,
     )
 
     script = completion.choices[0].message.content
-    
-    # Verify description length
-    # try:
-    #     data = json.loads(script)
-    #     total_desc_chars = sum(len(scene["description"]) for scene in data)
-    #     if total_desc_chars > maxChars:
-    #         # If over limit, truncate descriptions proportionally
-    #         ratio = maxChars / total_desc_chars
-    #         for scene in data:
-    #             scene["description"] = scene["description"][:int(len(scene["description"])*ratio)]
-    #         script = json.dumps(data, ensure_ascii=False)
-    # except (json.JSONDecodeError, KeyError):
-    #     pass  # Return as-is if JSON parsing fails
-    
+    print(f"Generated script: {script}")
     return script
