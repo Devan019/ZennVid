@@ -3,16 +3,22 @@ import { videogeneraterZodValidation } from "./schema";
 import axios from "axios";
 import { getShortVoiceName } from "../../utils/Voicemappping";
 import { formatResponse } from "../../utils/formateResponse";
+import connectToMongo from "../../utils/mongoConnection";
+import VideoGenerater from "./models/VideoSave";
+import { User } from "../../auth/model/User";
+
+interface videoUrl{
+  video : string
+}
 
 export const videoGeneraterService = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    console.log(req.body)
-    const { title, style, voiceGender, voiceLanguage, seconds, language} = videogeneraterZodValidation.parse(req.body);
+    await connectToMongo();
+    const { title, style, voiceGender, voiceLanguage, seconds, language } = videogeneraterZodValidation.parse(req.body);
 
     const forShortName = `${voiceLanguage}${voiceGender}`;
 
     const shortName = getShortVoiceName(forShortName);
-    console.log("Short Name:", shortName, "forShortName:", forShortName);
 
     if (!shortName) {
       return formatResponse(res, 400, "Invalid voice name", false, null);
@@ -27,8 +33,34 @@ export const videoGeneraterService = async (req: Request, res: Response, next: N
       seconds: seconds
     })
 
-    return genapi.data;
+    // const genapi = await axios.get(`${process.env.AI_URI}/video-gen-test`);
+
+    const data:videoUrl = genapi.data;
+    if(!data.video){
+      return "Backend problem"
+    }
+
+    const newVideo = new VideoGenerater({
+      videoUrl : data.video,
+      user : req.user.id
+    })
+
+
+    // console.log("video", newVideo, " api ", data)
+
+    await newVideo.save();
+
+    await User.findByIdAndUpdate(req.user.id, {
+      $inc:{
+        points : -20
+      }
+    })
+
+    return {
+      videoUrl: data.video,
+    }
   } catch (error) {
+    console.error("Error in videoGeneraterService:", error);
     return error
   }
 }

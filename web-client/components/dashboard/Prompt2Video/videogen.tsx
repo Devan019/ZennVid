@@ -14,133 +14,9 @@ import { videoGen } from '@/lib/apiProvider';
 import { useMutation } from '@tanstack/react-query';
 import Videomotion from '@/components/videomotion';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import VideoPreviewDialog from './downloadVideo';
+import TerminalLoader from './progressLoader';
 
-const data = {
-  "images": [
-    "https://res.cloudinary.com/dpnae0bod/image/upload/v1754571443/zennvid/image_0.png",
-    "https://res.cloudinary.com/dpnae0bod/image/upload/v1754571466/zennvid/image_1.png",
-    "https://res.cloudinary.com/dpnae0bod/image/upload/v1754571481/zennvid/image_2.png",
-    "https://res.cloudinary.com/dpnae0bod/image/upload/v1754571497/zennvid/image_3.png",
-    "https://res.cloudinary.com/dpnae0bod/image/upload/v1754571511/zennvid/image_4.png"
-  ],
-  "audio": "https://res.cloudinary.com/dpnae0bod/video/upload/v1754571526/zennvid/audio.mp3",
-  "captions": [
-    {
-      "index": 1,
-      "start": 0,
-      "end": 4560.000000000001,
-      "text": "A blue-white banner had a storm"
-    },
-    {
-      "index": 2,
-      "start": 4560.000000000001,
-      "end": 8620.000000000002,
-      "text": "A嗎uness which raised a slain vibe"
-    },
-    {
-      "index": 3,
-      "start": 8620.000000000002,
-      "end": 11660,
-      "text": "The one who were yellowish-like"
-    },
-    {
-      "index": 4,
-      "start": 11660,
-      "end": 16160,
-      "text": "The one who were so beautiful"
-    },
-    {
-      "index": 5,
-      "start": 16160,
-      "end": 22840,
-      "text": "said to watch the crowd"
-    },
-    {
-      "index": 6,
-      "start": 22840,
-      "end": 25720,
-      "text": "If a threat of one inch looks ugly"
-    },
-    {
-      "index": 7,
-      "start": 25720,
-      "end": 29720,
-      "text": "He was a very good man."
-    },
-    {
-      "index": 8,
-      "start": 29720,
-      "end": 31720,
-      "text": "He was a very good man."
-    },
-    {
-      "index": 9,
-      "start": 31720,
-      "end": 33720,
-      "text": "He was a very good man."
-    },
-    {
-      "index": 10,
-      "start": 33720,
-      "end": 35720,
-      "text": "He was a very good man."
-    },
-    {
-      "index": 11,
-      "start": 35720,
-      "end": 37720,
-      "text": "He was a very good man."
-    },
-    {
-      "index": 12,
-      "start": 37720,
-      "end": 39720,
-      "text": "He was a very good man."
-    },
-    {
-      "index": 13,
-      "start": 39720,
-      "end": 41720,
-      "text": "He was a very good man."
-    },
-    {
-      "index": 14,
-      "start": 41720,
-      "end": 43720,
-      "text": "He was a very good man."
-    },
-    {
-      "index": 15,
-      "start": 43720,
-      "end": 45720,
-      "text": "He was a very good man."
-    },
-    {
-      "index": 16,
-      "start": 45720,
-      "end": 47720,
-      "text": "He was a very good man."
-    },
-    {
-      "index": 17,
-      "start": 47720,
-      "end": 49720,
-      "text": "He was a very good man."
-    },
-    {
-      "index": 18,
-      "start": 49720,
-      "end": 51720,
-      "text": "He was a very good man."
-    },
-    {
-      "index": 19,
-      "start": 51720,
-      "end": 53720,
-      "text": "He was a very good man."
-    }
-  ]
-}
 
 const VideoConfigUI = () => {
   const [videoTitle, setVideoTitle] = useState('');
@@ -150,6 +26,17 @@ const VideoConfigUI = () => {
   const [voiceGender, setVoiceGender] = useState('');
   const [language, setLanguage] = useState<VoiceBaseLanguage>(VoiceBaseLanguage.EnglishIndia);
   const [videoloading, setvideoloading] = useState(false);
+  const [dialogState, setDialogState] = useState(false)
+  const [isGeneratered, setisGeneratered] = useState(false)
+  const [videoUrl, setvideoUrl] = useState("");
+
+  const delay = (time: number) => {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        resolve(true);
+      }, time);
+    });
+  }
 
   const videoGenMutation = useMutation({
     mutationFn: async () => {
@@ -157,6 +44,7 @@ const VideoConfigUI = () => {
         throw new Error('All fields are required');
       }
       setvideoloading(true)
+      setisGeneratered(false)
       const data = await videoGen({
         title: videoTitle,
         style: selectedStyle,
@@ -165,11 +53,16 @@ const VideoConfigUI = () => {
         seconds: videoLength === '30' ? 30 : 60,
         language
       });
+      // await delay(1000*5);
+      setisGeneratered(true);
+      await delay(1000*10);
       setvideoloading(false)
+
       return data;
     },
     onSuccess: (data) => {
-      console.log(data);
+      setvideoUrl(data.DATA.videoUrl);
+      setDialogState(true);
     },
     onError: (error) => {
       console.log(error);
@@ -177,17 +70,15 @@ const VideoConfigUI = () => {
   })
 
   const handleSubmit = () => {
-    // videoGenMutation.mutateAsync();
+    videoGenMutation.mutateAsync();
   };
   const styles = [
     { id: 'realistic', name: 'Realistic', emoji: '📸', color: 'bg-blue-500' },
     { id: 'anime', name: 'Anime', emoji: '🎌', color: 'bg-pink-500' },
     { id: 'cartoon', name: 'Cartoon', emoji: '🎨', color: 'bg-yellow-500' },
     { id: 'cyberpunk', name: 'Cyberpunk', emoji: '🤖', color: 'bg-purple-500' },
-    { id: 'fantasy', name: 'Fantasy', emoji: '🧙‍♂️', color: 'bg-green-500' },
-    { id: 'retro', name: 'Retro', emoji: '📼', color: 'bg-orange-500' },
-    { id: 'minimalist', name: 'Minimalist', emoji: '⚪', color: 'bg-gray-500' },
-    { id: 'watercolor', name: 'Watercolor', emoji: '🎭', color: 'bg-indigo-500' }
+    { id: 'sketch', name: 'Sketch', emoji: '✏️', color: 'bg-gray-400' },
+    { id: 'pixel-art', name: 'Pixel Art', emoji: '🟦', color: 'bg-green-400' }
   ];
 
 
@@ -212,18 +103,22 @@ const VideoConfigUI = () => {
     return videoTitle.trim() && videoLength && selectedStyle && voiceLanguage && voiceGender;
   };
 
+  const OnClose = () => {
+    setDialogState(false);
+  }
+
+
   useEffect(() => {
     setLanguage(VoiceBaseLanguage[voiceLanguage as keyof typeof VoiceBaseLanguage] || VoiceBaseLanguage.EnglishIndia);
   }, [voiceLanguage])
 
   if (videoloading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold mb-4">Generating Video...</h2>
-          <p className="text-gray-600">Please wait while we create your video.</p>
-        </div>
-      </div>
+      <TerminalLoader
+        completed={isGeneratered}
+        setCompleted={setisGeneratered}
+        isVideoLoading={videoloading}
+      />
     );
   }
 
@@ -247,34 +142,11 @@ const VideoConfigUI = () => {
           <p className="text-slate-600 text-lg">Configure your perfect video with AI-powered customization</p>
         </motion.div>
 
-        <Dialog open={true} >
-          <DialogContent className="w-auto h-[680px]">
-            <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-center">
-                Video Preview
-              </DialogTitle>
-              <DialogDescription className="text-center text-muted-foreground mb-4">
-                Preview and See in your videos
-              </DialogDescription>
-            </DialogHeader>
-
-            <div className="">
-              <Videomotion
-                images={data.images}
-                audioUrl={data.audio}
-                captions={data.captions}
-              />
-              <Button
-                variant={"destructive"}
-                className="mt-4 w-full bg-blue-500 hover:bg-blue-600 text-white"
-                size={"lg"}
-
-              >
-                Export
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
+        <VideoPreviewDialog
+          open={dialogState}
+          onClose={OnClose}
+          videoUrl={videoUrl}
+        />
         <div className="space-y-8">
           {/* Video Title */}
           <motion.div variants={itemVariants}>

@@ -1,14 +1,7 @@
 import os
 import edge_tts
-import cloudinary
-import cloudinary.uploader
 
-# Cloudinary config
-cloudinary.config(
-    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
-    api_key=os.getenv("CLOUDINARY_API_KEY"),
-    api_secret=os.getenv("CLOUDINARY_API_SECRET")
-)
+current_dir = os.path.dirname(os.path.abspath(__file__))
 
 async def generate_audio_edge(text: str, voice: str, audio_filename: str = "audio.mp3") -> str:
     """
@@ -24,20 +17,11 @@ async def generate_audio_edge(text: str, voice: str, audio_filename: str = "audi
     """
     try:
         # Generate and save the audio file locally
+        audio_path = os.path.join(current_dir, audio_filename)
         communicate = edge_tts.Communicate(text, voice)
-        await communicate.save(audio_filename)
+        await communicate.save(audio_path)
 
-        # Upload to Cloudinary
-        if os.path.exists(audio_filename):
-            result = cloudinary.uploader.upload(
-                audio_filename,
-                folder="zennvid",
-                resource_type="video",  # Required for audio
-                public_id="audio"
-            )
-            return result["secure_url"]
-        else:
-            raise FileNotFoundError(f"⚠️ File not found: {audio_filename}")
+        return audio_path
 
     except Exception as e:
         print(f"❌ Error generating or uploading audio: {e}")

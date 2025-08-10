@@ -9,7 +9,13 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "strict": true,
-    
   },
-  "include": ["src"]
+  "include": [
+    "src",
+    "remotion",
+    "src/index.tsx",
+    "src/remotionVideo.tsx",
+    "src/service.ts",
+    "src/server.ts"
+  ]
 }

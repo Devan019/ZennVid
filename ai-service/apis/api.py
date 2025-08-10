@@ -251,49 +251,63 @@ class VideoPro(BaseModel):
     image_size: str = "1024x1024"
     language: str = "english"
     seconds: int
-
-@app.post("/video-gen-pro") #with script gen
+@app.post("/video-gen-pro")  # with script gen
 async def videoGenPro(req: VideoPro):
-
-    # step  1 gemini script
+    import logging
+    logging.basicConfig(level=logging.INFO)
+    
     from helpers.gemini_script import generate_story_script
     from helpers.gemini_image_gen import generate_image
     from helpers.translate import getTranslateText
     from helpers.wisper_model import generate_captions
     from helpers.edge_tts import generate_audio_edge
-    
+    from helpers.ffmepg import create_video
 
+    logging.info("Step 1: Generating story script...")
     script = generate_story_script(req.topic, req.theme, req.seconds, req.language)
-    
 
-
+    logging.info("Step 2: Generating images...")
     images = []
-    #step 2 gen images
     idx = 0
-    for item in script:
+    # for item in script:
+    for item in script: 
         prompt = item['prompt']
         img_path = generate_image(prompt, req.image_size, idx)
         idx += 1
         images.append(img_path)
 
-    # step 3 gen audio
+    logging.info("Step 3: Preparing audio text...")
     audio_desc = ""
     audio_desc2 = ""
     for item in script:
-
         description = getTranslateText(item['description'], Audio_Mapper[req.language])
         audio_desc += description + ". "
         audio_desc2 += item['description'] 
 
-    audio = await generate_audio_edge(audio_desc, req.voice,"audio.mp3")
+    logging.info("Step 4: Generating audio...")
+    audio = await generate_audio_edge(audio_desc, req.voice, "audio.mp3")
 
-    # step 4 gen captions
-    captions = await generate_captions(audio)
+    logging.info("Step 5: Generating captions...")
+    captions = await generate_captions("./helpers/audio.mp3")
+    # return captions
+
+    logging.info("Step 6: Creating final video...")
+    video_url = create_video(
+        captions_json=json.dumps(captions),
+        images=images,
+        audio="./helpers/audio.mp3"
+    )
+
+    logging.info("Step 7: Video generation complete.")
 
     return {
-        "images": images,
-        "audio": audio,
-        "captions": captions
+        "video": video_url
+    }
+
+@app.get("/video-gen-test")
+def getULtest():
+    return {
+        "video": "https://res.cloudinary.com/dpnae0bod/video/upload/v1754833702/output_video.mp4"
     }
 
 class VideoLite(BaseModel):

@@ -129,6 +129,13 @@ export const signInUserService = expressAsyncHandler(async (req: Request, res: R
       username: user.username
     }
 
+    req.user = {
+      id: user._id,
+      email: user.email,
+      provider: user.provider,
+      username: user.username
+    }
+
     return formatResponse(res, 200, "User signed in successfully", true, { user: sendUser });
 
   } catch (error) {
@@ -141,12 +148,6 @@ export const signInUserService = expressAsyncHandler(async (req: Request, res: R
 export const logoutUserService = expressAsyncHandler(async (req: Request, res: Response, next: NextFunction) => {
   try {
     res.clearCookie("token", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict"
-    });
-
-    res.clearCookie("is-authenticated", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict"

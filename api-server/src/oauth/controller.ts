@@ -52,7 +52,6 @@ export const oauthCallback = expressAsyncHandler(async (req: Request, res: Respo
       username: exitUser.username,
     });
     SetCookie(res, "token", jwtToken, 60 * 60 * 24 * 7); // 7 days
-    SetCookie(res, "is-authenticated", "true", 60 * 60 * 24 * 7); // 7 days
     return res.redirect(`${FRONTEND_URL}`);
   } catch (error: any) {
     console.log(error)

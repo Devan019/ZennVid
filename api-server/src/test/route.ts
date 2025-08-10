@@ -5,7 +5,6 @@ import { formatResponse } from "../utils/formateResponse";
 import axios from "axios";
 import path from "path";
 import fs from "fs/promises";
-import { renderVideo } from "./test";
 
 export const TestRouter = Router();
 
@@ -27,6 +26,7 @@ TestRouter.get("/sendmail", expressAsyncHandler(async (req: Request, res: Respon
 
 TestRouter.get("/languages", expressAsyncHandler(async (req: Request, res: Response) => {
   try {
+    console.log("Fetching languages...");
     const filePath = path.join("src/test/audio.json");
     const fileContent = await fs.readFile(filePath, "utf-8");
     const data = JSON.parse(fileContent);
@@ -41,11 +41,3 @@ TestRouter.get("/languages", expressAsyncHandler(async (req: Request, res: Respo
   }
 }));
 
-TestRouter.post("/video", expressAsyncHandler(async (req: Request, res: Response) => {
-  try {
-    await renderVideo(req, res);
-  } catch (error) {
-    console.error("Error downloading file:", error);
-    return formatResponse(res, 500, "Failed to download file", false);
-  }
-}));

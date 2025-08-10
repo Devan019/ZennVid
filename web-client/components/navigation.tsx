@@ -32,17 +32,16 @@ export function Navigation() {
     <motion.nav
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-        scrolled
+      className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled
           ? "bg-white/90 dark:bg-black/90 backdrop-blur-md border-b border-gray-200 dark:border-gray-800"
           : "bg-transparent"
-      }`}
+        }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <motion.div 
-            whileHover={{ scale: 1.05 }} 
+          <motion.div
+            whileHover={{ scale: 1.05 }}
             className="flex items-center space-x-2 cursor-pointer"
             onClick={() => router.push('/')}
           >
@@ -57,20 +56,20 @@ export function Navigation() {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-6">
             <div className="flex items-center gap-6">
-              <FlipLink 
-                className="text-[18px] text-gray-800 dark:text-gray-200 hover:text-purple-600 dark:hover:text-purple-400" 
+              <FlipLink
+                className="text-[18px] text-gray-800 dark:text-gray-200 hover:text-purple-600 dark:hover:text-purple-400"
                 href="#features"
               >
                 Features
               </FlipLink>
-              <FlipLink 
-                className="text-[18px] text-gray-800 dark:text-gray-200 hover:text-purple-600 dark:hover:text-purple-400" 
+              <FlipLink
+                className="text-[18px] text-gray-800 dark:text-gray-200 hover:text-purple-600 dark:hover:text-purple-400"
                 href="#pricing"
               >
                 Pricing
               </FlipLink>
-              <FlipLink 
-                className="text-[18px] text-gray-800 dark:text-gray-200 hover:text-purple-600 dark:hover:text-purple-400" 
+              <FlipLink
+                className="text-[18px] text-gray-800 dark:text-gray-200 hover:text-purple-600 dark:hover:text-purple-400"
                 href="#reviews"
               >
                 Reviews
@@ -88,7 +87,7 @@ export function Navigation() {
                   >
                     Sign In
                   </Button>
-                  <Button 
+                  <Button
                     className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
                   >
                     Get Started
@@ -103,9 +102,9 @@ export function Navigation() {
                   >
                     Logout
                   </Button>
-                  <Button 
+                  <Button
                     className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
-                    onClick={() => router.push('/dashboard/Prompt2Video')}
+                    onClick={() => router.push('/dashboard/prompt2video')}
                   >
                     Dashboard
                   </Button>
@@ -117,9 +116,9 @@ export function Navigation() {
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center gap-2">
             <ModeToggle />
-            <Button 
-              variant="ghost" 
-              size="icon" 
+            <Button
+              variant="ghost"
+              size="icon"
               className="text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800"
               onClick={() => setIsOpen(!isOpen)}
             >
@@ -165,7 +164,7 @@ export function Navigation() {
                     >
                       Sign In
                     </Button>
-                    <Button 
+                    <Button
                       className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
                     >
                       Get Started
@@ -180,9 +179,9 @@ export function Navigation() {
                     >
                       Logout
                     </Button>
-                    <Button 
+                    <Button
                       className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
-                      onClick={() => router.push('/dashboard/Prompt2Video')}
+                      onClick={() => router.push('/dashboard/prompt2video')}
                     >
                       Dashboard
                     </Button>

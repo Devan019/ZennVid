@@ -80,7 +80,6 @@ const AuthPages: React.FC = () => {
     onSuccess: (data) => {
       toast.success(`${isSignUp ? 'Send OTP' : 'Welcome back'}!`);
       if (!isSignUp) {
-        document.cookie = `is-authenticated=true; path=/; max-age=604800; secure; SameSite=Strict`;
         setTimeout(() => {
           router.push("/dashboard/prompt2video");
         }, 1500);
@@ -91,7 +90,6 @@ const AuthPages: React.FC = () => {
       // Redirect to dashboard or appropriate page
     },
     onError: (error: any) => {
-      document.cookie = `is-authenticated=false; path=/; max-age=604800; secure; SameSite=Strict`;
       console.error(`${isSignUp ? 'Sign up' : 'Sign in'} error:`, error);
       const errorMessage = error?.message ||
         (isSignUp ? "Failed to create account. Please try again." :
@@ -108,13 +106,11 @@ const AuthPages: React.FC = () => {
     },
     onSuccess: (data) => {
       toast.success("OTP verified successfully! redirecting to home page...");
-      document.cookie = `is-authenticated=true; path=/; max-age=604800; secure; SameSite=Strict`;
       setTimeout(() => {
         router.push("/dashboard/prompt2video");
       }, 1500);
     },
     onError: (error: any) => {
-      document.cookie = `is-authenticated=false; path=/; max-age=604800; secure; SameSite=Strict`;
       console.error("OTP verification error:", error);
       toast.error("Invalid OTP. Please try again.");
     },

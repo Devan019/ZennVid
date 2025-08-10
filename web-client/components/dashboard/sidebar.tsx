@@ -36,9 +36,9 @@ export function AppSidebar() {
       tooltip: "Home"
     },
     {
-      href: "/dashboard/Prompt2Video",
+      href: "/dashboard/prompt2video",
       icon: Video,
-      label: "Prompt2Video",
+      label: "prompt2video",
       tooltip: "Prompt To Video"
     },
     {
@@ -194,7 +194,7 @@ export function AppSidebar() {
           >
             <SidebarMenuItem>
               <div >
-                <ModeToggle  />
+                <ModeToggle />
               </div>
             </SidebarMenuItem>
           </motion.div>
@@ -204,27 +204,27 @@ export function AppSidebar() {
             whileTap={{ scale: 0.98 }}
           >
             <SidebarMenuItem>
-                <SidebarMenuButton
-                onClick=  {logout}
-                  tooltip="Logout"
-                  className="
+              <SidebarMenuButton
+                onClick={logout}
+                tooltip="Logout"
+                className="
                     group w-full transition-all duration-200 ease-in-out
                     hover:bg-red-50 dark:hover:bg-red-900/20
                     text-gray-700 dark:text-gray-300
                     hover:text-red-600 dark:hover:text-red-400
                     rounded-lg mx-1 px-3 py-2
                   "
+              >
+                <motion.div
+                  whileHover={{ x: 2 }}
+                  transition={{ duration: 0.2 }}
                 >
-                  <motion.div
-                    whileHover={{ x: 2 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <LogOut className="size-4 group-hover:text-red-500 dark:group-hover:text-red-400 transition-colors duration-200" />
-                  </motion.div>
-                  <span className="font-medium group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors duration-200">
-                    Logout
-                  </span>
-                </SidebarMenuButton>
+                  <LogOut className="size-4 group-hover:text-red-500 dark:group-hover:text-red-400 transition-colors duration-200" />
+                </motion.div>
+                <span className="font-medium group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors duration-200">
+                  Logout
+                </span>
+              </SidebarMenuButton>
             </SidebarMenuItem>
           </motion.div>
         </SidebarMenu>
