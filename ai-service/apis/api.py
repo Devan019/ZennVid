@@ -233,6 +233,7 @@ async def create_captions_test(file: UploadFile = File(...)):
     return JSONResponse(content=captions)
 
 
+
 class VideoClone(BaseModel):
     audio: str
     text: str
@@ -242,6 +243,17 @@ def voice_clone(request: VideoClone):
     from helpers.coqui.voice_cloning import getVoiceCloneAudio
     output_path =  getVoiceCloneAudio(request.text, request.audio)
     return {"audio" : output_path}
+
+@app.post("/voice-clone-captions")
+async def voice_clone_with_captions(request: VideoClone):
+    from helpers.coqui.voice_cloning import getVoiceCloneAudio
+    res =  await getVoiceCloneAudio(request.text, request.audio)
+    return {"audio" : res["audio"], "captions" : res["captions"]}
+
+class videoSubtitle(BaseModel):
+    video: str
+    subtitle: str
+
 
 @app.post("/voice-clone-test")
 def voice_clone_test(request: VideoClone):
@@ -315,51 +327,6 @@ def getULtest():
         "video": "https://res.cloudinary.com/dpnae0bod/video/upload/v1754845600/zennvid/9925a13b-2efc-4537-8751-9dd1a3a3509c.mp4"
     }
 
-class VideoLite(BaseModel):
-    script: Any
-    topic: str
-    theme: str
-    voice: str
-    image_size: str = "1024x1024"
-
-@app.post("/video-gen-lite")
-async def videoGenLite(req: VideoLite): #without script gen
-    from helpers.gemini_image_gen import generate_image
-    from helpers.translate import getTranslateText
-    from helpers.wisper_model import generate_captions
-    from helpers.edge_tts import generate_audio_edge
-
-    groqScript = json.loads(req.script)
-
-    images = []
-    #step 2 gen images
-    idx = 0
-    for item in groqScript:
-        prompt = item['prompt']
-        img_path = generate_image(prompt, req.image_size, idx)
-        idx += 1
-        images.append(img_path)
-
-    # step 3 gen audio
-    audio_desc = ""
-    audio_desc2 = ""
-    for item in groqScript:
-
-        description = getTranslateText(item['description'], Audio_Mapper[req.language])
-        audio_desc += description + ". "
-        audio_desc2 += item['description'] 
-
-    audio = await generate_audio_edge(audio_desc, req.voice,"audio.mp3")
-
-    # step 4 gen captions
-    captions = await generate_captions(audio)
-
-    return {
-        "images": images,
-        "audio": audio,
-        "captions": captions
-    }
-
 class TranslateReq(BaseModel):
     text: str
     language : str
@@ -369,6 +336,9 @@ def translate_text(request: TranslateReq):
     from helpers.translate import getTranslateText
     translated_text = getTranslateText(request.text, request.language)
     return translated_text
+
+
+
 
 
 import uvicorn

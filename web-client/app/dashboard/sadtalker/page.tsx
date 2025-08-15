@@ -46,22 +46,22 @@ const VideoCreator = () => {
 
   const sadTalkerMutation = useMutation({
     mutationKey: ['sadTalker'],
-    mutationFn: async ({ audioUrl, description, character, title, style, language }: { audioUrl: string; description: string; character: string; title: string; style: string; language: string }) => {
+    mutationFn: async ({ description, character, title, style, language }: { description: string; character: string; title: string; style: string; language: string }) => {
       setvideoloading(true)
       setisGeneratered(false)
-      const data = await sadTalker({ audioUrl, description, character, title, style, language });
+      const data = await sadTalker({ description, character, title, style, language });
       setisGeneratered(true);
       await delay(1000 * 10);
       setvideoloading(false)
-      return data;
+      setVideoUrl(data.DATA.videoUrl);
+      return data.DATA;
     },
     onSuccess: ({ data }: { data: any }) => {
-      setVideoUrl(data.videoUrl);
       setDialogState(true);
     },
     onError: (error: any) => {
       // Handle error
-      console.error("SADTalker error:", error);
+      console.log("SADTalker error:", error);
     },
     onSettled: () => {
       setvideoloading(false);
@@ -100,9 +100,8 @@ const VideoCreator = () => {
 
     try {
       const response = await sadTalkerMutation.mutateAsync({
-        audioUrl: "someAudioUrl",
         description: speech,
-        character: selectedPerson.image,
+        character: selectedPerson.name,
         title,
         style: "realistic",
         language: "english"

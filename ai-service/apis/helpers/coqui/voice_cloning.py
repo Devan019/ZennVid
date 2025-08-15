@@ -70,14 +70,16 @@ voiceMapper = {
 # ---------------------------
 # Function to Generate Voice Clone Audio
 # ---------------------------
-def getVoiceCloneAudio(
+async def getVoiceCloneAudio(
     text: str = "Technology has always been about bringing people closer together. At Meta, our mission is to build the future of human connection — a future powered by AI, virtual reality, and the metaverse",
     speaker: str = "Elon Musk",
     output_path: str = "output.wav"
 ) -> str:
     logger.info(f"Starting voice cloning process for speaker: {speaker}")
     logger.info(f"Input text: {text[:60]}{'...' if len(text) > 60 else ''}")
-    
+
+    import helpers.wisper_model as caption_helper
+
     # Resolve speaker audio file
     speaker_path = voiceMapper.get(speaker)
     if not speaker_path:
@@ -97,6 +99,9 @@ def getVoiceCloneAudio(
         )
         logger.info(f"Audio generated and saved to {output_path}")
 
+        #caption-generating
+        captions = await caption_helper.generate_captions(output_path)
+
         # Upload to Cloudinary
         logger.info(f"Uploading {output_path} to Cloudinary folder 'zennvid'...")
         upload_result = cloudinary.uploader.upload(
@@ -108,7 +113,10 @@ def getVoiceCloneAudio(
         secure_url = upload_result.get("secure_url")
         logger.info(f"Upload successful. File URL: {secure_url}")
 
-        return secure_url
+        return {
+            "audio": secure_url,
+            "captions": captions
+        }
 
     except Exception as e:
         logger.error(f"Error in getVoiceCloneAudio: {e}", exc_info=True)

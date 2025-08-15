@@ -98,11 +98,10 @@ export const getUserVideos = async() => {
 }
 
 //sadtakler
-// description, character, audioUrl, title, style, language
-export const sadTalker = async ({ audioUrl, description, character, title, style, language }: { audioUrl: string; description: string; character: string; title: string; style: string; language: string }) => {
+// description, character, title, style, language
+export const sadTalker = async ({ description, character, title, style, language }: { description: string; character: string; title: string; style: string; language: string }) => {
   try {
     const api = await axios.post(`${SADTALKER}`, {
-      audioUrl,
       description,
       character,
       title,
