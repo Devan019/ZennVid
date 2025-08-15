@@ -14,3 +14,5 @@ apis/**/__pycache__/
 .env
 results
 *.pyc
+
+SadTalker/.venv/

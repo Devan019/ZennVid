@@ -1,0 +1,3 @@
+[submodule "ai-service/SadTalker"]
+    path = ai-service/SadTalker
+    url = ./ai-service/SadTalker

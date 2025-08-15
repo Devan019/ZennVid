@@ -6,3 +6,4 @@ audio.json
 caption.json
 groq-script.json
 sample_res.json
+ai-service/SadTalker/.venv/
