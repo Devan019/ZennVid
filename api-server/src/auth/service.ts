@@ -117,7 +117,8 @@ export const signInUserService = expressAsyncHandler(async (req: Request, res: R
       id: user._id.toString(),
       email: user.email,
       provider: user.provider,
-      username: user.username
+      username: user.username,
+      credits : user.credits
     });
 
     SetCookie(res, "token", token, 60 * 60 * 24 * 7); // 7 days
@@ -133,7 +134,9 @@ export const signInUserService = expressAsyncHandler(async (req: Request, res: R
       id: user._id,
       email: user.email,
       provider: user.provider,
-      username: user.username
+      username: user.username,
+      credits : user.credits,
+      profilePicture: user.profilePicture
     }
 
     return formatResponse(res, 200, "User signed in successfully", true, { user: sendUser });

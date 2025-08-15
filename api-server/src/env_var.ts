@@ -9,6 +9,7 @@ export const AUTH_GOOGLE_SECRET = process.env.AUTH_GOOGLE_SECRET
 export const AUTH_GOOGLE_REDIRECT_URI = process.env.AUTH_GOOGLE_REDIRECT_URI
 export const RESEND_KEY = process.env.RESEND_KEY
 export const AI_URI = process.env.AI_URI || "http://localhost:8080";
+export const SADTALKER = process.env.SADTALKER || "http://localhost:9000";
 export const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:3000";
 export const CLOUDINARY_CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME;
 export const CLOUDINARY_API_KEY = process.env.CLOUDINARY_API_KEY;

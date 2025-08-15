@@ -9,3 +9,12 @@ export const videogeneraterZodValidation = z.object({
   seconds: z.number().min(1, "Seconds must be at least 1"),
   language : z.string().min(1, "Language is required")
 })
+
+export const lipSyncZodValidation = z.object({
+  description : z.string().min(1, "Description is required"),
+  character : z.string().min(1, "Character is required"),
+  audioUrl : z.string().min(1, "Audio URL is required"),
+  style: z.nativeEnum(Styles).default(Styles.Realistic),
+  language: z.string().min(1, "Voice Language is required"),
+  title: z.string().min(1, "title is required"),
+})

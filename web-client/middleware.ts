@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { FRONTEND_ROUTES } from "./constants/frontend_routes";
 
 export function middleware(req: NextRequest) {
   const isAuthenticated = req.cookies.get("token")?.value
@@ -10,7 +11,7 @@ export function middleware(req: NextRequest) {
 
   // ✅ If already authenticated and trying to visit /auth page, redirect to dashboard
   if (isAuthenticated && pathname.includes("/auth")) {
-    return NextResponse.redirect(new URL("/dashboard/prompt2video", req.url));
+    return NextResponse.redirect(new URL(FRONTEND_ROUTES.DASHBOARD, req.url));
   }
 
   return NextResponse.next();

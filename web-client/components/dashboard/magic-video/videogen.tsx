@@ -12,10 +12,9 @@ import { Label } from '@/components/ui/label';
 import { VoiceBaseLanguage, VoiceLanguage } from '@/constants/languages';
 import { videoGen } from '@/lib/apiProvider';
 import { useMutation } from '@tanstack/react-query';
-import Videomotion from '@/components/videomotion';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import VideoPreviewDialog from './downloadVideo';
 import TerminalLoader from './progressLoader';
+import { delay } from '@/lib/delay';
 
 
 const VideoConfigUI = () => {
@@ -29,14 +28,22 @@ const VideoConfigUI = () => {
   const [dialogState, setDialogState] = useState(false)
   const [isGeneratered, setisGeneratered] = useState(false)
   const [videoUrl, setvideoUrl] = useState("");
+  const [progress, setProgress] = useState({
+    script: false,
+    images: false,
+    audio: false,
+    captions: false,
+    video: false,
+  });
+  const steps = [ 
+    { id: "script" , label: "Crafting your epic storyline", duration: 30 }, 
+    { id: "images" , label: "Painting vivid scenes in pixels", duration: 100 }, 
+    { id: "audio" , label: "Giving voices to your story", duration: 70 }, 
+    { id: "captions" , label: "Writing words on the screen", duration: 60 }, 
+    { id: "video" , label: "Stitching it all into a masterpiece", duration: 500 }, 
+  ];
 
-  const delay = (time: number) => {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        resolve(true);
-      }, time);
-    });
-  }
+  
 
   const videoGenMutation = useMutation({
     mutationFn: async () => {
@@ -55,7 +62,7 @@ const VideoConfigUI = () => {
       });
       // await delay(1000*5);
       setisGeneratered(true);
-      await delay(1000*10);
+      await delay(1000 * 10);
       setvideoloading(false)
 
       return data;
@@ -66,6 +73,16 @@ const VideoConfigUI = () => {
     },
     onError: (error) => {
       console.log(error);
+    },
+    onSettled: () => {
+      setvideoloading(false);
+      setProgress({
+        script: false,
+        images: false,
+        audio: false,
+        captions: false,
+        video: false,
+      })
     }
   })
 
@@ -118,6 +135,9 @@ const VideoConfigUI = () => {
         completed={isGeneratered}
         setCompleted={setisGeneratered}
         isVideoLoading={videoloading}
+        steps={steps}
+        progress={progress}
+        setProgress={setProgress}
       />
     );
   }

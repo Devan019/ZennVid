@@ -11,6 +11,8 @@ declare global {
         email: string;
         provider: string;
         username: string;
+        credits : number;
+        profilePicture : string;
       }
     }
   }
@@ -29,7 +31,9 @@ export const isAuthenticated = expressAsyncHandler((req: Request, res: Response,
     id: decoded.id as string,
     email: decoded.email as string,
     provider: decoded.provider as string,
-    username: decoded.username as string
+    username: decoded.username as string,
+    credits : decoded.credits as number,
+    profilePicture : decoded.profilePicture as string
   };
   return next();
 })

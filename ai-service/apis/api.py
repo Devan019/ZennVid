@@ -241,7 +241,12 @@ class VideoClone(BaseModel):
 def voice_clone(request: VideoClone):
     from helpers.coqui.voice_cloning import getVoiceCloneAudio
     output_path =  getVoiceCloneAudio(request.text, request.audio)
-    return output_path
+    return {"audio" : output_path}
+
+@app.post("/voice-clone-test")
+def voice_clone_test(request: VideoClone):
+    output_path =  "https://res.cloudinary.com/dpnae0bod/video/upload/v1755247789/zennvid/zner5iwqabtnko8mrj4q.wav"
+    return {"audio" : output_path}
 
 
 class VideoPro(BaseModel):
@@ -307,7 +312,7 @@ async def videoGenPro(req: VideoPro):
 @app.get("/video-gen-test")
 def getULtest():
     return {
-        "video": "https://res.cloudinary.com/dpnae0bod/video/upload/v1754833702/output_video.mp4"
+        "video": "https://res.cloudinary.com/dpnae0bod/video/upload/v1754845600/zennvid/9925a13b-2efc-4537-8751-9dd1a3a3509c.mp4"
     }
 
 class VideoLite(BaseModel):

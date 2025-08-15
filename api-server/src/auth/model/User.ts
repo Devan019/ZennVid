@@ -20,7 +20,7 @@ const UserSchema = new Schema({
     type: String,
     required: true,
   },
-  points : {
+  credits : {
     type: Number,
     default: 50,
   },

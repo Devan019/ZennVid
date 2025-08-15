@@ -50,6 +50,7 @@ export const oauthCallback = expressAsyncHandler(async (req: Request, res: Respo
       email: email || exitUser.email,
       provider: Provider.GOOGLE,
       username: exitUser.username,
+      credits : exitUser.credits
     });
     SetCookie(res, "token", jwtToken, 60 * 60 * 24 * 7); // 7 days
     return res.redirect(`${FRONTEND_URL}`);

@@ -1,4 +1,4 @@
-import { AUTH_CREDENTIALS_URI, generateVideo, generateVideoScript, userProfileRoute } from "@/constants/backend_routes";
+import { AUTH_CREDENTIALS_URI, generateVideo, generateVideoScript, getVideos, SADTALKER, userProfileRoute } from "@/constants/backend_routes";
 import axios from "axios";
 
 
@@ -83,3 +83,37 @@ export const videoGen = async ({title, style, voiceGender, voiceLanguage, second
     throw new Error("video service error");
   }
 }
+
+
+//get videos
+export const getUserVideos = async() => {
+  try {
+    const api = await axios.get(`${getVideos}`, {
+      withCredentials: true,
+    });
+    return api.data;
+  } catch (error) {
+    throw new Error("Failed to get videos. Please try again.");
+  }
+}
+
+//sadtakler
+// description, character, audioUrl, title, style, language
+export const sadTalker = async ({ audioUrl, description, character, title, style, language }: { audioUrl: string; description: string; character: string; title: string; style: string; language: string }) => {
+  try {
+    const api = await axios.post(`${SADTALKER}`, {
+      audioUrl,
+      description,
+      character,
+      title,
+      style,
+      language
+    }, {
+      withCredentials: true
+    });
+    return api.data;
+  } catch (error) {
+    console.log(error);
+    throw new Error("SADTalker service error");
+  }
+};

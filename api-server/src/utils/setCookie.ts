@@ -5,6 +5,6 @@ export const SetCookie = (res: Response, key: string, value: any, time: number) 
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "strict",
-    maxAge: time
+    maxAge: time * 1000
   });
 }

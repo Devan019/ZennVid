@@ -4,7 +4,7 @@ import { formatResponse } from "../../utils/formateResponse";
 import connectToMongo from "../../utils/mongoConnection";
 import VideoGenerater from "../video_generater/models/VideoSave";
 
-export const getVideos = () => expressAsyncHandler(async (req:Request, res:Response) => {
+export const getVideos =  expressAsyncHandler(async (req:Request, res:Response) => {
  try {
     await connectToMongo();
     const id = req.user.id;

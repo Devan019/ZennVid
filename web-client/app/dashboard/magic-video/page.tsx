@@ -1,6 +1,6 @@
 "use client"
 
-import VideoConfigUI from '@/components/dashboard/Prompt2Video/videogen'
+import VideoConfigUI from '@/components/dashboard/magic-video/videogen'
 import React from 'react'
 
 const page = () => {

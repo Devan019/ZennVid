@@ -7,12 +7,11 @@ import { createContext, useCallback, useContext, useEffect, useState } from "rea
 export type User = {
   username: string;
   email: string;
-  accessToken?: string;
-  profilePicture?: string;
-  points?: number;
-  _id?: string;
-  provider?: string;
-  logout?: () => void;
+  accessToken: string;
+  profilePicture: string;
+  credits: number;
+  _id: string;
+  provider: string;
 }
 interface UserContextType {
   user: User | null;
@@ -43,25 +42,26 @@ export const UserProvider = ({ children }: {
       setIsLoading(true);
       setError(null);
       const data = await getUser();
-      if (data) {
-        setUser(data.DATA);
+      if (data?.DATA) { // ✅ Check for data.DATA
+        setUser(data.DATA.user);
         setIsAuthenticated(true);
       } else {
         setIsAuthenticated(false);
       }
-      setIsLoading(false);
       return data;
-    },
-    onSuccess: (data) => {
     },
     onError: (error: any) => {
       setError(error.message || "Failed to fetch user");
       setIsAuthenticated(false);
     },
-    onSettled:() =>{
-      setIsLoading(false)
-    }
+    
   });
+
+  useEffect(() => {
+    if (!user && !isLoading) {
+      userMutation.mutate();
+    }
+  }, [user, isLoading]);
 
   const doLogout = useMutation({
     mutationFn: async () => {
@@ -81,13 +81,6 @@ export const UserProvider = ({ children }: {
     },
   });
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      setIsLoading(true);
-      userMutation.mutate();
-      setIsLoading(false);
-    }
-  }, []);
 
   const logout = useCallback(() => {
     doLogout.mutate();
@@ -95,7 +88,7 @@ export const UserProvider = ({ children }: {
   }, [doLogout]);
 
   return (
-    <userContext.Provider value={{ user, setUser, isAuthenticated, setIsAuthenticated, isLoading, setIsLoading, error, setError, logout  }}>
+    <userContext.Provider value={{ user, setUser, isAuthenticated, setIsAuthenticated, isLoading, setIsLoading, error, setError, logout }}>
       {children}
     </userContext.Provider>
   );

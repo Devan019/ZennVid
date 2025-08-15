@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogOverlay, DialogTitle } from "@/components/ui/dialog";
 import { OtpInput } from "@/components/OtpInput";
 import { AUTH_GOOGLE_OAUTH_URI } from "@/constants/backend_routes";
+import { FRONTEND_ROUTES } from "@/constants/frontend_routes";
 
 
 // Types
@@ -81,8 +82,8 @@ const AuthPages: React.FC = () => {
       toast.success(`${isSignUp ? 'Send OTP' : 'Welcome back'}!`);
       if (!isSignUp) {
         setTimeout(() => {
-          router.push("/dashboard/prompt2video");
-        }, 1500);
+          window.location.href = FRONTEND_ROUTES.DASHBOARD
+        }, 1000);
       } else {
         setopenotp(true)
       }
@@ -107,8 +108,8 @@ const AuthPages: React.FC = () => {
     onSuccess: (data) => {
       toast.success("OTP verified successfully! redirecting to home page...");
       setTimeout(() => {
-        router.push("/dashboard/prompt2video");
-      }, 1500);
+        window.location.href = FRONTEND_ROUTES.DASHBOARD;
+      }, 1000);
     },
     onError: (error: any) => {
       console.error("OTP verification error:", error);

@@ -1,6 +1,6 @@
 "use client"
 
-import { Moon, Sun, Home, Video, LogOut, MenuIcon, Menu } from "lucide-react";
+import { Moon, Sun, Home, Video, LogOut, MenuIcon, Menu, icons, VideoOff } from "lucide-react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -21,6 +21,8 @@ import {
 import { GiLipstick } from "react-icons/gi";
 import ModeToggle from "../mode-toggle";
 import { useUser } from "@/context/UserProvider";
+import { FRONTEND_ROUTES } from "@/constants/frontend_routes";
+import { FaMagic } from "react-icons/fa";
 
 export function AppSidebar() {
   const pathname = usePathname();
@@ -30,22 +32,28 @@ export function AppSidebar() {
 
   const menuItems = [
     {
-      href: "/",
+      href: FRONTEND_ROUTES.HOME,
       icon: Home,
       label: "Home",
       tooltip: "Home"
     },
     {
-      href: "/dashboard/prompt2video",
-      icon: Video,
-      label: "prompt2video",
-      tooltip: "Prompt To Video"
+      href: FRONTEND_ROUTES.MAGIC_VIDEO,
+      icon: FaMagic,
+      label: "Magic Video",
+      tooltip: "Magic Video"
     },
     {
-      href: "/SyncTalk",
+      href: FRONTEND_ROUTES.SADTALKER,
       icon: GiLipstick,
-      label: "SyncTalk",
-      tooltip: "SyncTalk"
+      label: "SadTalker",
+      tooltip: "SadTalker"
+    },
+    {
+      href: FRONTEND_ROUTES.YOURVIDEO,
+      icon: VideoOff,
+      label: "Your Videos",
+      tooltip: "Your Videos"
     }
   ];
 

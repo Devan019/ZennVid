@@ -1,11 +1,12 @@
 import { NextFunction, Request, Response } from "express";
-import { videogeneraterZodValidation } from "./schema";
+import { lipSyncZodValidation, videogeneraterZodValidation } from "./schema";
 import axios from "axios";
 import { getShortVoiceName } from "../../utils/Voicemappping";
 import { formatResponse } from "../../utils/formateResponse";
 import connectToMongo from "../../utils/mongoConnection";
-import VideoGenerater from "./models/VideoSave";
+import VideoGenerater, { VideoType } from "./models/VideoSave";
 import { User } from "../../auth/model/User";
+import { AI_URI, SADTALKER } from "../../env_var";
 
 interface videoUrl{
   video : string
@@ -25,7 +26,7 @@ export const videoGeneraterService = async (req: Request, res: Response, next: N
     }
 
 
-    const genapi = await axios.post(`${process.env.AI_URI}/video-gen-pro`, {
+    const genapi = await axios.post(`${AI_URI}/video-gen-pro`, {
       topic: title,
       theme: style,
       voice: shortName,
@@ -42,7 +43,12 @@ export const videoGeneraterService = async (req: Request, res: Response, next: N
 
     const newVideo = new VideoGenerater({
       videoUrl : data.video,
-      user : req.user.id
+      user : req.user.id,
+      type : VideoType.MAGIC_VIDEO,
+      title : title,
+      style : style,
+      language : language,
+      voiceCharacter : shortName
     })
 
 
@@ -52,7 +58,7 @@ export const videoGeneraterService = async (req: Request, res: Response, next: N
 
     await User.findByIdAndUpdate(req.user.id, {
       $inc:{
-        points : -20
+        credits : -20
       }
     })
 
@@ -63,4 +69,43 @@ export const videoGeneraterService = async (req: Request, res: Response, next: N
     console.error("Error in videoGeneraterService:", error);
     return error
   }
+}
+
+export const lipSync = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { description, character, audioUrl, title, style, language } = lipSyncZodValidation.parse(req.body);
+
+    const audiGen = await axios.post(`${AI_URI}/voice-clone`,{
+      audio : audioUrl,
+      text: description
+    })
+
+    const audioUrlResponse = audiGen.data;
+
+    const videoGen = await axios.post(`${SADTALKER}/generate-video`,{
+      audioUrl: audioUrlResponse
+    });
+
+    const videoData = videoGen.data;
+
+    const newVideo = new VideoGenerater({
+      videoUrl : videoData.video,
+      user : req.user.id,
+      type : VideoType.SADTALKER,
+      title : title,
+      style : style,
+      language : language,
+      voiceCharacter : character
+    })
+
+    await newVideo.save();
+
+    return formatResponse(res, 200, "Video generated successfully", true, {
+      videoUrl: videoData.video,
+    });
+
+  } catch (error) {
+    return formatResponse(res, 500, "Internal Server Error", false, null);
+  }
+
 }

@@ -4,19 +4,17 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "next-themes";
 
-const TerminalLoader = ({ completed, setCompleted, isVideoLoading }: {
+
+const TerminalLoader = ({ completed, setCompleted, isVideoLoading, steps, progress, setProgress }: {
   completed: boolean;
   setCompleted: (completed: boolean) => void;
   isVideoLoading: boolean;
+  steps: any;
+  progress: any;
+  setProgress: (progress: any) => void;
 }) => {
   const { resolvedTheme } = useTheme();
-  const [progress, setProgress] = useState({
-    script: false,
-    images: false,
-    audio: false,
-    captions: false,
-    video: false,
-  });
+
   const [terminalLines, setTerminalLines] = useState<string[]>([]);
   const [finalTime, setFinalTime] = useState<string | null>(null);
   const startTimeRef = useRef<number>(Date.now());
@@ -46,13 +44,6 @@ const TerminalLoader = ({ completed, setCompleted, isVideoLoading }: {
 
   const currentColors = resolvedTheme === "dark" ? colors.dark : colors.light;
 
-  const steps = [
-    { id: "script", label: "Crafting your epic storyline", duration: 30 },
-    { id: "images", label: "Painting vivid scenes in pixels", duration: 100 },
-    { id: "audio", label: "Giving voices to your story", duration: 70 },
-    { id: "captions", label: "Writing words on the screen", duration: 60 },
-    { id: "video", label: "Stitching it all into a masterpiece", duration: 500 },
-  ];
 
   const simulateFastProcess = async () => {
       const fastDurations = [500, 1000, 1500, 2000, 2500]; // Staggered durations
@@ -63,7 +54,7 @@ const TerminalLoader = ({ completed, setCompleted, isVideoLoading }: {
 
         await new Promise(resolve => setTimeout(resolve, fastDurations[i]));
 
-        setProgress(prev => ({ ...prev, [step.id]: true }));
+        setProgress((prev:any) => ({ ...prev, [step.id]: true }));
         addTerminalLine(`✓ ${step.label} completed`);
       }
 
@@ -99,7 +90,7 @@ const TerminalLoader = ({ completed, setCompleted, isVideoLoading }: {
         }
 
         // Mark step as complete
-        setProgress(prev => ({ ...prev, [step.id]: true }));
+        setProgress((prev:any) => ({ ...prev, [step.id]: true }));
         addTerminalLine(`✓ ${step.label} completed`);
       }
 
@@ -171,7 +162,7 @@ const TerminalLoader = ({ completed, setCompleted, isVideoLoading }: {
 
           {/* Progress steps */}
           <div className="space-y-6">
-            {steps.map((step) => (
+            {steps.map((step:any) => (
               <div key={step.id} className="flex items-start">
                 <div className="flex-shrink-0 mt-1 mr-3">
                   {progress[step.id as keyof typeof progress] ? (
