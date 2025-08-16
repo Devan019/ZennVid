@@ -26,6 +26,7 @@ const VideoGallery = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
+      videoQuery.refetch()
       const data: any = videoQuery.data;
       setVideoCards(() => {
         return data?.DATA.map((video: any, index: number) => ({
@@ -87,7 +88,7 @@ const VideoGallery = () => {
   }
 
   return (
-    (videoCards.length > 0 && <VideoLayoutGrid
+    (videoCards && videoCards.length > 0 && <VideoLayoutGrid
       cards={videoCards}
       onDelete={handleVideoDelete}
       onShare={handleVideoShare}

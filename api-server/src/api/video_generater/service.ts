@@ -56,11 +56,11 @@ export const videoGeneraterService = async (req: Request, res: Response, next: N
 
     await newVideo.save();
 
-    await User.findByIdAndUpdate(req.user.id, {
-      $inc: {
-        credits: -20
-      }
-    })
+    // await User.findByIdAndUpdate(req.user.id, {
+    //   $inc: {
+    //     credits: -20
+    //   }
+    // })
 
     return {
       videoUrl: data.video,

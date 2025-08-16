@@ -202,7 +202,7 @@ const VideoConfigUI = () => {
 
 
           {/* Video Length */}
-          <motion.div variants={itemVariants}>
+          {/* <motion.div variants={itemVariants}>
             <Card className="shadow-lg border-0 backdrop-blur-sm">
               <CardHeader className="pb-4">
                 <CardTitle className="flex items-center gap-2">
@@ -262,7 +262,7 @@ const VideoConfigUI = () => {
                 </RadioGroup>
               </CardContent>
             </Card>
-          </motion.div>
+          </motion.div> */}
 
           {/* Visual Style */}
           <motion.div variants={itemVariants}>

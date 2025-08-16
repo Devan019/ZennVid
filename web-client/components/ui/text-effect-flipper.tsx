@@ -1,5 +1,6 @@
 import React, { ReactNode } from "react"
 import { motion } from "framer-motion"
+import Link from "next/link"
 
 const DURATION = 0.35
 const STAGGER = 0.025
@@ -12,10 +13,7 @@ interface FlipLinkProps {
 
 const FlipLink: React.FC<FlipLinkProps> = ({ children, href, className }) => {
   return (
-    <motion.a
-    
-      initial="initial"
-      whileHover="hovered"
+    <Link
       href={href}
       className={`relative block overflow-hidden whitespace-nowrap font-semibold  dark:text-white/90  ${className} w-auto`}
     >
@@ -65,7 +63,7 @@ const FlipLink: React.FC<FlipLinkProps> = ({ children, href, className }) => {
           </motion.span>
         ))}
       </div>
-    </motion.a>
+    </Link>
   )
 }
 
