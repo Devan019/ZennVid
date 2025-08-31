@@ -6,6 +6,7 @@ import { Features } from "@/components/features"
 import { Reviews } from "@/components/reviews"
 import { Footer } from "@/components/footer"
 import { StepHome } from "@/components/steps"
+import PricingComponent from "@/components/pricing"
 
 export default function Home() {
   return (
@@ -15,6 +16,7 @@ export default function Home() {
         <Hero />
         <Features />
         <StepHome />
+        <PricingComponent />
         {/* <Reviews /> */}
       </div>
       <Footer />
