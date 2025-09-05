@@ -1,4 +1,4 @@
-import { AUTH_CREDENTIALS_URI, generateVideo, generateVideoScript, getVideos, SADTALKER, userProfileRoute } from "@/constants/backend_routes";
+import { AUTH_CREDENTIALS_URI, CREATEAPP, generateVideo, generateVideoScript, GETAPPS, getVideos, SADTALKER, SEND_KEY_URI, userProfileRoute } from "@/constants/backend_routes";
 import axios from "axios";
 
 
@@ -116,3 +116,36 @@ export const sadTalker = async ({ description, character, title, style, language
     throw new Error("SADTalker service error");
   }
 };
+
+/**make app */
+export const createNewApp = async (name: string) => {
+  try {
+    const api = await axios.post(CREATEAPP, {name},{withCredentials:true});
+    return api.data;
+  } catch (error) {
+    console.log(error)
+    throw new Error("app can not be created")
+  }
+}
+
+/**get apis */
+export const getApps = async() => {
+  try {
+    const api = await axios.get(GETAPPS,{withCredentials:true});
+    return api.data;
+  } catch (error) {
+    console.log(error)
+    throw new Error("app can not be created")
+  }
+}
+
+/**send key to email */
+export const sendKey = async({ appId }: { appId: string }) => {
+  try {
+    const api = await axios.post(`${SEND_KEY_URI}`, { appId }, { withCredentials: true });
+    return api.data;
+  } catch (error) {
+    console.log(error)
+    throw new Error("app can not be created")
+  }
+}

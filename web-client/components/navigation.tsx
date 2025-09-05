@@ -30,6 +30,7 @@ export function Navigation() {
 
   const authUrls: URLS[] = [
     { url: FRONTEND_ROUTES.DASHBOARD, label: "Dashboard" },
+    { url: FRONTEND_ROUTES.OPENAPI, label: "Openapi" },
     /** add more */
   ]
 

@@ -1,6 +1,6 @@
 "use client"
 
-import { Moon, Sun, Home, Video, LogOut, MenuIcon, Menu, icons, VideoOff } from "lucide-react";
+import { Moon, Sun, Home, Video, LogOut, MenuIcon, Menu, icons, VideoOff, LucideProps, Cog, Book, Languages, Speaker } from "lucide-react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -10,12 +10,10 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-  SidebarProvider,
   useSidebar,
 } from "@/components/ui/sidebar";
 import { GiLipstick } from "react-icons/gi";
@@ -23,40 +21,35 @@ import ModeToggle from "../mode-toggle";
 import { useUser } from "@/context/UserProvider";
 import { FRONTEND_ROUTES } from "@/constants/frontend_routes";
 import { FaMagic } from "react-icons/fa";
+import { ForwardRefExoticComponent, RefAttributes } from "react";
+import { IconType } from "react-icons/lib";
+import { TbPhoto } from "react-icons/tb";
 
-export function AppSidebar() {
+const iconMap: Record<string, React.ElementType> = {
+  home: Home,
+  magic: FaMagic,
+  lipstick: GiLipstick,
+  videoOff: VideoOff,
+  dashboard: Home,         // or HomeIcon if you want alias
+  createApp: Cog,
+  caption: Book,
+  translate: Languages,
+  image: TbPhoto,
+  textAudio: Speaker,
+}
+
+export function AppSidebar({ menuItems }: {
+  menuItems: {
+    href: string,
+    icon: string,
+    label: string,
+    tooltip: string
+  }[]
+}) {
   const pathname = usePathname();
   const { openMobile, setOpenMobile, isMobile } = useSidebar();
   const { logout } = useUser();
-
-
-  const menuItems = [
-    {
-      href: FRONTEND_ROUTES.HOME,
-      icon: Home,
-      label: "Home",
-      tooltip: "Home"
-    },
-    {
-      href: FRONTEND_ROUTES.MAGIC_VIDEO,
-      icon: FaMagic,
-      label: "Magic Video",
-      tooltip: "Magic Video"
-    },
-    {
-      href: FRONTEND_ROUTES.SADTALKER,
-      icon: GiLipstick,
-      label: "SadTalker",
-      tooltip: "SadTalker"
-    },
-    {
-      href: FRONTEND_ROUTES.YOURVIDEO,
-      icon: VideoOff,
-      label: "Your Videos",
-      tooltip: "Your Videos"
-    }
-  ];
-
+ 
   const containerVariants = {
     hidden: { opacity: 0, x: -20 },
     visible: {
@@ -125,7 +118,7 @@ export function AppSidebar() {
           >
             <SidebarMenu className="space-y-2">
               {menuItems.map((item, index) => {
-                const Icon = item.icon;
+                 const Icon = iconMap[item.icon]
                 const isActive = pathname === item.href;
 
                 return (

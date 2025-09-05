@@ -1,10 +1,33 @@
-export const AUTH_CREDENTIALS_URI = `${process.env.NEXT_PUBLIC_AUTH_URL}`;
-export const userProfileRoute = `${process.env.NEXT_PUBLIC_AUTH_URL}/user`;
 
-export const generateVideoScript = `${process.env.NEXT_PUBLIC_API_URL}/generate-script`
-export const generateVideo = `${process.env.NEXT_PUBLIC_API_URL}/generate-video`;
-export const AUTH_GOOGLE_OAUTH_URI = `${process.env.NEXT_PUBLIC_OAUTH_URI}/login/google`;
+const auth = process.env.NEXT_PUBLIC_AUTH_URL;
+const oauth = process.env.NEXT_PUBLIC_OAUTH_URI;
+const api = process.env.NEXT_PUBLIC_API_URL;
 
-export const getVideos = `${process.env.NEXT_PUBLIC_API_URL}/get-videos`
+if (!auth) {
+  throw new Error("AUTH URL not set");
+}
 
-export const SADTALKER = `${process.env.NEXT_PUBLIC_API_URL}/sadtalker`
+if (!oauth) {
+  throw new Error("OAUTH URL not set");
+}
+
+if (!api) {
+  throw new Error("API URL not set")
+}
+
+export const AUTH_CREDENTIALS_URI = `${auth}`;
+export const userProfileRoute = `${auth}/user`;
+
+export const generateVideoScript = `${api}/generate-script`
+export const generateVideo = `${api}/generate-video`;
+export const AUTH_GOOGLE_OAUTH_URI = `${oauth}/login/google`;
+
+export const getVideos = `${api}/get-videos`
+
+export const SADTALKER = `${api}/sadtalker`
+
+export const CREATEAPP = `${api}/openapi/app`
+
+export const GETAPPS = `${api}/openapi/apps`
+
+export const SEND_KEY_URI = `${api}/openapi/app/sendkey`
