@@ -22,6 +22,7 @@ export default function ApiKeyGenerator({ onGenerate }: ApiKeyGeneratorProps) {
     setLoading(true);
     try {
       const result = await onGenerate(appname);
+      setAppname("")
       if (result.success) {
         setApiKey(result.apiKey);
         setShowApiKey(true);
@@ -74,47 +75,6 @@ export default function ApiKeyGenerator({ onGenerate }: ApiKeyGeneratorProps) {
           {loading ? 'Generating...' : 'Generate API Key'}
         </motion.button>
 
-        {apiKey && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            className="mt-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-md"
-          >
-            <div className="flex items-center justify-between mb-2">
-              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Your API Key
-              </label>
-              <div className="flex space-x-2">
-                <button
-                  onClick={() => setShowApiKey(!showApiKey)}
-                  className="p-1 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-                >
-                  {showApiKey ? (
-                    <FaEyeSlash className="h-4 w-4" />
-                  ) : (
-                    <EyeIcon className="h-4 w-4" />
-                  )}
-                </button>
-                <button
-                  onClick={copyToClipboard}
-                  className="p-1 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-                >
-                  {copied ? (
-                    <CheckIcon className="h-4 w-4 text-green-500" />
-                  ) : (
-                    <ClipboardIcon className="h-4 w-4" />
-                  )}
-                </button>
-              </div>
-            </div>
-            <div className="font-mono text-sm bg-white dark:bg-gray-800 p-2 rounded border">
-              {showApiKey ? apiKey : '•'.repeat(apiKey.length)}
-            </div>
-            <p className="text-xs text-red-600 dark:text-red-400 mt-2">
-              ⚠️ This is the only time we'll show you this key. Store it securely!
-            </p>
-          </motion.div>
-        )}
       </div>
     </motion.div>
   );

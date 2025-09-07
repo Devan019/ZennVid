@@ -28,13 +28,13 @@ const apis = [
     href: '/apis/text-translator',
     color: 'bg-green-500',
   },
-  {
-    name: 'Image Generator',
-    description: 'Generate images from text descriptions',
-    icon: TbPhoto,
-    href: '/apis/image-generator',
-    color: 'bg-purple-500',
-  },
+  // {
+  //   name: 'Image Generator',
+  //   description: 'Generate images from text descriptions',
+  //   icon: TbPhoto,
+  //   href: '/apis/image-generator',
+  //   color: 'bg-purple-500',
+  // },
   {
     name: 'Text to Audio',
     description: 'Convert text to natural-sounding speech',

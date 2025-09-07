@@ -8,6 +8,7 @@ import { decrypt, encrypt, generateApiKey, sha256Hex } from "../../utils/cyrpto"
 import connectToMongo from "../../utils/mongoConnection";
 import { sendMail } from "../../utils/SendMail";
 import { keyTemplate } from "./key-template";
+import { OPENAPI_SECERT } from "../../env_var";
 
 const getApisByUser = async ({ id }: { id: string }) => {
   try {
@@ -23,7 +24,7 @@ export const CreateNewApp = expressAsyncHandler(async (req: Request, res: Respon
   try {
     await connectToMongo()
     const { name } = ApiSchema.parse(req.body);
-    const secret = process.env.ENCRYPTION_SECRET
+    const secret = OPENAPI_SECERT;
     if (!secret) {
       return formatResponse(res, 500, "Encryption secret not set", false, {});
     }
@@ -35,16 +36,22 @@ export const CreateNewApp = expressAsyncHandler(async (req: Request, res: Respon
 
     const existing = await OpenApi.findOne({ user: user.id }).lean();
 
+
     if (existing) {
-      await OpenApi.findOneAndUpdate({ user: user.id }, {
-        $push: {
-          apps: {
-            appName: name,
-            apiKeyHash: hashedKey,
-            apiKeyEncrypted: encryptKey
+      const newApp = await OpenApi.findOneAndUpdate(
+        { user: user.id },
+        {
+          $push: {
+            apps: {
+              appName: name,
+              apiKeyHash: hashedKey,
+              apiKeyEncrypted: encryptKey
+            }
           }
-        }
-      });
+        },
+        {new : true}
+      );
+
 
       await sendMail({
         to: user?.email!,
@@ -53,11 +60,15 @@ export const CreateNewApp = expressAsyncHandler(async (req: Request, res: Respon
         html: keyTemplate({ name, apiKey, user })
       });
 
-      return formatResponse(res, 201, "New App Created Successfully", true, { message: "Please check your email for the API key." });
+      return formatResponse(res, 201, "New App Created Successfully", true, {
+        appName: name,
+        created_at: newApp?.apps[newApp.apps.length-1].created_at,
+        _id: newApp?.apps[newApp.apps.length-1]._id
+      });
     }
 
-    await OpenApi.create({
-      user: user,
+    const newApp = await OpenApi.create({
+      user: user.id,
       apps: [{
         appName: name,
         apiKeyHash: hashedKey,
@@ -72,8 +83,13 @@ export const CreateNewApp = expressAsyncHandler(async (req: Request, res: Respon
       html: keyTemplate({ name, apiKey, user })
     });
 
-    return formatResponse(res, 201, "New App Created Successfully", true, { message: "Please check your email for the API key." });
+    return formatResponse(res, 201, "New App Created Successfully", true, {
+      appName: name,
+      created_at: newApp?.apps[newApp.apps.length - 1].created_at,
+      _id: newApp?.apps[newApp.apps.length - 1]._id
+    });
   } catch (error: any) {
+    console.log(error.message)
     return formatResponse(res, 500, "Internal Server Error", false, { error: error.message });
   }
 });
