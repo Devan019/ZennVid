@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import expressAsyncHandler from "../utils/expressAsync";
-import connectToMongo from "../utils/mongoConnection";
+
 import { CheckUserValidation, SignInValidation, UserValidation } from "./schema/zodschema";
 import { User } from "./model/User";
 import { formatResponse } from "../utils/formateResponse";
@@ -17,7 +17,7 @@ import { SetCookie } from "../utils/setCookie";
 
 export const createUserService = expressAsyncHandler(async (req: Request, res: Response, next: NextFunction) => {
   try {
-    await connectToMongo();
+    ;
     const { email, password, provider, username } = UserValidation.parse(req.body);
 
     const exitsUser = await User.findOne({ email });
@@ -70,7 +70,7 @@ export const createUserService = expressAsyncHandler(async (req: Request, res: R
 
 export const checkUserService = expressAsyncHandler(async (req: Request, res: Response, next: NextFunction) => {
   try {
-    await connectToMongo();
+    ;
     const { email, otp } = CheckUserValidation.parse(req.body);
 
     const user = await TmpUser.findOne({ email, otp });
@@ -94,7 +94,7 @@ export const checkUserService = expressAsyncHandler(async (req: Request, res: Re
 
 export const signInUserService = expressAsyncHandler(async (req: Request, res: Response, next: NextFunction) => {
   try {
-    await connectToMongo();
+    ;
     const { email, password, provider } = SignInValidation.parse(req.body);
 
     const user = await User.findOne({
@@ -118,7 +118,7 @@ export const signInUserService = expressAsyncHandler(async (req: Request, res: R
       email: user.email,
       provider: user.provider,
       username: user.username,
-      credits : user.credits
+      credits: user.credits
     });
 
     SetCookie(res, "token", token, 60 * 60 * 24 * 7); // 7 days
@@ -135,7 +135,7 @@ export const signInUserService = expressAsyncHandler(async (req: Request, res: R
       email: user.email,
       provider: user.provider,
       username: user.username,
-      credits : user.credits,
+      credits: user.credits,
       profilePicture: user.profilePicture
     }
 
@@ -164,7 +164,7 @@ export const logoutUserService = expressAsyncHandler(async (req: Request, res: R
 
 export const getUserService = expressAsyncHandler(async (req: Request, res: Response, next: NextFunction) => {
   try {
-    await connectToMongo();
+    ;
     const token = req.cookies.token;
     if (!token) {
       return formatResponse(res, 401, "Unauthorized", false, null);

@@ -16,3 +16,6 @@ results
 *.pyc
 
 SadTalker/.venv/
+
+openapi/.venv/
+openapi/__pycache__/

@@ -8,6 +8,7 @@ import { sadTalker } from "@/lib/apiProvider";
 import { delay } from "@/lib/delay";
 import TerminalLoader from "@/components/dashboard/magic-video/progressLoader";
 import VideoPreviewDialog from "@/components/dashboard/magic-video/downloadVideo";
+import { toast } from "sonner";
 
 interface FamousPerson {
   name: string;
@@ -50,13 +51,23 @@ const VideoCreator = () => {
       setvideoloading(true)
       setisGeneratered(false)
       const data = await sadTalker({ description, character, title, style, language });
+      if (!data.SUCCESS) {
+        toast.error(data.MESSAGE);
+        return data;
+      }
+      toast.success(data.MESSAGE);
       setisGeneratered(true);
       await delay(1000 * 10);
       setvideoloading(false)
       setVideoUrl(data.DATA.videoUrl);
       return data.DATA;
     },
-    onSuccess: ({ data }: { data: any }) => {
+    onSuccess: (data : any) => {
+      if (!data.SUCCESS) {
+        toast.error(data.MESSAGE);
+        return;
+      }
+      toast.success(data.MESSAGE);
       setDialogState(true);
     },
     onError: (error: any) => {
@@ -80,13 +91,13 @@ const VideoCreator = () => {
       name: "Elon Musk",
       image: "/images/elon_musk.jpg",
       quote: "When something is important enough, you do it even if the odds are not in your favor.",
-      backend_image : "./images/elon_musk.jpg"
+      backend_image: "./images/elon_musk.jpg"
     },
     {
       name: "Mark Zuckerberg",
       image: "/images/mark_zuckerberg.png",
       quote: "The biggest risk is not taking any risk.",
-      backend_image : "./images/mark_zuckerberg.png"
+      backend_image: "./images/mark_zuckerberg.png"
     },
   ];
 

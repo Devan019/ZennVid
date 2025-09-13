@@ -15,6 +15,7 @@ import { useMutation } from '@tanstack/react-query';
 import VideoPreviewDialog from './downloadVideo';
 import TerminalLoader from './progressLoader';
 import { delay } from '@/lib/delay';
+import { toast } from 'sonner';
 
 
 const VideoConfigUI = () => {
@@ -35,15 +36,15 @@ const VideoConfigUI = () => {
     captions: false,
     video: false,
   });
-  const steps = [ 
-    { id: "script" , label: "Crafting your epic storyline", duration: 30 }, 
-    { id: "images" , label: "Painting vivid scenes in pixels", duration: 100 }, 
-    { id: "audio" , label: "Giving voices to your story", duration: 70 }, 
-    { id: "captions" , label: "Writing words on the screen", duration: 60 }, 
-    { id: "video" , label: "Stitching it all into a masterpiece", duration: 500 }, 
+  const steps = [
+    { id: "script", label: "Crafting your epic storyline", duration: 30 },
+    { id: "images", label: "Painting vivid scenes in pixels", duration: 100 },
+    { id: "audio", label: "Giving voices to your story", duration: 70 },
+    { id: "captions", label: "Writing words on the screen", duration: 60 },
+    { id: "video", label: "Stitching it all into a masterpiece", duration: 500 },
   ];
 
-  
+
 
   const videoGenMutation = useMutation({
     mutationFn: async () => {
@@ -60,6 +61,10 @@ const VideoConfigUI = () => {
         seconds: videoLength === '30' ? 30 : 60,
         language
       });
+      if (!data.SUCCESS) {
+        // toast.error(data.MESSAGE);
+        return data;
+      }
       // await delay(1000*5);
       setisGeneratered(true);
       await delay(1000 * 10);
@@ -68,11 +73,19 @@ const VideoConfigUI = () => {
       return data;
     },
     onSuccess: (data) => {
-      setvideoUrl(data.DATA.videoUrl);
-      setDialogState(true);
+      if (data && !data.SUCCESS) {
+        toast.error(data.MESSAGE);
+        return;
+      }
+      if (data) {
+        toast.success(data.MESSAGE);
+        setvideoUrl(data.DATA.videoUrl);
+        setDialogState(true);
+      }
     },
     onError: (error) => {
       console.log(error);
+
     },
     onSettled: () => {
       setvideoloading(false);

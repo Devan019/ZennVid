@@ -21,7 +21,7 @@ import ModeToggle from "../mode-toggle";
 import { useUser } from "@/context/UserProvider";
 import { FRONTEND_ROUTES } from "@/constants/frontend_routes";
 import { FaMagic } from "react-icons/fa";
-import { ForwardRefExoticComponent, RefAttributes } from "react";
+import { ForwardRefExoticComponent, RefAttributes, use } from "react";
 import { IconType } from "react-icons/lib";
 import { TbPhoto } from "react-icons/tb";
 
@@ -49,7 +49,8 @@ export function AppSidebar({ menuItems }: {
   const pathname = usePathname();
   const { openMobile, setOpenMobile, isMobile } = useSidebar();
   const { logout } = useUser();
- 
+  const { user } = useUser();
+
   const containerVariants = {
     hidden: { opacity: 0, x: -20 },
     visible: {
@@ -118,7 +119,7 @@ export function AppSidebar({ menuItems }: {
           >
             <SidebarMenu className="space-y-2">
               {menuItems.map((item, index) => {
-                 const Icon = iconMap[item.icon]
+                const Icon = iconMap[item.icon]
                 const isActive = pathname === item.href;
 
                 return (
@@ -182,6 +183,22 @@ export function AppSidebar({ menuItems }: {
                   </motion.div>
                 );
               })}
+              {user && (<motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.5 }}
+                className="w-full flex items-center space-x-2 bg-gradient-to-r from-blue-50 to-purple-50 px-3 py-2 rounded-full border border-blue-200 cursor-pointer"
+                whileHover={{ scale: 1.05 }}
+              >
+                <motion.div
+                  className="w-2 h-2 bg-green-500 rounded-full"
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                />
+                <span className="w-18 text-sm font-semibold text-gray-700">
+                  {user.credits + " Credits"}
+                </span>
+              </motion.div>)}
             </SidebarMenu>
           </motion.div>
         </SidebarGroup>

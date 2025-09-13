@@ -11,6 +11,7 @@ const layout = ({ children }: {
   children: React.ReactNode
 }) => {
   const items = [
+    { tooltip: "Home", label: "Home", href: FRONTEND_ROUTES.HOME, icon: "home" },
     { tooltip: "Dashboard", label: "Dashboard", href: FRONTEND_ROUTES.OPENAPI, icon: "dashboard" },
     { tooltip: "Apps", label: "Create App", href: FRONTEND_ROUTES.APPS, icon: "createApp" },
     { tooltip: "Caption", label: "Caption Generator", href: FRONTEND_ROUTES.CAPTION, icon: "caption" },

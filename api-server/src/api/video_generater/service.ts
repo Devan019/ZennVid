@@ -3,7 +3,7 @@ import { lipSyncZodValidation, videogeneraterZodValidation } from "./schema";
 import axios from "axios";
 import { getShortVoiceName } from "../../utils/Voicemappping";
 import { formatResponse } from "../../utils/formateResponse";
-import connectToMongo from "../../utils/mongoConnection";
+
 import VideoGenerater, { VideoType } from "./models/VideoSave";
 import { User } from "../../auth/model/User";
 import { AI_URI, SADTALKER } from "../../env_var";
@@ -13,8 +13,9 @@ interface videoUrl {
 }
 
 export const videoGeneraterService = async (req: Request, res: Response, next: NextFunction) => {
+  
   try {
-    await connectToMongo();
+
     const { title, style, voiceGender, voiceLanguage, seconds, language } = videogeneraterZodValidation.parse(req.body);
 
     const forShortName = `${voiceLanguage}${voiceGender}`;
@@ -56,36 +57,40 @@ export const videoGeneraterService = async (req: Request, res: Response, next: N
 
     await newVideo.save();
 
-    // await User.findByIdAndUpdate(req.user.id, {
-    //   $inc: {
-    //     credits: -20
-    //   }
-    // })
+    await User.findByIdAndUpdate(req.user.id, {
+      $inc: {
+        credits: -20
+      }
+    })
 
     return {
       videoUrl: data.video,
     }
   } catch (error) {
-    console.error("Error in videoGeneraterService:", error);
     return error
   }
 }
 
 export const lipSync = async (req: Request, res: Response, next: NextFunction) => {
+
   try {
-    await connectToMongo();
+    if (req.user.credits < 20) {
+      console.log("Not enough credits");
+      return formatResponse(res, 400, "Not enough credits", false, null);
+    }
+
     const { description, character, title, style, language } = lipSyncZodValidation.parse(req.body);
 
-    const audiGen = await axios.post(`${AI_URI}/voice-clone-captions`,{
+    const audiGen = await axios.post(`${AI_URI}/voice-clone-captions`, {
       text: description,
       audio: character,
     })
 
     const audioUrlResponse = audiGen.data;
 
-    const videoGen = await axios.post(`${SADTALKER}/generate-video`,{
+    const videoGen = await axios.post(`${SADTALKER}/generate-video`, {
       driven_audio: audioUrlResponse.audio,
-      source_image : character,
+      source_image: character,
       captions: audioUrlResponse.captions
     });
 
@@ -102,6 +107,12 @@ export const lipSync = async (req: Request, res: Response, next: NextFunction) =
     })
 
     await newVideo.save();
+
+    await User.findByIdAndUpdate(req.user.id, {
+      $inc: {
+        credits: -20
+      }
+    });
 
     return formatResponse(res, 200, "Video generated successfully", true, {
       videoUrl: videoData.video,

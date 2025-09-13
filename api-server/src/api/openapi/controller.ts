@@ -5,14 +5,14 @@ import { ApiSchema } from "./schema";
 import OpenApi from "./model";
 import { formatResponse } from "../../utils/formateResponse";
 import { decrypt, encrypt, generateApiKey, sha256Hex } from "../../utils/cyrpto";
-import connectToMongo from "../../utils/mongoConnection";
+
 import { sendMail } from "../../utils/SendMail";
 import { keyTemplate } from "./key-template";
 import { OPENAPI_SECERT } from "../../env_var";
 
 const getApisByUser = async ({ id }: { id: string }) => {
   try {
-    await connectToMongo()
+
     const apis = await OpenApi.find({ user: id }).select("-apps.apiKeyEncrypted -apps.apiKeyHash -__v -user").lean();
     return apis;
   } catch (error) {
@@ -22,7 +22,7 @@ const getApisByUser = async ({ id }: { id: string }) => {
 
 export const CreateNewApp = expressAsyncHandler(async (req: Request, res: Response) => {
   try {
-    await connectToMongo()
+
     const { name } = ApiSchema.parse(req.body);
     const secret = OPENAPI_SECERT;
     if (!secret) {
@@ -49,7 +49,7 @@ export const CreateNewApp = expressAsyncHandler(async (req: Request, res: Respon
             }
           }
         },
-        {new : true}
+        { new: true }
       );
 
 
@@ -62,8 +62,8 @@ export const CreateNewApp = expressAsyncHandler(async (req: Request, res: Respon
 
       return formatResponse(res, 201, "New App Created Successfully", true, {
         appName: name,
-        created_at: newApp?.apps[newApp.apps.length-1].created_at,
-        _id: newApp?.apps[newApp.apps.length-1]._id
+        created_at: newApp?.apps[newApp.apps.length - 1].created_at,
+        _id: newApp?.apps[newApp.apps.length - 1]._id
       });
     }
 
@@ -109,7 +109,7 @@ export const GetAllApps = expressAsyncHandler(async (req: Request, res: Response
 
 export const SendKeyToEmail = expressAsyncHandler(async (req: Request, res: Response) => {
   try {
-    await connectToMongo()
+
     const { appId } = req.body;
     const user = req.user;
     const secret = process.env.ENCRYPTION_SECRET
@@ -142,6 +142,32 @@ export const SendKeyToEmail = expressAsyncHandler(async (req: Request, res: Resp
 
 
     return formatResponse(res, 200, "App Fetched Successfully", true, { data: { message: "API key has been sent to your email!" } });
+  } catch (error: any) {
+    return formatResponse(res, 500, "Internal Server Error", false, { error: error.message });
+  }
+});
+
+export const dashboardStats = expressAsyncHandler(async (req: Request, res: Response) => {
+  try {
+
+    const userId = req.user.id;
+
+    const openapi = await OpenApi.findOne({ user: userId })
+
+    if (!openapi) {
+      return formatResponse(res, 200, "Apps stats", true, {
+        "Api Calls": 0,
+        "Apps": 0,
+        "Remaing Credits": req.user.credits
+      })
+    }
+
+    return formatResponse(res, 200, "Apps stats", true, {
+      "Api Calls": openapi.apiCalls,
+      "Apps": openapi.apps.length,
+      "Remaing Credits": req.user.credits
+    })
+
   } catch (error: any) {
     return formatResponse(res, 500, "Internal Server Error", false, { error: error.message });
   }

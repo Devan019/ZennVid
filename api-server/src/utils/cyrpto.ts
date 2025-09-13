@@ -32,7 +32,7 @@ export async function encrypt(plain: string, secret: string) {
 
 export async function decrypt(payload: { iv: string; cipher: string }, secret: string) {
   if (!payload.iv || !payload.cipher) {
-    return null
+    return null;
   }
   const subtle = await getSubtle()
   const key = await importAesKey(secret)

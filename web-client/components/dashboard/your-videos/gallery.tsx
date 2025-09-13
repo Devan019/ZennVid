@@ -5,6 +5,7 @@ import { VideoData, VideoLayoutGrid } from "@/components/ui/video-layout"
 import { useUser } from "@/context/UserProvider"
 import { getUserVideos } from "@/lib/apiProvider"
 import { useQuery } from "@tanstack/react-query"
+import { toast } from "sonner"
 
 
 const getGridClassName = (index: number) => {
@@ -28,6 +29,11 @@ const VideoGallery = () => {
     if (isAuthenticated) {
       videoQuery.refetch()
       const data: any = videoQuery.data;
+      if(!data.SUCCESS){
+        toast.error(data.MESSAGE);
+        return;
+      }
+      toast.success(data.MESSAGE);
       setVideoCards(() => {
         return data?.DATA.map((video: any, index: number) => ({
           id: video._id,

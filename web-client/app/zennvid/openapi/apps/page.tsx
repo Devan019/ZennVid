@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader } from '@/components/ui/dialog';
 import { DialogTitle } from '@radix-ui/react-dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { toast } from 'sonner';
 
 export default function CreateApp() {
   const [apps, setApps] = useState<Array<{ _id: string; appName: string; created_at: string }>>([]);
@@ -31,10 +32,15 @@ export default function CreateApp() {
         return null
       }
     },
-    onSuccess: (data: { DATA: any }) => {
+    onSuccess: (data) => {
+      if (!data.SUCCESS) {
+        toast.error(data.MESSAGE);
+        return null;
+      }
       if (data != null) {
         return data.DATA
       }
+      toast.success(data.MESSAGE);
       return null
     },
     onError(error, variables, context) {
@@ -53,7 +59,12 @@ export default function CreateApp() {
         return null
       }
     },
-    onSuccess: ({ data }: { data: any }) => {
+    onSuccess: (data) => {
+      if (!data.SUCCESS) {
+        toast.error(data.MESSAGE);
+        return;
+      }
+      toast.success(data.MESSAGE);
       if (data != null) {
         // alert("API key has been sent to your email!")
         return data.apiKey
@@ -71,12 +82,18 @@ export default function CreateApp() {
     queryKey: ["app"],
     queryFn: async () => {
       const data = await getApps();
+      if (!data.SUCCESS) {
+        toast.error(data.MESSAGE);
+        return;
+      }
+      toast.success(data.MESSAGE);
       const apis = data.DATA.apis;
       let tmp: any = [];
       apis.forEach((api: { apps: any[] }) => {
         tmp = tmp.concat(api.apps);
       });
       setApps(tmp);
+
       return apis;
     }
   })
@@ -88,7 +105,7 @@ export default function CreateApp() {
         setApps((prev) => [...prev, { ...response.DATA }])
         setApp({ ...response.DATA })
         setIsOpen(true)
-        
+
         return { apiKey: '', success: false };
       }
       return { apiKey: response, success: true };

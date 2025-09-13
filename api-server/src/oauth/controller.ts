@@ -6,7 +6,7 @@ import { AUTH_SECRET, FRONTEND_URL } from "../env_var";
 import { generateJWTtoken } from "../utils/jwtAssign";
 import { User } from "../auth/model/User";
 import { Provider } from "../constants/provider";
-import connectToMongo from "../utils/mongoConnection";
+
 import { SetCookie } from "../utils/setCookie";
 
 export const loginWithGoogle = expressAsyncHandler((req: Request, res: Response) => {
@@ -21,21 +21,21 @@ export const loginWithGoogle = expressAsyncHandler((req: Request, res: Response)
 export const oauthCallback = expressAsyncHandler(async (req: Request, res: Response) => {
   try {
 
-    if(req.cookies.token) {
+    if (req.cookies.token) {
       return res.redirect("/auth/user");
     }
 
     const { code } = req.query;
     const { idToken } = await getTokens(code as string);
     const { data } = await getOAuthUser(idToken);
-    await connectToMongo();
+    ;
     const { email, name, picture } = data.getPayload() || {};
-    
-    let exitUser = await User.findOne({ email});
-    if(exitUser && exitUser.provider !== Provider.GOOGLE) {
+
+    let exitUser = await User.findOne({ email });
+    if (exitUser && exitUser.provider !== Provider.GOOGLE) {
       return formatResponse(res, 400, "User already exists with different provider", false);
     }
-    if(!exitUser){
+    if (!exitUser) {
       const newUser = new User({
         email,
         username: name,
@@ -50,7 +50,7 @@ export const oauthCallback = expressAsyncHandler(async (req: Request, res: Respo
       email: email || exitUser.email,
       provider: Provider.GOOGLE,
       username: exitUser.username,
-      credits : exitUser.credits
+      credits: exitUser.credits
     });
     SetCookie(res, "token", jwtToken, 60 * 60 * 24 * 7); // 7 days
     return res.redirect(`${FRONTEND_URL}`);

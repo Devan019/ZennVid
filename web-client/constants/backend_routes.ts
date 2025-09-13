@@ -18,6 +18,8 @@ if (!api) {
 export const AUTH_CREDENTIALS_URI = `${auth}`;
 export const userProfileRoute = `${auth}/user`;
 
+export const UPDATE_CREDITS = `${api}/update-credit`;
+
 export const generateVideoScript = `${api}/generate-script`
 export const generateVideo = `${api}/generate-video`;
 export const AUTH_GOOGLE_OAUTH_URI = `${oauth}/login/google`;
@@ -31,3 +33,13 @@ export const CREATEAPP = `${api}/openapi/app`
 export const GETAPPS = `${api}/openapi/apps`
 
 export const SEND_KEY_URI = `${api}/openapi/app/sendkey`
+
+export const OPENAPI_STATS = `${api}/openapi/dashboard` 
+
+export const LANGUAGES = `${api}/openapi/languages`
+
+export const TEXT_TRANSLATE = `${api}/openapi/translate`
+
+export const VOICES = `${api}/openapi/voices`
+
+export const GEN_AUDIO = `${api}/openapi/generate-audio`

@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+edge_tts
+groq
+dotenv
+aiofiles
+cloudinary
+deep_translator

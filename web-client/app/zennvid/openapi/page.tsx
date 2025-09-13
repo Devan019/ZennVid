@@ -1,31 +1,31 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { FRONTEND_ROUTES } from '@/constants/frontend_routes';
+import { Stats } from '@/lib/apiProvider';
+import { useQuery } from '@tanstack/react-query';
+import { motion, number } from 'framer-motion';
 import { BookAIcon, Languages, Speaker } from 'lucide-react';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import { TbPhoto } from 'react-icons/tb';
+import { toast } from 'sonner';
 
 
-const stats = [
-  { name: 'Total API Calls', value: '12,345', change: '+12%' },
-  { name: 'Credits Used', value: '8,432', change: '+8%' },
-  { name: 'Active Apps', value: '23', change: '+3%' },
-  { name: 'Success Rate', value: '99.2%', change: '+0.1%' },
-];
+
 
 const apis = [
   {
     name: 'Caption Generator',
     description: 'Generate captions for videos and images',
     icon: BookAIcon,
-    href: '/apis/caption-generator',
+    href: FRONTEND_ROUTES.CAPTION,
     color: 'bg-blue-500',
   },
   {
     name: 'Text Translator',
     description: 'Translate text between multiple languages',
     icon: Languages,
-    href: '/apis/text-translator',
+    href: FRONTEND_ROUTES.TRANSLATE,
     color: 'bg-green-500',
   },
   // {
@@ -39,12 +39,50 @@ const apis = [
     name: 'Text to Audio',
     description: 'Convert text to natural-sounding speech',
     icon: Speaker,
-    href: '/apis/text-to-audio',
+    href: FRONTEND_ROUTES.TEXT_AUDIO,
     color: 'bg-orange-500',
   },
 ];
 
+
+interface Stats {
+  name : string,
+  value : number
+}
+
 export default function Dashboard() {
+
+  const [stats, setStats] = useState<Stats[] | null>(null)
+
+  const query = useQuery({
+    queryKey: ["query"],
+    queryFn: async()=>{
+      const data = await Stats()
+      if(!data.SUCCESS){
+        toast.error(data.MESSAGE);
+        return;
+      }
+      toast.success(data.MESSAGE);
+      return data
+    }
+  })
+
+  async function setQuery() {
+    const api = await query.refetch()
+    let sts:Stats[] = []
+    Object.entries(api.data.DATA).forEach((data) => {
+      sts.push({
+        name : data[0],
+        value : Number(data[1]) ?? 0
+      })
+    })
+    setStats(sts)
+  }
+
+  useEffect(() => {
+    setQuery()
+  }, [])
+
   return (
     <div className="space-y-6">
       <motion.div
@@ -57,7 +95,7 @@ export default function Dashboard() {
             Dashboard
           </h1>
           <Link
-            href="/create-app"
+            href={FRONTEND_ROUTES.APPS}
             className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
           >
             Create New App
@@ -65,7 +103,7 @@ export default function Dashboard() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          {stats.map((stat, index) => (
+          {stats?.map((stat, index) => (
             <motion.div
               key={stat.name}
               initial={{ opacity: 0, y: 20 }}
@@ -77,9 +115,6 @@ export default function Dashboard() {
                 <div>
                   <p className="text-sm text-gray-600 dark:text-gray-300">{stat.name}</p>
                   <p className="text-2xl font-bold text-gray-900 dark:text-white">{stat.value}</p>
-                </div>
-                <div className="text-sm text-green-600 dark:text-green-400">
-                  {stat.change}
                 </div>
               </div>
             </motion.div>

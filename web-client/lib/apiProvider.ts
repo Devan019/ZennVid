@@ -1,4 +1,4 @@
-import { AUTH_CREDENTIALS_URI, CREATEAPP, generateVideo, generateVideoScript, GETAPPS, getVideos, SADTALKER, SEND_KEY_URI, userProfileRoute } from "@/constants/backend_routes";
+import { AUTH_CREDENTIALS_URI, CREATEAPP, generateVideo, generateVideoScript, GETAPPS, getVideos, OPENAPI_STATS, SADTALKER, SEND_KEY_URI, UPDATE_CREDITS, userProfileRoute } from "@/constants/backend_routes";
 import axios from "axios";
 
 
@@ -9,8 +9,8 @@ export const loginWithCredentials = async ( email: string, password: string) => 
       withCredentials : true
     });
     return api.data;
-  } catch (error) {
-    throw new Error("Login failed. Please check your credentials and try again.");
+  } catch (error: any) {
+    return error.response.data;
   }
 };
 
@@ -21,8 +21,8 @@ export const signUpWithCredentials = async (email: string, password: string, use
       withCredentials : true
     });
     return api.data;
-  } catch (error) {
-    throw new Error("Sign up failed. Please check your details and try again.");
+  } catch (error: any) {
+    return error.response.data;
   }
 };
 
@@ -33,8 +33,8 @@ export const checkUserWithOtp = async (email: string, otp: string) => {
       withCredentials : true
     });
     return api.data;
-  } catch (error) {
-    throw new Error("OTP verification failed. Please check your OTP and try again.");
+  } catch (error: any) {
+    return error.response.data;
   }
 }
 
@@ -45,8 +45,8 @@ export const logoutUser = async () => {
       withCredentials: true,
     });
     return api.data;
-  } catch (error) {
-    throw new Error("Logout failed. Please try again.");
+  } catch (error: any) {
+    return error.response.data;
   }
 };
 
@@ -57,8 +57,8 @@ export const getUser = async () => {
       withCredentials: true,
     });
     return api.data;
-  } catch (error) {
-    throw new Error("Failed to get user. Please try again.");
+  } catch (error: any) {
+    return error.response.data;
   }
 };
 
@@ -78,9 +78,8 @@ export const videoGen = async ({title, style, voiceGender, voiceLanguage, second
       withCredentials : true
     })
     return api.data;
-  } catch (error) {
-    console.log(error)
-    throw new Error("video service error");
+  } catch (error: any) {
+    return error.response.data;
   }
 }
 
@@ -92,8 +91,8 @@ export const getUserVideos = async() => {
       withCredentials: true,
     });
     return api.data;
-  } catch (error) {
-    throw new Error("Failed to get videos. Please try again.");
+  } catch (error: any) {
+    return error.response.data;
   }
 }
 
@@ -111,9 +110,8 @@ export const sadTalker = async ({ description, character, title, style, language
       withCredentials: true
     });
     return api.data;
-  } catch (error) {
-    console.log(error);
-    throw new Error("SADTalker service error");
+  } catch (error: any) {
+    return error.response.data;
   }
 };
 
@@ -122,9 +120,8 @@ export const createNewApp = async (name: string) => {
   try {
     const api = await axios.post(CREATEAPP, {name},{withCredentials:true});
     return api.data;
-  } catch (error) {
-    console.log(error)
-    throw new Error("app can not be created")
+  } catch (error: any) {
+    return error.response.data;
   }
 }
 
@@ -133,9 +130,8 @@ export const getApps = async() => {
   try {
     const api = await axios.get(GETAPPS,{withCredentials:true});
     return api.data;
-  } catch (error) {
-    console.log(error)
-    throw new Error("app can not be created")
+  }catch (error: any) {
+    return error.response.data;
   }
 }
 
@@ -144,8 +140,28 @@ export const sendKey = async({ appId }: { appId: string }) => {
   try {
     const api = await axios.post(`${SEND_KEY_URI}`, { appId }, { withCredentials: true });
     return api.data;
-  } catch (error) {
-    console.log(error)
-    throw new Error("app can not be created")
+  } catch (error: any) {
+    return error.response.data;
+  }
+}
+
+/** get stats */
+
+export const Stats = async() => {
+  try {
+    const api = await axios.get(`${OPENAPI_STATS}`, {withCredentials: true})
+    return api.data;
+  } catch (error: any) {
+    return error.response.data;
+  }
+}
+
+/** credits update */
+export const updateCredits = async(credits: number) => {
+  try {
+    const api = await axios.post(`${UPDATE_CREDITS}`, {credits}, {withCredentials: true})
+    return api.data;
+  } catch (error:any) {
+    return error.response.data;
   }
 }

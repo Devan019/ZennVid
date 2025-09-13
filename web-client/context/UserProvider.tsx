@@ -3,6 +3,7 @@
 import { getUser, logoutUser } from "@/lib/apiProvider";
 import { useMutation } from "@tanstack/react-query";
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export type User = {
   username: string;
@@ -42,6 +43,11 @@ export const UserProvider = ({ children }: {
       setIsLoading(true);
       setError(null);
       const data = await getUser();
+      if (!data.SUCCESS) {
+        toast.error(data.MESSAGE);
+        return;
+      }
+      toast.success(data.MESSAGE);
       if (data?.DATA) { // ✅ Check for data.DATA
         setUser(data.DATA.user);
         setIsAuthenticated(true);
@@ -54,7 +60,7 @@ export const UserProvider = ({ children }: {
       setError(error.message || "Failed to fetch user");
       setIsAuthenticated(false);
     },
-    
+
   });
 
   useEffect(() => {
@@ -67,12 +73,18 @@ export const UserProvider = ({ children }: {
     mutationFn: async () => {
       setIsLoading(true);
       setError(null);
-      await logoutUser();
+      const data = await logoutUser();
       setIsAuthenticated(false);
       setUser(null);
       setIsLoading(false);
+      return data;
     },
-    onSuccess: () => {
+    onSuccess: (data : any) => {
+      if (!data.SUCCESS) {
+        toast.error(data.MESSAGE);
+        return;
+      }
+      toast.success(data.MESSAGE);
       setUser(null);
       setIsAuthenticated(false);
     },
