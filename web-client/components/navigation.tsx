@@ -1,16 +1,16 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { motion } from "framer-motion"
+import { AnimatePresence, motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Menu, X, Zap } from "lucide-react"
 import { useRouter } from "next/navigation"
 import ModeToggle from "./mode-toggle"
-import FlipLink from "./ui/text-effect-flipper"
+
 import { useUser } from "@/context/UserProvider"
-import { SpringElement } from "./animate-ui/components/spring-element"
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
 import { FRONTEND_ROUTES } from "@/constants/frontend_routes"
+import Link from "next/link"
 
 interface URLS {
   url: string;
@@ -18,6 +18,7 @@ interface URLS {
 }
 
 export function Navigation() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const router = useRouter()
@@ -42,7 +43,15 @@ export function Navigation() {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
-  
+  const handleLogout = () => {
+    setIsMenuOpen(false);
+  };
+
+  const handleViewProfile = () => {
+    setIsMenuOpen(false);
+  };
+
+
 
 
   return (
@@ -75,29 +84,29 @@ export function Navigation() {
             <div className="flex items-center gap-6">
               {isAuthenticated && (
                 authUrls.map((url, index) => (
-                  <FlipLink
+                  <Link
                     className="text-[18px] text-gray-800 dark:text-gray-200 hover:text-purple-600 dark:hover:text-purple-400"
                     href={url.url}
                     key={index}
                   >
                     {url.label}
-                  </FlipLink>
+                  </Link>
                 ))
               )}
               {!isAuthenticated && (
                 defaultUrls.map((url, index) => (
-                  <FlipLink
+                  <Link
                     className="text-[18px] text-gray-800 dark:text-gray-200 hover:text-purple-600 dark:hover:text-purple-400"
                     href={url.url}
                     key={index}
                   >
                     {url.label}
-                  </FlipLink>
+                  </Link>
                 ))
               )}
             </div>
 
-            <div className="flex items-center gap-4 ml-6">
+            <div className="flex items-center gap-4 ml-6 relative">
               <ModeToggle />
               {!isAuthenticated && (
                 <>
@@ -115,7 +124,7 @@ export function Navigation() {
                   </Button>
                 </>
               )}
-              {user  && isAuthenticated  &&
+              {user && isAuthenticated &&
                 (
                   <>
                     <motion.div
@@ -131,21 +140,56 @@ export function Navigation() {
                         transition={{ duration: 2, repeat: Infinity }}
                       />
                       <span className="w-18 text-sm font-semibold text-gray-700">
-                        {user.credits + " Credits"} 
+                        {user.credits + " Credits"}
                       </span>
                     </motion.div>
-                    <SpringElement>
-                      <Avatar className="size-12">
-                        <AvatarImage draggable={false} src={user.profilePicture} />
-                        <AvatarFallback
-                          className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 
+
+                    <Avatar
+                      className="size-12 cursor-pointer"
+                      onClick={() => setIsMenuOpen(!isMenuOpen)}
+                    >
+                      <AvatarImage draggable={false} src={user.profilePicture} />
+                      <AvatarFallback
+                        className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 
                  text-white font-bold text-lg flex items-center justify-center 
                  rounded-full uppercase shadow-lg"
+                      >
+                        {user.username?.[0] || "U"}
+                      </AvatarFallback>
+                    </Avatar>
+
+                    <AnimatePresence>
+                      {isMenuOpen && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -10, scale: 0.9 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, y: -10, scale: 0.9 }}
+                          transition={{ duration: 0.2 }}
+                          className="  mt-16  bg-white rounded-lg shadow-lg py-1 z-10 border border-gray-200"
                         >
-                          {user.username?.[0] || "U"}
-                        </AvatarFallback>
-                      </Avatar>
-                    </SpringElement>
+                          <div className="px-4 py-2 border-b border-gray-100">
+                            <p className="text-sm font-medium text-gray-900">{user.username}</p>
+                            {/* <p className="text-xs text-gray-500">{user.credits} credits available</p> */}
+                          </div>
+
+                          <motion.button
+                          
+                            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            onClick={handleViewProfile}
+                          >
+                            Profile
+                          </motion.button>
+
+                          <motion.button
+                            
+                            className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                            onClick={handleLogout}
+                          >
+                            Logout
+                          </motion.button>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </>
                 )}
             </div>
@@ -176,24 +220,24 @@ export function Navigation() {
             <div className="flex flex-col space-y-4">
               {isAuthenticated && (
                 authUrls.map((url, index) => (
-                  <FlipLink
+                  <Link
                     className="text-[18px] text-gray-800 dark:text-gray-200 hover:text-purple-600 dark:hover:text-purple-400"
                     href={url.url}
                     key={index}
                   >
                     {url.label}
-                  </FlipLink>
+                  </Link>
                 ))
               )}
               {!isAuthenticated && (
                 defaultUrls.map((url, index) => (
-                  <FlipLink
+                  <Link
                     className="text-[18px] text-gray-800 dark:text-gray-200 hover:text-purple-600 dark:hover:text-purple-400"
                     href={url.url}
                     key={index}
                   >
                     {url.label}
-                  </FlipLink>
+                  </Link>
                 ))
               )}
               <div className="flex flex-col gap-2 pt-2">
@@ -230,18 +274,21 @@ export function Navigation() {
                         {user?.credits} Credits
                       </span>
                     </motion.div>
-                    <SpringElement>
-                      <Avatar className="size-12">
+                    <>
+                      <Avatar
+                        className="size-12 cursor-pointer"
+                        onClick={() => setIsMenuOpen(!isMenuOpen)}
+                      >
                         <AvatarImage draggable={false} src={user?.profilePicture} />
                         <AvatarFallback
                           className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 
                  text-white font-bold text-lg flex items-center justify-center 
                  rounded-full uppercase shadow-lg"
                         >
-                          {user?.username?.[0] || "?"}
+                          {user?.username?.[0] || "U"}
                         </AvatarFallback>
                       </Avatar>
-                    </SpringElement>
+                    </>
                   </>
                 )}
               </div>

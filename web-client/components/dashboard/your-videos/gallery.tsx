@@ -29,7 +29,8 @@ const VideoGallery = () => {
     if (isAuthenticated) {
       videoQuery.refetch()
       const data: any = videoQuery.data;
-      if(!data.SUCCESS){
+      // console.log("Fetched videos:", data);
+      if(data && !data.SUCCESS){
         toast.error(data.MESSAGE);
         return;
       }

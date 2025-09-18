@@ -6,7 +6,7 @@ import VideoGenerater from "../video_generater/models/VideoSave";
 
 export const getVideos = expressAsyncHandler(async (req: Request, res: Response) => {
   try {
-    ;
+    
     const id = req.user.id;
     if (!id) {
       return formatResponse(res, 400, "User Not found", false, null);

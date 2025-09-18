@@ -61,17 +61,17 @@ function FeatureCard({
     >
       <div
         className={cn(
-          "group relative w-full overflow-hidden rounded-3xl border border-black/10  bg-gradient-to-b from-neutral-900/90 to-stone-800 transition duration-300 dark:from-neutral-950/90 dark:to-neutral-800/90",
+          "group relative w-full overflow-hidden rounded-3xl border border-black/10  bg-gradient-to-b from-neutral-200/90 to-stone-200 transition duration-300 dark:from-neutral-950/90 dark:to-neutral-800/90",
           "md:hover:border-transparent",
           bgClass
         )}
       >
         <div className="m-10 min-h-[550px] w-full">
           <div className="flex w-4/6 flex-col gap-3">
-            <h2 className="text-xl font-bold tracking-tight text-white md:text-2xl">
+            <h2 className="text-xl font-bold tracking-tight text-black dark:text-white  md:text-2xl">
               {title}
             </h2>
-            <p className="text-sm leading-5 text-neutral-300 dark:text-zinc-400 sm:text-base sm:leading-5">
+            <p className="text-sm leading-5 text-neutral-800 dark:text-white/80 sm:text-base sm:leading-5">
               <Balancer>{description}</Balancer>
             </p>
           </div>
@@ -103,6 +103,7 @@ export function SkiperCard({
   step2img1Class?: string
   step2img2Class?: string
   step3imgClass?: string
+  step4imgClass?:string,
   image?: {
     step1dark1?: StaticImageData
     step1dark2?: StaticImageData

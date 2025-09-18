@@ -20,8 +20,8 @@ export function StepHome() {
               </Badge>
             </div>
 
-            <div className="mx-auto max-w-4xl rounded-[34px] bg-neutral-700">
-              <div className="relative z-10 grid w-full gap-8 rounded-[28px] bg-neutral-950 p-2">
+            <div className="mx-auto max-w-4xl rounded-[34px] ">
+              <div className="relative z-10 grid w-full gap-8 rounded-[28px]  p-2">
                 <SkiperCard
                   step1img1Class={cn(
                     "pointer-events-none w-[50%] border border-stone-100/10 transition-all duration-500 dark:border-stone-700/50",
@@ -47,14 +47,39 @@ export function StepHome() {
                     "pointer-events-none w-[90%] overflow-hidden rounded-t-[24px] border border-stone-100/10 transition-all duration-500 dark:border-stone-700",
                     "left-[5%] top-[50%] md:left-1/2 md:left-[68px] md:top-[30%]"
                   )}
-                  // step4imgClass={cn(
-                  //   "pointer-events-none w-[90%] overflow-hidden rounded-t-[24px] border border-stone-100/10 transition-all duration-500 dark:border-stone-700",
-                  //   "left-[5%] top-[50%] md:left-1/2 md:left-[68px] md:top-[30%]"
-                  // )}
+                  step4imgClass={cn(
+                    "pointer-events-none w-[90%] overflow-hidden rounded-t-[24px] border border-stone-100/10 transition-all duration-500 dark:border-stone-700",
+                    "left-[5%] top-[50%] md:left-1/2 md:left-[68px] md:top-[30%]"
+                  )}
                   description="Create amazing videos in seconds"
                   bgClass="lg:bg-gradient-to-tr"
                   image={{
                     alt: "Video generation steps",
+                    step1light1 : {
+                      src : "/step-2.png",
+                      height : 200,
+                      width : 200
+                    },
+                    step1light2 : {
+                      src : "/step-1.png",
+                      height : 200,
+                      width : 200
+                    },
+                    step2light1 : {
+                      src : "/step-3.png",
+                      height : 200,
+                      width : 200
+                    },
+                    step2light2 : {
+                      src : "/step-2-2.png",
+                      height : 200,
+                      width : 200
+                    },
+                    step3light : {
+                      src : "/step-4.png",
+                      height : 200,
+                      width : 200
+                    },
                   }}
                   title="AI Video Generation"
                   steps={
@@ -64,6 +89,8 @@ export function StepHome() {
                       { id: "3", name: "Export or download your creation" }
                     ] as { id: string; name: string }[]
                   }
+                  
+                  
                 />
               </div>
             </div>
