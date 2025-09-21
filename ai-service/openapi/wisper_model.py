@@ -40,7 +40,7 @@ async def download_file(url: str, destination: str) -> None:
                 raise Exception(f"❌ Failed to download file: {url}, status: {resp.status}")
 
 
-async def generate_captions(file: Union[str, UploadFile], lang: str = "hi") -> list[dict]:
+async def generate_captions(file: Union[str, UploadFile], lang: str = "en") -> list[dict]:
     file_path = None
     cleanup = False  
 

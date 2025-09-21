@@ -87,7 +87,8 @@ export default function CreateApp() {
         return;
       }
       toast.success(data.MESSAGE);
-      const apis = data.DATA.apis;
+
+      const apis = data.DATA.apis ?? data.DATA[0];
       let tmp: any = [];
       apis.forEach((api: { apps: any[] }) => {
         tmp = tmp.concat(api.apps);
@@ -215,24 +216,7 @@ export default function CreateApp() {
                         Email API Key
                       </Button>
 
-                      <Button
-                        size="sm"
-                        variant="secondary"
-                        onClick={() => {
-                          setUpdateId(app._id)
-                          setNewName(app.appName)
-                        }}
-                      >
-                        Update
-                      </Button>
-
-                      <Button
-                        size="sm"
-                        variant="secondary"
-                        onClick={() => setDeleteId(app._id)}
-                      >
-                        Delete
-                      </Button>
+                      
                     </div>
                   </div>
                 ))}

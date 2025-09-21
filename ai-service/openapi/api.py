@@ -110,12 +110,12 @@ async def generate_audio(request: VoiceRequest):
  
 class CaptionRequest(BaseModel):
     audio: str
-    lanuage: str = "hi"
+    language: str = "en"
 
 @app.post("/generate-captions")
 async def create_captions(req: CaptionRequest) -> str:
     from wisper_model import generate_captions
-    captions = await generate_captions(req.audio, req.lanuage)
+    captions = await generate_captions(req.audio, req.language)
     return JSONResponse(content=captions)
 
 class TranslateReq(BaseModel):

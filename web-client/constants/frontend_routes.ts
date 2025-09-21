@@ -18,4 +18,7 @@ export const FRONTEND_ROUTES = {
   IMAGE: "/zennvid/openapi/image",
   TEXT_AUDIO: "/zennvid/openapi/audio-gen",
 
+  /**pricing */
+  PRICING : "/zennvid/pricing"
+
 };

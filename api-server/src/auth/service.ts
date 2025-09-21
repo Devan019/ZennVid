@@ -43,7 +43,7 @@ export const createUserService = expressAsyncHandler(async (req: Request, res: R
     await newUser.save();
 
     await sendMail({
-      from: "onboarding@resend.dev",
+      from: "devanchauhan012@gmail.com",
       to: email,
       subject: "ZennVid - Verify your email",
       html: `<p>Hi, ${username} </p>
@@ -53,7 +53,7 @@ export const createUserService = expressAsyncHandler(async (req: Request, res: R
              <p>Best regards,</p>
              <p>ZennVid Team</p>`
     })
-
+    
     return formatResponse(res, 200, "Otp send !!!", true, {
       user: {
         email: email,
@@ -64,6 +64,7 @@ export const createUserService = expressAsyncHandler(async (req: Request, res: R
     });
 
   } catch (error) {
+    console.log(error)
     return formatResponse(res, 500, "Internal server error", false, error);
   }
 })

@@ -17,7 +17,6 @@ export interface ScriptGen {
 export const videoGeneraterController = expressAsyncHandler(async (req: Request, res: Response, next: NextFunction) => {
   try {
     if (req.user.credits < 20) {
-      console.log("Not enough credits");
       return formatResponse(res, 400, "Not enough credits", false, null);
     }
     const response = await videoGeneraterService(req, res, next);

@@ -25,26 +25,33 @@ const VideoGallery = () => {
     queryKey: ['videos']
   })
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      videoQuery.refetch()
-      const data: any = videoQuery.data;
-      // console.log("Fetched videos:", data);
-      if(data && !data.SUCCESS){
-        toast.error(data.MESSAGE);
-        return;
-      }
-      toast.success(data.MESSAGE);
-      setVideoCards(() => {
-        return data?.DATA.map((video: any, index: number) => ({
+  async function main() {
+    let data: any = videoQuery.data
+    if (!data) {
+      data = (await videoQuery.refetch()).data
+    }
+    if (data && !data.SUCCESS) {
+      toast.error(data.MESSAGE);
+      return;
+    }
+    data && data.MESSAGE && toast.success(data.MESSAGE);
+    setVideoCards(() => {
+      return data?.DATA.map((video: any, index: number) => {
+        return {
           id: video._id,
           content: video,
           className: getGridClassName(index),
-          thumbnail: `/placeholder.svg?height=400&width=600&query=video thumbnail for ${video.title}`,
-        }))
+          // thumbnail: `/placeholder.svg?height=400&width=600&query=video thumbnail for ${video.title}`,
+        }
       })
+    })
+  }
+
+  useEffect(() => {
+    if (videoCards.length === 0) {
+      main()
     }
-  }, [isAuthenticated])
+  }, [])
 
   const handleVideoDelete = (id: string) => {
     console.log("Delete video:", id)
@@ -84,7 +91,7 @@ const VideoGallery = () => {
 
   if (videoCards && !videoCards.length) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center ml-64">
         <div className="text-center">
           <VideoIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
           <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-2">No videos yet</h2>

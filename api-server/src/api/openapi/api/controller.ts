@@ -7,6 +7,7 @@ import axios from "axios";
 import { languages, voices } from "../../../constants/provider";
 import { AudioGenSchema, CaptionGenSchema, TranslaterSchema } from "./schema";
 import { User } from "../../../auth/model/User";
+import redisClient from "../../../utils/redisClient";
 
 export const Translater = expressAsyncHandler(async (req: Request, res: Response) => {
   try {
@@ -30,8 +31,9 @@ export const Translater = expressAsyncHandler(async (req: Request, res: Response
     await User.findByIdAndUpdate(req.user?.id, {
       $inc: { credits: -10 }
     })
+    req.user.credits -= 10;
 
-    /** todo increment api call of app */
+    await redisClient.del(`zennvid:dashboard:${req.user.id}`);
     return formatResponse(res, 200, "Translation succesfully", true, { ...doTranslate.data });
   } catch (error) {
     console.error("error found", error);
@@ -44,7 +46,7 @@ export const Languages = expressAsyncHandler(async (req: Request, res: Response)
     await OpenApi.findOneAndUpdate({ "apps.appName": req.headers["x-app-name"] }, {
       $inc: { apiCalls: 1 }
     });
-
+    await redisClient.del(`zennvid:dashboard:${req.user.id}`);
     return formatResponse(res, 200, "Languages fetched succesfully", true, { Languages: languages });
   } catch (error) {
     console.error("error found", error);
@@ -66,8 +68,10 @@ export const GenAudio = expressAsyncHandler(async (req: Request, res: Response) 
     await User.findByIdAndUpdate(req.user?.id, {
       $inc: { credits: -10 }
     })
+    req.user.credits -= 10;
 
     const api = await axios.post(`${OPENAPI_URL}/generate-audio`, { text, voice });
+    await redisClient.del(`zennvid:dashboard:${req.user.id}`);
     return formatResponse(res, 200, "Audio generated succesfully", true, api.data);
   } catch (error) {
     return formatResponse(res, 500, "Internal server problem", false, error);
@@ -80,6 +84,7 @@ export const GetVoices = expressAsyncHandler(async (req: Request, res: Response)
     await OpenApi.findOneAndUpdate({ "apps.appName": req.headers["x-app-name"] }, {
       $inc: { apiCalls: 1 }
     });
+    await redisClient.del(`zennvid:dashboard:${req.user.id}`);
     return formatResponse(res, 200, "Voices fetched succesfully", true, voices);
   } catch (error) {
     return formatResponse(res, 500, "Internal server problem", false, error);
@@ -103,6 +108,8 @@ export const GenCaptions = expressAsyncHandler(async (req: Request, res: Respons
     await User.findByIdAndUpdate(req.user?.id, {
       $inc: { credits: -10 }
     });
+    req.user.credits -= 10;
+    await redisClient.del(`zennvid:dashboard:${req.user.id}`);
     return formatResponse(res, 200, "Captions generated succesfully", true, api.data);
   } catch (error) {
     return formatResponse(res, 500, "Internal server problem", false, error);

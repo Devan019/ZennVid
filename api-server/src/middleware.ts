@@ -3,6 +3,7 @@ import { formatResponse } from "./utils/formateResponse";
 import expressAsyncHandler from "./utils/expressAsync";
 import jwt from "jsonwebtoken";
 
+
 declare global {
   namespace Express {
     interface Request {

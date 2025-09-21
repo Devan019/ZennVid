@@ -22,9 +22,15 @@ const limiter = rateLimit({
 	standardHeaders: 'draft-8', 
 	legacyHeaders: false,
 	ipv6Subnet: 56, 
+  handler : (req, res, next, options)  => {
+     res.status(options.statusCode || 429).json({
+      SUCCESS: false,
+      MESSAGE: "Too many requests, please try again after a minute",
+    });
+  }
 })
 app.set("trust proxy", false);
-// app.use(limiter)
+app.use(limiter)
 
 app.use(cookieParser());
 app.use(cors(corsOptions));

@@ -26,7 +26,7 @@ export const checkApiKey = async (req: Request, res: Response, next: Function) =
     }
 
     const hasedPassword = await sha256Hex(apiKey);
-    const exitsApp = isExits.apps.find(app => app.apiKeyHash === hasedPassword);
+    const exitsApp = isExits.apps.find(app => (app.apiKeyHash === hasedPassword) && (app.appName === appName));
 
     if (!exitsApp) {
       return formatResponse(res, 401, "AppKey is invalid", false);

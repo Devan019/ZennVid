@@ -1,5 +1,4 @@
 import mongoose, { Schema } from "mongoose";
-import bcrypt from "bcrypt"
 import { Provider } from "../../constants/provider";
 
 const UserSchema = new Schema({

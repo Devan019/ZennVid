@@ -7,6 +7,7 @@ import { formatResponse } from "../../utils/formateResponse";
 import VideoGenerater, { VideoType } from "./models/VideoSave";
 import { User } from "../../auth/model/User";
 import { AI_URI, SADTALKER } from "../../env_var";
+import redisClient from "../../utils/redisClient";
 
 interface videoUrl {
   video: string
@@ -62,6 +63,9 @@ export const videoGeneraterService = async (req: Request, res: Response, next: N
         credits: -20
       }
     })
+    req.user.credits -= 10;
+
+    await redisClient.del(`zennvid:videos:${req.user.id}`)
 
     return {
       videoUrl: data.video,
@@ -113,6 +117,9 @@ export const lipSync = async (req: Request, res: Response, next: NextFunction) =
         credits: -20
       }
     });
+    req.user.credits -= 20;
+
+    await redisClient.del(`zennvid:videos:${req.user.id}`)
 
     return formatResponse(res, 200, "Video generated successfully", true, {
       videoUrl: videoData.video,

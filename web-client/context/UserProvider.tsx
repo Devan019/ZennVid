@@ -1,7 +1,7 @@
 "use client"
 
 import { getUser, logoutUser } from "@/lib/apiProvider";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -38,34 +38,33 @@ export const UserProvider = ({ children }: {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  const userMutation = useMutation({
-    mutationFn: async () => {
-      setIsLoading(true);
-      setError(null);
-      const data = await getUser();
-      if (!data.SUCCESS) {
-        toast.error(data.MESSAGE);
-        return;
-      }
-      toast.success(data.MESSAGE);
-      if (data?.DATA) { // ✅ Check for data.DATA
-        setUser(data.DATA.user);
-        setIsAuthenticated(true);
-      } else {
-        setIsAuthenticated(false);
-      }
-      return data;
-    },
-    onError: (error: any) => {
-      setError(error.message || "Failed to fetch user");
-      setIsAuthenticated(false);
-    },
 
-  });
+  const UserQuery = useQuery({
+    queryKey: ['getUser'],
+    queryFn: getUser,
+    enabled: false,
+  })
+
+  async function fetchUser() {
+    setIsLoading(true);
+    setError(null);
+    const { data } = await UserQuery.refetch();
+    if (!data.SUCCESS) {
+      toast.error(data.MESSAGE);
+      return;
+    }
+    toast.success(data.MESSAGE);
+    if (data?.DATA) { 
+      setUser(data.DATA.user);
+      setIsAuthenticated(true);
+    } else {
+      setIsAuthenticated(false);
+    }
+  }
 
   useEffect(() => {
-    if (!user && !isLoading) {
-      userMutation.mutate();
+    if (!user && !isAuthenticated) {
+      fetchUser();
     }
   }, [user, isLoading]);
 
@@ -79,7 +78,7 @@ export const UserProvider = ({ children }: {
       setIsLoading(false);
       return data;
     },
-    onSuccess: (data : any) => {
+    onSuccess: (data: any) => {
       if (!data.SUCCESS) {
         toast.error(data.MESSAGE);
         return;

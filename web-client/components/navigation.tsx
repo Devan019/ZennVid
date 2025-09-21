@@ -32,6 +32,7 @@ export function Navigation() {
   const authUrls: URLS[] = [
     { url: FRONTEND_ROUTES.DASHBOARD, label: "Dashboard" },
     { url: FRONTEND_ROUTES.OPENAPI, label: "Openapi" },
+    { url: FRONTEND_ROUTES.PRICING, label: "Pricing" },
     /** add more */
   ]
 
@@ -45,6 +46,7 @@ export function Navigation() {
 
   const handleLogout = () => {
     setIsMenuOpen(false);
+    logout();
   };
 
   const handleViewProfile = () => {

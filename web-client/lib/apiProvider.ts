@@ -58,6 +58,10 @@ export const getUser = async () => {
     });
     return api.data;
   } catch (error: any) {
+    if(error.code === "ERR_NETWORK") return {
+      MESSAGE : "Too many requests, please try again after a minute",
+      SUCCESS : false,
+    }
     return error.response.data;
   }
 };

@@ -1,6 +1,7 @@
 'use client';
 
 import { FRONTEND_ROUTES } from '@/constants/frontend_routes';
+import { useUser } from '@/context/UserProvider';
 import { Stats } from '@/lib/apiProvider';
 import { useQuery } from '@tanstack/react-query';
 import { motion, number } from 'framer-motion';
@@ -53,6 +54,7 @@ interface Stats {
 export default function Dashboard() {
 
   const [stats, setStats] = useState<Stats[] | null>(null)
+  const { isAuthenticated} = useUser()
 
   const query = useQuery({
     queryKey: ["query"],
@@ -68,9 +70,13 @@ export default function Dashboard() {
   })
 
   async function setQuery() {
-    const api = await query.refetch()
+    let api = await query.data;
+    if(!api){
+      api = (await query.refetch()).data
+    }
+
     let sts:Stats[] = []
-    Object.entries(api.data.DATA).forEach((data) => {
+    Object.entries(api.DATA).forEach((data) => {
       sts.push({
         name : data[0],
         value : Number(data[1]) ?? 0
@@ -80,8 +86,10 @@ export default function Dashboard() {
   }
 
   useEffect(() => {
-    setQuery()
-  }, [])
+    if(isAuthenticated && !stats){ 
+      setQuery()
+    }
+  }, [isAuthenticated])
 
   return (
     <div className="space-y-6">
