@@ -24,3 +24,19 @@ export const getVideos = expressAsyncHandler(async (req: Request, res: Response)
     return formatResponse(res, 500, "Internal Server Error", false, {error});
   }
 })
+
+export const deleteVideo = expressAsyncHandler(async(req: Request, res:Response) => {
+  try {
+    const id = req.user.id;
+    const {videoId} = req.query;
+    if (!id) {
+      return formatResponse(res, 400, "User Not found", false, null);
+    }
+
+    await VideoGenerater.findByIdAndDelete({videoId})
+    await redisClient.del(`zennvid:videos:${id}`)
+    return formatResponse(res, 200, "Videos deleted successfully", true);
+  } catch (error) {
+    return formatResponse(res, 500, "Internal Server Error", false, {error});
+  }
+})

@@ -119,6 +119,16 @@ export const sadTalker = async ({ description, character, title, style, language
   }
 };
 
+/**delete a video */
+export const deleteVideo = async({id} : {id:string}) => {
+  try {
+    const api = await axios.delete(`${getVideos}?videoId:${id}`,{withCredentials: true});
+    return api.data;
+  } catch (error:any) {
+    return error.response.data;
+  }
+}
+
 /**make app */
 export const createNewApp = async (name: string) => {
   try {

@@ -24,7 +24,7 @@ export const generateVideoScript = `${api}/generate-script`
 export const generateVideo = `${api}/generate-video`;
 export const AUTH_GOOGLE_OAUTH_URI = `${oauth}/login/google`;
 
-export const getVideos = `${api}/get-videos`
+export const getVideos = `${api}/videos`
 
 export const SADTALKER = `${api}/sadtalker`
 

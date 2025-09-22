@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { videoGeneraterController } from "./video_generater/controller";
 import { isAuthenticated } from "../middleware";
-import { getVideos } from "./getVideo/controller";
+import { deleteVideo, getVideos } from "./videoapi/controller";
 import { lipSync } from "./video_generater/service";
 import { CreateNewApp, dashboardStats, GetAllApps, SendKeyToEmail } from "./openapi/controller";
 import { GenAudio, GenCaptions, GetVoices, Languages, Translater } from "./openapi/api/controller";
@@ -16,12 +16,14 @@ export const ApiRouter = Router();
 /**credits */
 ApiRouter.post("/update-credit", isAuthenticated, updateCredit);
 
+/**videoapi */
 /** prompt to video gen */
 ApiRouter.post("/generate-video",isAuthenticated ,videoGeneraterController);
-ApiRouter.get("/get-videos", isAuthenticated, getVideos);
-
+ApiRouter.get("/videos", isAuthenticated, getVideos);
 /** sadtalker */
 ApiRouter.post("/sadtalker", isAuthenticated, lipSync);
+/** delete */
+ApiRouter.delete("/videos", isAuthenticated, deleteVideo);
 
 /**openapi */
 ApiRouter.get("/openapi/apps" , isAuthenticated , GetAllApps);

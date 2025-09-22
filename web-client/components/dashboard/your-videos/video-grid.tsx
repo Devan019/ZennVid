@@ -99,7 +99,7 @@ export const VideoCard = ({ video, onDelete, onShare, onDownload }: VideoCardPro
         </div>
 
         {/* Menu Button */}
-        <div className="absolute top-3 right-3">
+        <div className="absolute top-3 right-3 z-40">
           <div className="relative">
             <button
               onClick={(e) => {

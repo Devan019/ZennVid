@@ -19,6 +19,7 @@ import {
   MoreVertical,
   Trash2,
   X,
+  Trash,
 } from "lucide-react"
 
 export type VideoData = {
@@ -280,6 +281,10 @@ const SelectedVideoCard = ({ selected, onClose, onDelete, onShare, onDownload }:
     onShare?.(selected.content)
   }
 
+  const handleDelete = () => {
+    onDelete?.(selected.id)
+  }
+
   return (
     <div className="relative w-full h-full bg-black rounded-2xl overflow-hidden">
       <video
@@ -294,12 +299,12 @@ const SelectedVideoCard = ({ selected, onClose, onDelete, onShare, onDownload }:
       </video>
 
       {/* Close button */}
-      {/* <button
-        onClick={onClose}
+      <button
+        onClick={handleDelete}
         className="absolute top-4 right-4 bg-black/50 backdrop-blur-sm rounded-full p-2 hover:bg-black/70 transition-colors z-20 hover:cursor-pointer"
       >
-        <X className="w-5 h-5 text-white" />
-      </button> */}
+        <Trash className="w-5 h-5 text-red-500" />
+      </button>
 
       {/* Custom Controls */}
       <motion.div

@@ -1,11 +1,12 @@
 "use client"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { VideoIcon } from "lucide-react"
 import { VideoData, VideoLayoutGrid } from "@/components/ui/video-layout"
 import { useUser } from "@/context/UserProvider"
 import { getUserVideos } from "@/lib/apiProvider"
 import { useQuery } from "@tanstack/react-query"
 import { toast } from "sonner"
+import { Input } from "@/components/ui/input"
 
 
 const getGridClassName = (index: number) => {
@@ -14,7 +15,32 @@ const getGridClassName = (index: number) => {
 }
 
 const VideoGallery = () => {
-  const [videoCards, setVideoCards] = useState([])
+  const [videoCards, setVideoCards] = useState([]);
+  const [allVideos, setAllVideos] = useState<any[]>([]);
+  const [query, setQuery] = useState("");
+  const [filterType, setFilterType] = useState("all");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedQuery(query);
+    }, 400);
+    return () => clearTimeout(handler);
+  }, [query]);
+
+
+  useEffect(() => {
+    const filtered: any = allVideos.filter((video: any) => {
+
+      const matchesSearch = video.content.title
+        .toLowerCase()
+        .includes(debouncedQuery.toLowerCase())
+      const matchesType = filterType === "all" ? true : video.content.type === filterType
+      return matchesSearch && matchesType
+    })
+    setVideoCards(filtered)
+  }, [debouncedQuery, filterType, allVideos])
+
 
   const { isAuthenticated } = useUser()
 
@@ -45,6 +71,16 @@ const VideoGallery = () => {
         }
       })
     })
+    setAllVideos(() => {
+      return data?.DATA.map((video: any, index: number) => {
+        return {
+          id: video._id,
+          content: video,
+          className: getGridClassName(index),
+          // thumbnail: `/placeholder.svg?height=400&width=600&query=video thumbnail for ${video.title}`,
+        }
+      })
+    })
   }
 
   useEffect(() => {
@@ -56,6 +92,8 @@ const VideoGallery = () => {
   const handleVideoDelete = (id: string) => {
     console.log("Delete video:", id)
     // Implement delete functionality
+
+    
   }
 
   const handleVideoShare = (video: VideoData) => {
@@ -91,7 +129,31 @@ const VideoGallery = () => {
 
   if (videoCards && !videoCards.length) {
     return (
-      <div className="min-h-screen flex items-center justify-center ml-64">
+      <div className="flex flex-col ml-16 overflow-x-hidden">
+        <div className="flex gap-4 ml-64 mt-4 w-2/3">
+          {/* Search */}
+          <Input
+            type="text"
+            placeholder="🔍 Search by title..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            className="flex-1 px-3 py-2 rounded-lg border shadow-sm focus:outline-none "
+          />
+
+          {/* Filter */}
+          <select
+            name="filter"
+            title="filter"
+            value={filterType}
+            onChange={(e) => setFilterType(e.target.value)}
+            className="px-3 py-2 rounded-lg border shadow-sm"
+          >
+            <option value="all">All Types</option>
+            <option value="magic_video">Magic Video</option>
+            <option value="SadTalker">Sadtalker</option>
+            {/* Add more types if your data has them */}
+          </select>
+        </div>
         <div className="text-center">
           <VideoIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
           <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-2">No videos yet</h2>
@@ -102,12 +164,40 @@ const VideoGallery = () => {
   }
 
   return (
-    (videoCards && videoCards.length > 0 && <VideoLayoutGrid
-      cards={videoCards}
-      onDelete={handleVideoDelete}
-      onShare={handleVideoShare}
-      onDownload={handleVideoDownload}
-    />)
+    (videoCards && videoCards.length > 0 &&
+      <div className="flex flex-col ml-16 overflow-x-hidden">
+        <div className="flex gap-4 ml-64 mt-4 w-2/3">
+          {/* Search */}
+          <Input
+            type="text"
+            placeholder="🔍 Search by title..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            className="flex-1 px-3 py-2 rounded-lg border shadow-sm focus:outline-none "
+          />
+
+          {/* Filter */}
+          <select
+            name="filter"
+            title="filter"
+            value={filterType}
+            onChange={(e) => setFilterType(e.target.value)}
+            className="px-3 py-2 rounded-lg border shadow-sm"
+          >
+            <option value="all">All Types</option>
+            <option value="magic_video">Magic Video</option>
+            <option value="SadTalker">Sadtalker</option>
+            {/* Add more types if your data has them */}
+          </select>
+        </div>
+        <VideoLayoutGrid
+          cards={videoCards}
+          onDelete={handleVideoDelete}
+          onShare={handleVideoShare}
+          onDownload={handleVideoDownload}
+        />
+      </div>
+    )
   )
 }
 
