@@ -1,7 +1,8 @@
 // import { createUser, getUserFromSession, logout } from "./controller"
 import { isAuthenticated } from "../middleware"
 import { Router } from "express";
-import { checkUser, createUser, getUserFromSession, logout, signInUser } from "./controller";
+import { checkUser, CreateAdmin, createUser, getUserFromSession, logout, signInUser } from "./controller";
+import { Auth } from "googleapis";
 
 
 export const AuthRouter = Router()
@@ -16,4 +17,5 @@ AuthRouter.post("/signin", signInUser);
 
 AuthRouter.post("/checkuser", checkUser);
 
+AuthRouter.post("/createadmin", CreateAdmin);
 

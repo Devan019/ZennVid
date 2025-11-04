@@ -1,4 +1,4 @@
-import { AUTH_CREDENTIALS_URI, CREATEAPP, generateVideo, generateVideoScript, GETAPPS, getVideos, OPENAPI_STATS, SADTALKER, SEND_KEY_URI, UPDATE_CREDITS, userProfileRoute } from "@/constants/backend_routes";
+import { ADMIN_USER, AUTH_CREDENTIALS_URI, CREATEAPP, DAILY_DEVELOPER, DAILY_USER, DAILY_VIDEO, DEVELOPER_STATS, generateVideo, generateVideoScript, GETAPPS, getVideos, OPENAPI_STATS, SADTALKER, SEND_KEY_URI, TX_CHARTCHANGE, TX_HISTORY, TX_STATS, UPDATE_CREDITS, USER_STATS, userProfileRoute, VIDEO_STATS } from "@/constants/backend_routes";
 import axios from "axios";
 
 
@@ -171,11 +171,209 @@ export const Stats = async() => {
 }
 
 /** credits update */
-export const updateCredits = async(credits: number) => {
+export const updateCredits = async({credits, paymentId,  amount}:{
+  credits: number,
+  paymentId : string,
+  amount: number
+}) => {
   try {
-    const api = await axios.post(`${UPDATE_CREDITS}`, {credits}, {withCredentials: true})
+    const api = await axios.post(`${UPDATE_CREDITS}`, {credits, paymentId, amount}, {withCredentials: true})
     return api.data;
   } catch (error:any) {
+    return error.response.data;
+  }
+}
+
+/** Transcation Stats  */
+export const txStats = async() => {
+  try {
+    const api = await axios.get(`${TX_STATS}`, {withCredentials: true})
+    return api.data;
+  } catch (error:any) {
+    return error.response.data;
+  }
+} 
+
+/** User stats */
+export const userStats = async() => {
+  try {
+    const api = await axios.get(`${USER_STATS}`, {withCredentials: true})
+    return api.data;
+  } catch (error:any) {
+    return error.response.data;
+  }
+}
+
+/** Developer stats */
+export const developerstats = async() => {
+  try {
+    const api = await axios.get(`${DEVELOPER_STATS}`, {withCredentials: true})
+    return api.data;
+  } catch (error:any) {
+    return error.response.data;
+  }
+}
+
+/** Video Stats */
+export const videostats = async() => {
+  try {
+    const api = await axios.get(`${VIDEO_STATS}`, {withCredentials: true})
+    return api.data;
+  } catch (error:any) {
+    return error.response.data;
+  }
+}
+
+/** user get */
+export const getAllUser = async(
+  {
+    page,
+    limit
+  }:{
+    page :number,
+    limit : number,
+  }
+) => {
+  try {
+    const api = await axios.post(`${ADMIN_USER}/all`, {
+      page,limit
+    }, {withCredentials: true})
+    return api.data
+  } catch (error:any) {
+    return error.response.data;
+  }
+}
+
+/** user delete */
+export const  deleteUser = async({id} : {id:string}) => {
+  try {
+    const api = await axios.delete(`${ADMIN_USER}/${id}`, {withCredentials: true});
+    return api.data;
+  } catch (error:any) {
+    return error.response.data;
+  }
+}
+
+/** user update */
+export const updateUser = async(
+  {id, username, credits} : {
+    id : string,
+    username : string,
+    credits : number
+  }
+) => {
+  try {
+    const api = await axios.put(`${ADMIN_USER}/${id}`, {username, credits}, {withCredentials: true});
+    return api.data;
+  } catch (error:any) {
+    return error.response.data;
+  }
+}
+
+/** create user */
+export const createUser = async(
+  {email, password, username, role} : {
+    email : string,
+    password : string,
+    username : string,
+    role : string
+  }
+) => {
+  try {
+    const api = await axios.post(`${ADMIN_USER}`, {email, password, username, role}, {withCredentials: true});
+    return api.data;
+  } catch (error:any) {
+    return error.response.data;
+  }
+}
+
+/** get transaction history */
+export const getTransactionHistory = async(
+  {page, limit, search, createdAt} : {
+    page : number,
+    limit : number,
+    search?: string,
+    createdAt?: Date
+  }
+) => {
+  try {
+    const api = await axios.post(`${TX_HISTORY}`, {page, limit, search, createdAt}, {withCredentials: true});
+    return api.data;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+}
+
+/**  change-daily-revenue  */
+export const changeDailyRevenue = async (
+  {
+    date,
+    state,
+  }:{
+    date: Date,
+    state: 'Prev' | 'Next'
+  }
+) => {
+  try {
+    const api = await axios.post(`${TX_CHARTCHANGE}`, { date, state }, { withCredentials: true });
+    return api.data;
+  } catch (error: any) {
+    return error.response.data;
+  }
+}
+
+/** change daily developer */
+export const changeDailyDeveloper = async (
+  {
+    date,
+    state,
+  }:{
+    date: Date,
+    state: 'Prev' | 'Next'
+  }
+) => {
+  try {
+    const api = await axios.post(`${DAILY_DEVELOPER}`, { date, state }, { withCredentials: true });
+    return api.data;
+  } catch (error: any) {
+    return error.response.data;
+  }
+}
+
+/** change daily user */
+export const changeDailyUser = async (
+  {
+    date,
+    state,
+  }:{
+    date: Date,
+    state: 'Prev' | 'Next'
+  }
+) => {
+  try {
+    const api = await axios.post(`${DAILY_USER}`, { date, state }, { withCredentials: true });
+    return api.data;
+  } catch (error: any) {
+    return error.response.data;
+  }
+}
+
+/** change daily video */
+/** change daily developer */
+export const changeDailyVideo = async (
+  {
+    date,
+    state,
+  }:{
+    date: Date,
+    state: 'Prev' | 'Next'
+  }
+) => {
+  try {
+    const api = await axios.post(`${DAILY_VIDEO}`, { date, state }, { withCredentials: true });
+    return api.data;
+  } catch (error: any) {
     return error.response.data;
   }
 }

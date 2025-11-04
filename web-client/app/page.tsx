@@ -1,15 +1,31 @@
 "use client"
 
-import { Navigation } from "@/components/navigation"
-import { Hero } from "@/components/hero"
-import { Features } from "@/components/features"
-import { Reviews } from "@/components/reviews"
-import { Footer } from "@/components/footer"
-import { StepHome } from "@/components/steps"
-import PricingComponent from "@/components/pricing"
-import { useEffect } from "react"
 
+import { Features } from "@/components/Home/features"
+import { Reviews } from "@/components/Home/reviews"
+import { Footer } from "@/components/common/footer"
+import { StepHome } from "@/components/Home/steps"
+import PricingComponent from "@/components/Home/pricing"
+import { useEffect } from "react"
+import Lenis from "lenis";
+//@ts-ignore
+import "lenis/dist/lenis.css";
+import { Navigation } from "@/components/common/navigation"
+import { Hero } from "@/components/Home/hero"
 export default function Home() {
+  useEffect(() => {
+    document.body.classList.add("loaded");
+    const lenis = new Lenis({
+      lerp: 0.09
+    });
+
+    function raf(time: any) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+
+    requestAnimationFrame(raf);
+  }, []);
 
   return (
     <div className={`min-h-screen relative  h-dvh z-10`}>

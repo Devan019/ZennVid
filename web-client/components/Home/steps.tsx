@@ -2,7 +2,7 @@ import { SparklesIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
-import { SkiperCard } from "./ui/skiper-card"
+import { SkiperCard } from "../ui/skiper-card"
 
 export function StepHome() {
   return (
@@ -55,30 +55,30 @@ export function StepHome() {
                   bgClass="lg:bg-gradient-to-tr"
                   image={{
                     alt: "Video generation steps",
-                    step1light1 : {
-                      src : "/step-2.png",
-                      height : 200,
-                      width : 200
+                    step1light1: {
+                      src: "/step-2.png",
+                      height: 200,
+                      width: 200
                     },
-                    step1light2 : {
-                      src : "/step-1.png",
-                      height : 200,
-                      width : 200
+                    step1light2: {
+                      src: "/step-1.png",
+                      height: 200,
+                      width: 200
                     },
-                    step2light1 : {
-                      src : "/step-3.png",
-                      height : 200,
-                      width : 200
+                    step2light1: {
+                      src: "/step-3.png",
+                      height: 200,
+                      width: 200
                     },
-                    step2light2 : {
-                      src : "/step-2-2.png",
-                      height : 200,
-                      width : 200
+                    step2light2: {
+                      src: "/step-2-2.png",
+                      height: 200,
+                      width: 200
                     },
-                    step3light : {
-                      src : "/step-4.png",
-                      height : 200,
-                      width : 200
+                    step3light: {
+                      src: "/step-4.png",
+                      height: 200,
+                      width: 200
                     },
                   }}
                   title="AI Video Generation"
@@ -89,8 +89,8 @@ export function StepHome() {
                       { id: "3", name: "Export or download your creation" }
                     ] as { id: string; name: string }[]
                   }
-                  
-                  
+
+
                 />
               </div>
             </div>

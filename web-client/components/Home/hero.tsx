@@ -3,7 +3,7 @@
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Play, Sparkles, ArrowRight } from "lucide-react"
-import { HoleBackground } from "./animate-ui/backgrounds/hole"
+import { HoleBackground } from "../animate-ui/backgrounds/hole"
 
 
 export function Hero() {

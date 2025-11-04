@@ -9,8 +9,9 @@ import connectToMongo from "./utils/mongoConnection";
 import { rateLimit } from 'express-rate-limit'
 const app = e();
 app.use(e.json());
+
 const corsOptions = {
-  origin: ['http://localhost:3000', 'https://your-frontend-domain.com'],
+  origin: ["http://localhost:3000", "http://localhost:3001"],
   methods: ['GET', 'POST', 'PUT', 'DELETE'], 
   allowedHeaders: ['Content-Type', 'Authorization'], 
   credentials: true 

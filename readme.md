@@ -25,24 +25,17 @@ ZennVid enables users to generate and manipulate multimedia content using AI-dri
 
 ---
 
-## Architecture & Flow
 
-1. **User** interacts via a Next.js frontend (login/signup, dashboard, upload panel).
-2. **Authentication** is handled via OAuth and Express middleware.
-3. **Choose Video Mode**:
-   - **SadTalker**: User provides a script/text prompt.
-     - Audio is generated using **XTTS voice clone**.
-     - **SadTalker** (Python) generates a talking face video.
-     - **Whisper** generates captions.
-     - **FFmpeg** exports the final video.
-   - **Magic Video**: 
-     - **Gemini** generates a script and up to 5 images.
-     - **Edge-TTS** generates audio.
-     - **Whisper** generates captions.
-     - **FFmpeg** exports the final video.
-4. **Cloudinary** is used to store videos.
-5. **MongoDB** (via Express backend) stores metadata.
-6. All videos are accessible via the dashboard.
+## Architecture & Flow (Text Summary)
+
+1. **User Authentication**: Users sign up or log in via Next.js frontend using OAuth. Auth is validated by Express middleware.
+2. **Dashboard & Credits**: After login, users access the dashboard, where they can upload content or buy credits (via Razorpay).
+3. **Video Generation Modes**:
+   - **SadTalker**: Users input a script. XTTS generates audio, SadTalker (Python) creates a talking face, Whisper generates captions, and FFmpeg exports the video.
+   - **Magic Video**: Gemini generates a script and up to 5 images, Edge-TTS generates audio, Whisper generates captions, and FFmpeg exports the video.
+4. **Export & Storage**: Final videos are saved to Cloudinary. Metadata is stored in MongoDB via the Express backend.
+5. **Video Retrieval**: All videos are accessible via the dashboard, fetched from the Express API.
+6. **Developer Portal**: Developers can generate API keys (Express + MongoDB), receive them via email (Nodemailer), and use platform APIs (translation, audio, caption) with credits.
 
 ---
 

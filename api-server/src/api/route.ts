@@ -7,11 +7,19 @@ import { CreateNewApp, dashboardStats, GetAllApps, SendKeyToEmail } from "./open
 import { GenAudio, GenCaptions, GetVoices, Languages, Translater } from "./openapi/api/controller";
 import { checkApiKey } from "./openapi/api/checkApiKey";
 import { updateCredit } from "./pricing/controller";
+import AdminUserRouter from "./Admin/user/route";
+import StatsRouter from "./Admin/analisys/router";
+import { scriptRouter } from "../script/route";
 // import { getVideos } from "./getVideo/controller";
 // ===
 export const ApiRouter = Router();
 
+/** script */
+ApiRouter.use("/script", scriptRouter);
+
 /** api  */
+ApiRouter.use("/admin/stats", StatsRouter);
+ApiRouter.use("/admin",isAuthenticated, AdminUserRouter);
 
 /**credits */
 ApiRouter.post("/update-credit", isAuthenticated, updateCredit);

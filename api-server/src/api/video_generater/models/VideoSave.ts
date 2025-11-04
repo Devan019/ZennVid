@@ -15,10 +15,6 @@ const videoGeneraterSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  created_at: {
-    type: Date,
-    default: Date.now
-  },
   type:{
     type: String,
     enum: Object.values(VideoType),
@@ -36,7 +32,7 @@ const videoGeneraterSchema = new mongoose.Schema({
   voiceCharacter : {
     type: String,
   }
-})
+}, {timestamps : true})
 
 
 const VideoGenerater = mongoose.model('VideoGenerater', videoGeneraterSchema);

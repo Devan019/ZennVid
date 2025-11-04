@@ -11,7 +11,7 @@ import { useMutation } from "@tanstack/react-query";
 import { checkUserWithOtp, loginWithCredentials, signUpWithCredentials } from "@/lib/apiProvider";
 import { toast } from "sonner";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogOverlay, DialogTitle } from "@/components/ui/dialog";
-import { OtpInput } from "@/components/OtpInput";
+import { OtpInput } from "@/components/common/OtpInput";
 import { AUTH_GOOGLE_OAUTH_URI } from "@/constants/backend_routes";
 import { FRONTEND_ROUTES } from "@/constants/frontend_routes";
 
@@ -108,7 +108,7 @@ const AuthPages: React.FC = () => {
     onSuccess: (data) => {
       toast.success("OTP verified successfully! redirecting to home page...");
       setTimeout(() => {
-        window.location.href = FRONTEND_ROUTES.DASHBOARD;
+        window.location.href = FRONTEND_ROUTES.HOME;
       }, 1000);
     },
     onError: (error: any) => {

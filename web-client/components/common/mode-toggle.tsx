@@ -1,5 +1,5 @@
 import React from "react"
-import ThemeToggleButton from "./ui/theme-toggle-button"
+import ThemeToggleButton from "../ui/theme-toggle-button"
 
 
 const ModeToggle = () => {

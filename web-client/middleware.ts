@@ -11,7 +11,7 @@ export function middleware(req: NextRequest) {
 
   // ✅ If already authenticated and trying to visit /auth page, redirect to zennvid
   if (isAuthenticated && pathname.includes("/auth")) {
-    return NextResponse.redirect(new URL(FRONTEND_ROUTES.ZENNVID, req.url));
+    return NextResponse.redirect(new URL(FRONTEND_ROUTES.HOME, req.url));
   }
 
   return NextResponse.next();

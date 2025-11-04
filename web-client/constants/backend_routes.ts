@@ -43,3 +43,23 @@ export const TEXT_TRANSLATE = `${api}/openapi/translate`
 export const VOICES = `${api}/openapi/voices`
 
 export const GEN_AUDIO = `${api}/openapi/generate-audio`
+
+export const TX_STATS = `${api}/admin/stats/transactionstats`
+
+export const TX_CHARTCHANGE = `${api}/admin/stats/change-daily-revenue`
+
+export const TX_HISTORY = `${api}/admin/stats/transcation-history`
+
+export const USER_STATS = `${api}/admin/stats/userstats`
+
+export const DEVELOPER_STATS = `${api}/admin/stats/developerstats`
+
+export const VIDEO_STATS = `${api}/admin/stats/videostats`
+
+export const ADMIN_USER = `${api}/admin/users`
+
+export const DAILY_DEVELOPER = `${api}/admin/stats/change-daily-developer`
+
+export const DAILY_USER = `${api}/admin/stats/change-daily-user`
+
+export const DAILY_VIDEO = `${api}/admin/stats/change-daily-video`

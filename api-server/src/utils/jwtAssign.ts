@@ -7,10 +7,11 @@ export interface JWTPayload {
   provider: string;
   username: string;
   credits : number;
+  role : number
 }
 export const generateJWTtoken = (payload: JWTPayload) => {
-  const { id, email, provider, username } = payload;
-  if (!id || !email || !provider || !username) {
+  const { id, email, provider, username, role } = payload;
+  if (!id || !email || !provider || !username || !role) {
     throw new ExpressError(400, "Invalid payload for JWT generation");
   }
   if (typeof id !== "string" || typeof email !== "string" || typeof provider !== "string" || typeof username !== "string") {

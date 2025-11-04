@@ -118,7 +118,7 @@ export default function PricingComponent() {
       },
       handler: function (response:any) {
         // onPaymentSuccess(credits, response.razorpay_payment_id);
-        creditMutation.mutate(plan.credits)
+        creditMutation.mutate({credits: plan.credits, paymentId: response.razorpay_payment_id ,amount: price})
       },
     };
     

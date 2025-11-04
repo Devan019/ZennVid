@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation"
 import ModeToggle from "./mode-toggle"
 
 import { useUser } from "@/context/UserProvider"
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 import { FRONTEND_ROUTES } from "@/constants/frontend_routes"
 import Link from "next/link"
 
@@ -23,6 +23,7 @@ export function Navigation() {
   const [scrolled, setScrolled] = useState(false)
   const router = useRouter()
   const { user, isAuthenticated, isLoading, logout } = useUser()
+  const [urls, seturls] = useState<URLS[]>([]);
 
   const defaultUrls: URLS[] = [
     { url: "#featurs", label: "Features" },
@@ -35,6 +36,17 @@ export function Navigation() {
     { url: FRONTEND_ROUTES.PRICING, label: "Pricing" },
     /** add more */
   ]
+
+  useEffect(()=>{
+    if(isAuthenticated){
+      if(user?.role === 'admin'){
+        seturls([ { url: FRONTEND_ROUTES.ADMIN, label: "Admin" }]);
+      }else{
+        seturls(authUrls);
+      }
+    }
+  },[isAuthenticated])
+
 
   useEffect(() => {
     const handleScroll = () => {
@@ -85,7 +97,7 @@ export function Navigation() {
           <div className="hidden md:flex items-center gap-6">
             <div className="flex items-center gap-6">
               {isAuthenticated && (
-                authUrls.map((url, index) => (
+                urls.map((url, index) => (
                   <Link
                     className="text-[18px] text-gray-800 dark:text-gray-200 hover:text-purple-600 dark:hover:text-purple-400"
                     href={url.url}
@@ -126,7 +138,7 @@ export function Navigation() {
                   </Button>
                 </>
               )}
-              {user && isAuthenticated &&
+              {user  && isAuthenticated &&
                 (
                   <>
                     <motion.div

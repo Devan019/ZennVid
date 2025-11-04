@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { formatResponse } from "./utils/formateResponse";
 import expressAsyncHandler from "./utils/expressAsync";
 import jwt from "jsonwebtoken";
+import { UserRole } from "./constants/provider";
 
 
 declare global {
@@ -14,6 +15,7 @@ declare global {
         username: string;
         credits : number;
         profilePicture : string;
+        role : UserRole;
       }
     }
   }
@@ -34,7 +36,8 @@ export const isAuthenticated = expressAsyncHandler((req: Request, res: Response,
     provider: decoded.provider as string,
     username: decoded.username as string,
     credits : decoded.credits as number,
-    profilePicture : decoded.profilePicture as string
+    profilePicture : decoded.profilePicture as string,
+    role : decoded.role as UserRole
   };
   return next();
 })

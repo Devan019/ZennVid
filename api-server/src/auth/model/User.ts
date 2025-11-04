@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import { Provider } from "../../constants/provider";
+import { Provider, UserRole } from "../../constants/provider";
 
 const UserSchema = new Schema({
   email: {
@@ -26,7 +26,12 @@ const UserSchema = new Schema({
   profilePicture: {
     type: String,
   },
-})
+  role : {
+    type: String,
+    enum: UserRole,
+    default: UserRole.USER,
+  },
+}, {timestamps : true})
 
 
 export const User = mongoose.models.User || mongoose.model("User", UserSchema);

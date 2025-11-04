@@ -25,7 +25,7 @@ const OpenApiSchema = new mongoose.Schema({
     type : Number,
     default : 0
   }
-})
+}, {timestamps : true})
 
 OpenApiSchema.pre('save', function(next) {
   if (!this.isModified('ApiCalls')) {

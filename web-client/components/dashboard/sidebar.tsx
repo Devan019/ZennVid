@@ -1,6 +1,6 @@
 "use client"
 
-import { Moon, Sun, Home, Video, LogOut, MenuIcon, Menu, icons, VideoOff, LucideProps, Cog, Book, Languages, Speaker } from "lucide-react";
+import { Moon, Sun, Home, Video, LogOut, MenuIcon, Menu, icons, VideoOff, LucideProps, Cog, Book, Languages, Speaker, UserPenIcon, UserCog, Videotape } from "lucide-react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -17,13 +17,13 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { GiLipstick } from "react-icons/gi";
-import ModeToggle from "../mode-toggle";
+import ModeToggle from "../common/mode-toggle";
 import { useUser } from "@/context/UserProvider";
 import { FRONTEND_ROUTES } from "@/constants/frontend_routes";
 import { FaMagic } from "react-icons/fa";
 import { ForwardRefExoticComponent, RefAttributes, use } from "react";
 import { IconType } from "react-icons/lib";
-import { TbPhoto } from "react-icons/tb";
+import { TbApi, TbApiApp, TbPhoto, TbTransactionBitcoin } from "react-icons/tb";
 
 const iconMap: Record<string, React.ElementType> = {
   home: Home,
@@ -36,6 +36,12 @@ const iconMap: Record<string, React.ElementType> = {
   translate: Languages,
   image: TbPhoto,
   textAudio: Speaker,
+  UserPenIcon: UserPenIcon,
+  TbTransactionBitcoin: TbTransactionBitcoin,
+  TbApi: TbApi,
+  UserCog: UserCog,
+  TbApiApp: TbApiApp,
+  Videotape : Videotape
 }
 
 export function AppSidebar({ menuItems }: {
@@ -124,7 +130,7 @@ export function AppSidebar({ menuItems }: {
 
                 return (
                   <motion.div
-                    key={item.href}
+                    key={index}
                     variants={itemVariants}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
@@ -183,7 +189,7 @@ export function AppSidebar({ menuItems }: {
                   </motion.div>
                 );
               })}
-              {user && (<motion.div
+              {user && user.role === "user" && (<motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.5 }}
