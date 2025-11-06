@@ -63,3 +63,7 @@ export const DAILY_DEVELOPER = `${api}/admin/stats/change-daily-developer`
 export const DAILY_USER = `${api}/admin/stats/change-daily-user`
 
 export const DAILY_VIDEO = `${api}/admin/stats/change-daily-video`
+
+export const CSV_USERS = `${api}/admin/users/csv`
+
+export const FEED = `${api}/feed`

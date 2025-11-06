@@ -3,10 +3,12 @@ import { useEffect, useMemo, useState } from "react"
 import { VideoIcon } from "lucide-react"
 import { VideoData, VideoLayoutGrid } from "@/components/ui/video-layout"
 import { useUser } from "@/context/UserProvider"
-import { getUserVideos } from "@/lib/apiProvider"
-import { useQuery } from "@tanstack/react-query"
+import { deleteVideo, feedCreate, getUserVideos } from "@/lib/apiProvider"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { Input } from "@/components/ui/input"
+import { FaSignsPost } from "react-icons/fa6"
+import Modal from "@/components/common/Modal"
 
 
 const getGridClassName = (index: number) => {
@@ -20,6 +22,8 @@ const VideoGallery = () => {
   const [query, setQuery] = useState("");
   const [filterType, setFilterType] = useState("all");
   const [debouncedQuery, setDebouncedQuery] = useState("");
+  const [activeVideo, setActiveVideo] = useState<VideoData | null>(null);
+  const [isOpen, setisOpen] = useState(false)
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -42,7 +46,7 @@ const VideoGallery = () => {
   }, [debouncedQuery, filterType, allVideos])
 
 
-  const { isAuthenticated } = useUser()
+  const { user } = useUser()
 
   const videoQuery = useQuery({
     queryFn: async () => {
@@ -50,6 +54,20 @@ const VideoGallery = () => {
     },
     queryKey: ['videos']
   })
+
+  const deleteMutation = useMutation({
+    mutationKey: ['deleteVideo'],
+    mutationFn: async (id: string) => {
+      return await deleteVideo({ id })
+    }
+  })
+
+  const feedPostMutation = useMutation({
+    mutationKey: ['feedPost'],
+    mutationFn: async ({ userId, videoId }: { userId: string, videoId: string }) => {
+      return await feedCreate({ userId, videoId })
+    }
+  });
 
   async function main() {
     let data: any = videoQuery.data
@@ -90,22 +108,21 @@ const VideoGallery = () => {
   }, [])
 
   const handleVideoDelete = (id: string) => {
-    console.log("Delete video:", id)
-    // Implement delete functionality
-
-    
+    deleteMutation.mutate(id, {
+      onSuccess: (data: any) => {
+        if (!data.SUCCESS) {
+          toast.error(data.MESSAGE);
+          return;
+        }
+        toast.success(data.MESSAGE);
+      }
+    });
+    setAllVideos((prevVideos) => prevVideos.filter((video) => video.id !== id));
   }
 
   const handleVideoShare = (video: VideoData) => {
-    console.log("Share video:", video)
-    // Implement share functionality
-    if (navigator.share) {
-      navigator.share({
-        title: video.title,
-        text: `Check out this video: ${video.title}`,
-        url: video.videoUrl,
-      })
-    }
+    setActiveVideo(video)
+    setisOpen(true)
   }
 
   const handleVideoDownload = async (video: VideoData) => {
@@ -126,6 +143,44 @@ const VideoGallery = () => {
       console.error("Download failed", err);
     }
   };
+
+  const ShareModal = (
+    <div>
+      {activeVideo && (
+        <div>
+          <div>
+            confirm sharing {activeVideo?.title}
+          </div>
+          <button
+          onClick={()=>{
+            feedPostMutation.mutate({
+              userId : user?._id as string,
+              videoId : activeVideo?._id as string
+            },{
+              onSuccess : (data : any)=>{
+                if(!data.SUCCESS){
+                  toast.error(data.MESSAGE)
+                  return
+                }
+                toast.success(data.MESSAGE)
+               
+              },
+              onError : ()=>{
+                toast.error("Failed to post to feed")
+              },
+              onSettled : () => {
+                 setisOpen(false)
+                setActiveVideo(null)
+              }
+            })
+          }}
+          className="mt-4 bg-orange-600 text-white hover:bg-orange-400 hover:cursor-pointer p-2 rounded-lg">
+            POST TO FEED <FaSignsPost className="inline-block ml-2" /> 
+          </button>
+        </div>
+      )}
+    </div>
+  )
 
   if (videoCards && !videoCards.length) {
     return (
@@ -190,6 +245,9 @@ const VideoGallery = () => {
             {/* Add more types if your data has them */}
           </select>
         </div>
+        <Modal isOpen={isOpen} onClose={() => setisOpen(false)} title="Share Video">
+          {ShareModal}
+        </Modal>
         <VideoLayoutGrid
           cards={videoCards}
           onDelete={handleVideoDelete}

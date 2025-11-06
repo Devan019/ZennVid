@@ -15,6 +15,7 @@ import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from '
 import { FaMoneyBill, FaMoneyBillWave, FaSortAmountDown } from 'react-icons/fa';
 import { GiCreditsCurrency, GiPayMoney } from 'react-icons/gi';
 import { TbTransactionBitcoin } from 'react-icons/tb';
+import { toast } from 'sonner';
 
 
 
@@ -44,13 +45,14 @@ const page = () => {
         createdAt: new Date(item.createdAt).toLocaleDateString(),
       })) ?? []);
       setTotal(data?.total ?? 0);
+      toast.success(response.MESSAGE);
     }
   })
 
   const changeDailyRevenueMutation = useMutation({
     mutationFn: async ({ date, state }: { date: Date; state: 'Prev' | 'Next' }) => {
       const response: ResponseData = await changeDailyRevenue({ date, state });
-      console.log(response);
+      toast.success(response.MESSAGE);
       setChartData(response.DATA);
       return response;
     }
@@ -89,7 +91,7 @@ const page = () => {
     queryFn: txStats
   })
 
-  const setDataViaMain = (data: any) => {
+  const setDataViaMain = (data: any, message: string) => {
     setTxStatsData(data)
     setChartData(data.revenue?.dailyRevenue ?? [])
     setTableData(data.transactionHistory.transactions.map((item: Transaction, index: number) => ({
@@ -100,16 +102,17 @@ const page = () => {
       createdAt: new Date(item.createdAt).toLocaleDateString(),
     })) ?? []);
     setTotal(data.transactionHistory.total ?? 0);
+    toast.success(message);
   }
 
   async function main() {
     if (txQuery.data) {
-      setDataViaMain(txQuery.data.DATA)
+      setDataViaMain(txQuery.data.DATA, txQuery.data.MESSAGE)
       return;
     }
 
     const query = await txQuery.refetch();
-    setDataViaMain(query.data?.DATA)
+    setDataViaMain(query.data?.DATA,  query.data?.MESSAGE ?? "")
   }
 
   const changeChartData = (data: any) => {
@@ -146,6 +149,8 @@ const page = () => {
   };
 
    useEffect(() => {
+    if(!selectedDate) return;
+    setPage(1)
     txMutation.mutate();
   }, [selectedDate]);
 

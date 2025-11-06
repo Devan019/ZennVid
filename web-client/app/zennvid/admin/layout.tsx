@@ -38,6 +38,12 @@ const layout = ({ children }: {
       label: "Video Stats",
       tooltip: "Video Stats"
     },
+    {
+      href: FRONTEND_ROUTES.USER_ACCOUNTS,
+      icon: "UserCog",
+      label: "User Accounts",
+      tooltip: "User Accounts"
+    }
   ];
   return (
     <div>

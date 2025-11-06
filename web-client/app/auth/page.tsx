@@ -79,13 +79,19 @@ const AuthPages: React.FC = () => {
       }
     },
     onSuccess: (data) => {
-      toast.success(`${isSignUp ? 'Send OTP' : 'Welcome back'}!`);
-      if (!isSignUp) {
-        setTimeout(() => {
-          window.location.href = FRONTEND_ROUTES.DASHBOARD
-        }, 1000);
+      console.log(data)
+      if (data.SUCCESS === false) {
+        toast.error(data.MESSAGE);
+        return;
       } else {
-        setopenotp(true)
+        toast.success(`${data.MESSAGE}`);
+        if (!isSignUp) {
+          setTimeout(() => {
+            window.location.href = FRONTEND_ROUTES.HOME
+          }, 1000);
+        } else {
+          setopenotp(true)
+        }
       }
 
       // Redirect to dashboard or appropriate page

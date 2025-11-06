@@ -11,5 +11,4 @@ export const UserCreationValidation = z.object({
 export const UserUpdateValidation = z.object({
   username: z.string().min(3, "Username must be at least 3 characters long"),
   credits: z.number().min(0, "Credits must be a positive number"),
-  userId : z.string().uuid("Invalid user ID")
 });

@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import expressAsyncHandler from "../utils/expressAsync";
 import { formatResponse } from "../utils/formateResponse";
-import { CreateAdminService, createTmpUserService, createUserService, GetUserByIdService,  GetUserByTokenService,  signInUserService } from "./service";
+import { CreateAdminService, createTmpUserService, createUserService, getAllUsersAsCSVService, GetUserByIdService,  GetUserByTokenService,  signInUserService } from "./service";
 import { CheckUserValidation, SignInValidation, UserValidation } from "./schema/zodschema";
 import { TmpUser } from "./model/tmpUser";
 import { ISendResponse } from "../constants/interfaces";
@@ -37,6 +37,10 @@ export const signInUser = expressAsyncHandler(async (req: Request, res: Response
   try {
     const { email, password, provider } = SignInValidation.parse(req.body);
     const response: ISendResponse = await signInUserService({ email: email ?? "", password, provider });
+
+    if(!response.success){
+      return formatResponse(res, response.status, response.message, response.success, response.data);
+    }
     SetCookie(res, "token", response.data.token, 60 * 60 * 24 * 7); // 7 days
 
     const user = response.data.user;

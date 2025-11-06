@@ -1,8 +1,8 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import expressAsyncHandler from "../../../utils/expressAsync";
 import { UserCreationValidation, UserUpdateValidation } from "./schema";
 import { formatResponse } from "../../../utils/formateResponse";
-import { createUserService, GetAllUserService, GetUserByIdService, UpdateUserService } from "../../../auth/service";
+import { createUserService, DeleteUserService, getAllUsersAsCSVService, GetAllUserService, GetUserByIdService, UpdateUserService } from "../../../auth/service";
 import { ISendResponse, IUser } from "../../../constants/interfaces";
 import { paginationSchema } from "../analisys/schema";
 
@@ -24,8 +24,8 @@ export const createUser = expressAsyncHandler(async(req: Request, res: Response)
 
 export const getAllUsers = expressAsyncHandler(async(req: Request, res: Response) => {
   try {
-    const { page, limit } = paginationSchema.parse(req.body);
-    const users:ISendResponse = await GetAllUserService({ page, limit });
+    const { page, limit, createdAt, search } = paginationSchema.parse(req.body);
+    const users:ISendResponse = await GetAllUserService({ page, limit, search, createdAt });
     return formatResponse(res, users.status, users.message, users.success, users.data);
   } catch (error) {
     return formatResponse(res, 500, "Internal server error", false, error);
@@ -34,7 +34,9 @@ export const getAllUsers = expressAsyncHandler(async(req: Request, res: Response
 
 export const updateUser = expressAsyncHandler(async(req: Request, res: Response) => {
   try {
-    const { username, credits, userId } = UserUpdateValidation.parse(req.body);
+    console.log("Request body:", req.body, " id " + req.params.id);
+    const { username, credits } = UserUpdateValidation.parse(req.body);
+    const userId = req.params.id;
     const response:ISendResponse = await UpdateUserService(userId, username, credits);
     return formatResponse(res, response.status, response.message, response.success, response.data);
   } catch (error) {
@@ -58,7 +60,7 @@ export const getUser = expressAsyncHandler(async(req: Request, res: Response) =>
 export const deleteUser = expressAsyncHandler(async(req: Request, res: Response) => {
   try {
     const userId = req.params.id;
-    const deleteResponse: ISendResponse = await GetUserByIdService(userId);
+    const deleteResponse: ISendResponse = await DeleteUserService(userId);
     return formatResponse(res, deleteResponse.status, deleteResponse.message, deleteResponse.success, null);
   }
   catch (error) {
@@ -66,3 +68,14 @@ export const deleteUser = expressAsyncHandler(async(req: Request, res: Response)
   }
 })
 
+export const CSVUsers = expressAsyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+  try {
+
+    const response: ISendResponse = await getAllUsersAsCSVService();
+    return formatResponse(res, response.status, response.message, response.success, response.data);
+  }
+  catch (error) {
+    console.log("Error in CSVUsers controller:", error);
+    return formatResponse(res, 500, "Internal server error", false, error);
+  }
+});

@@ -34,6 +34,7 @@ export function Navigation() {
     { url: FRONTEND_ROUTES.DASHBOARD, label: "Dashboard" },
     { url: FRONTEND_ROUTES.OPENAPI, label: "Openapi" },
     { url: FRONTEND_ROUTES.PRICING, label: "Pricing" },
+    { url: FRONTEND_ROUTES.FEED, label: "Feed" },
     /** add more */
   ]
 

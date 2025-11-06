@@ -11,6 +11,7 @@ import React, {  useEffect, useState } from 'react'
 import { FaCode, FaGoogle } from 'react-icons/fa';
 import { FaMoneyBillTransfer } from 'react-icons/fa6';
 import {  TbApiApp, TbAppWindow, TbPassword } from 'react-icons/tb';
+import { toast } from 'sonner';
 
 
 
@@ -23,7 +24,7 @@ const page = () => {
   const changeDailyUserMutation = useMutation({
     mutationFn: async ({ date, state }: { date: Date; state: 'Prev' | 'Next' }) => {
       const response: ResponseData = await changeDailyUser({ date, state });
-      console.log(response);
+      toast.success(response.MESSAGE);
       setChartData(response.DATA);
       return response;
     }
@@ -39,19 +40,20 @@ const page = () => {
     queryFn: userStats
   })
 
-  const setDataViaMain = (data: any) => {
+  const setDataViaMain = (data: any, message: string) => {
+    toast.success(message);
     setUserStatsData(data)
     setChartData(data.dailyUsers ?? []);
   }
 
   async function main() {
     if (UserQuery.data) {
-      setDataViaMain(UserQuery.data.DATA)
+      setDataViaMain(UserQuery.data.DATA, UserQuery.data.MESSAGE);
       return;
     }
 
     const query = await UserQuery.refetch();
-    setDataViaMain(query.data?.DATA)
+    setDataViaMain(query.data?.DATA, query.data?.MESSAGE ?? "");
   }
 
   const changeChartData = (data: any) => {

@@ -139,7 +139,7 @@ export const userStatsService = async (): Promise<ISendResponse> => {
     ])
     const userStats = stats[0] ?? {};
 
-     const months = [1,2,3,4,5,6,7,8,9,10,11,12];
+    const months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
     const last12Days = Array.from({ length: 12 }, (_, i) => {
       const date = new Date();
       date.setDate(date.getDate() - i);
@@ -528,7 +528,6 @@ export const transcationHistroyService = async ({
 
 export const videoStatsService = async (): Promise<ISendResponse> => {
   try {
-    const today = getToday();
     const stats = await VideoGenerater.aggregate([
       {
         $facet: {
@@ -725,9 +724,37 @@ export const videoStatsService = async (): Promise<ISendResponse> => {
       };
     });
 
+    const allStyles = ["realistic", "anime", "cartoon", "cyberpunk", "sketch", "pixel-art"];
+    statsData.allStyles = allStyles.map((style) => {
+      const found = statsData.allStyles.find((item: any) => item._id === style);
+      return {
+        _id: style,
+        count: found ? found.count : 0
+      }
+    });
+
+    if (statsData.topLanguages.length < 7) {
+      const defaultLanguages = [
+        "English", "Spanish", "French",
+        "German", "Chinese", "Japanese", "Hindi"
+      ];
+      const missingLanguages = defaultLanguages.filter(
+        (lang) => !statsData.topLanguages.some((item: any) => item._id === lang)
+      );
+      const need = 7 - statsData.topLanguages.length;
+
+      statsData.topLanguages.push(
+        ...missingLanguages.slice(0, need).map((lang) => ({
+          _id: lang,
+          count: 0
+        }))
+      );
+    }
+
+
     return {
       status: 200,
-      data: stats[0],
+      data: statsData,
       message: "Video stats fetched successfully",
       success: true
     }

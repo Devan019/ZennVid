@@ -10,6 +10,7 @@ import {  ChevronLeft, ChevronRight,  CodeIcon } from 'lucide-react';
 import React, {  useEffect, useState } from 'react'
 import { FaCode } from 'react-icons/fa';
 import {  TbApiApp, TbAppWindow } from 'react-icons/tb';
+import { toast } from 'sonner';
 
 
 
@@ -22,7 +23,7 @@ const page = () => {
   const changeDailyDeveloperMutation = useMutation({
     mutationFn: async ({ date, state }: { date: Date; state: 'Prev' | 'Next' }) => {
       const response: ResponseData = await changeDailyDeveloper({ date, state });
-      console.log(response);
+      toast.success(response.MESSAGE);
       setChartData(response.DATA);
       return response;
     }
@@ -38,19 +39,20 @@ const page = () => {
     queryFn: developerstats
   })
 
-  const setDataViaMain = (data: any) => {
+  const setDataViaMain = (data: any, message: any) => {
     setDeveloperStatsData(data)
     setChartData(data.dailyUsers ?? []);
+    toast.success(message);
   }
 
   async function main() {
     if (DeveloperQuery.data) {
-      setDataViaMain(DeveloperQuery.data.DATA)
+      setDataViaMain(DeveloperQuery.data.DATA, DeveloperQuery.data.MESSAGE)
       return;
     }
 
     const query = await DeveloperQuery.refetch();
-    setDataViaMain(query.data?.DATA)
+    setDataViaMain(query.data?.DATA, query.data?.MESSAGE ?? "")
   }
 
   const changeChartData = (data: any) => {

@@ -5,7 +5,7 @@ import { formatResponse } from "../utils/formateResponse";
 import { AUTH_SECRET, FRONTEND_URL } from "../env_var";
 import { generateJWTtoken } from "../utils/jwtAssign";
 import { User } from "../auth/model/User";
-import { Provider } from "../constants/provider";
+import { Provider, UserRole } from "../constants/provider";
 
 import { SetCookie } from "../utils/setCookie";
 
@@ -41,6 +41,7 @@ export const oauthCallback = expressAsyncHandler(async (req: Request, res: Respo
         username: name,
         provider: Provider.GOOGLE,
         profilePicture: picture,
+        role : UserRole.USER
       });
       await newUser.save();
       exitUser = newUser;
@@ -50,7 +51,8 @@ export const oauthCallback = expressAsyncHandler(async (req: Request, res: Respo
       email: email || exitUser.email,
       provider: Provider.GOOGLE,
       username: exitUser.username,
-      credits: exitUser.credits
+      credits: exitUser.credits,
+      role: exitUser.role
     });
     SetCookie(res, "token", jwtToken, 60 * 60 * 24 * 7); // 7 days
     return res.redirect(`${FRONTEND_URL}`);

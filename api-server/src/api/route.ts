@@ -10,6 +10,7 @@ import { updateCredit } from "./pricing/controller";
 import AdminUserRouter from "./Admin/user/route";
 import StatsRouter from "./Admin/analisys/router";
 import { scriptRouter } from "../script/route";
+import FeedRouter from "./feed/route";
 // import { getVideos } from "./getVideo/controller";
 // ===
 export const ApiRouter = Router();
@@ -18,8 +19,13 @@ export const ApiRouter = Router();
 ApiRouter.use("/script", scriptRouter);
 
 /** api  */
-ApiRouter.use("/admin/stats", StatsRouter);
+
+/**admin */
+ApiRouter.use("/admin/stats",isAuthenticated, StatsRouter);
 ApiRouter.use("/admin",isAuthenticated, AdminUserRouter);
+
+/** feed */
+ApiRouter.use("/feed", FeedRouter);
 
 /**credits */
 ApiRouter.post("/update-credit", isAuthenticated, updateCredit);
@@ -31,7 +37,7 @@ ApiRouter.get("/videos", isAuthenticated, getVideos);
 /** sadtalker */
 ApiRouter.post("/sadtalker", isAuthenticated, lipSync);
 /** delete */
-ApiRouter.delete("/videos", isAuthenticated, deleteVideo);
+ApiRouter.delete("/videos/:videoId", isAuthenticated, deleteVideo);
 
 /**openapi */
 ApiRouter.get("/openapi/apps" , isAuthenticated , GetAllApps);

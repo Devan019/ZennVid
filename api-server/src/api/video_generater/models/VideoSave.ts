@@ -35,6 +35,6 @@ const videoGeneraterSchema = new mongoose.Schema({
 }, {timestamps : true})
 
 
-const VideoGenerater = mongoose.model('VideoGenerater', videoGeneraterSchema);
+const VideoGenerater = mongoose.models.VideoGenerater || mongoose.model('VideoGenerater', videoGeneraterSchema);
 
 export default VideoGenerater;

@@ -6,9 +6,11 @@ import { VideoStats } from '@/constants/admin_analisys';
 import { ResponseData } from '@/constants/response';
 import { changeDailyVideo, videostats, } from '@/lib/apiProvider';
 import { useMutation, useQuery } from '@tanstack/react-query';
+import { set } from 'date-fns';
 import { ChevronLeft, ChevronRight, VideoIcon, Videotape } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
 import { GiMagicHat, GiTalk } from 'react-icons/gi';
+import { toast } from 'sonner';
 
 
 
@@ -17,12 +19,14 @@ const page = () => {
   const [chartData, setChartData] = useState<any[]>([]);
   const [isMonthly, setIsMonthly] = useState(false);
   const [videoChartData, setVideoChartData] = useState<any[]>([]);
+  const [isStyles, setIsStyles] = useState(false);
 
 
   const changeDailyVideoMutation = useMutation({
     mutationFn: async ({ date, state }: { date: Date; state: 'Prev' | 'Next' }) => {
       const response: ResponseData = await changeDailyVideo({ date, state });
       setChartData(response.DATA);
+      toast.success(response.MESSAGE);
       return response;
     }
   })
@@ -37,24 +41,31 @@ const page = () => {
     queryFn: videostats
   })
 
-  const setDataViaMain = (data: any) => {
+  const setDataViaMain = (data: any, message: string) => {
+    toast.success(message);
     setVideoStatsData(data)
     setChartData(data.dailyVideo ?? []);
+    setVideoChartData(data.allStyles ?? []);
   }
 
   async function main() {
     if (VideoQuery.data) {
-      setDataViaMain(VideoQuery.data.DATA)
+      setDataViaMain(VideoQuery.data.DATA, VideoQuery.data.MESSAGE);
       return;
     }
 
     const query = await VideoQuery.refetch();
-    setDataViaMain(query.data?.DATA)
+    setDataViaMain(query.data?.DATA, query.data?.MESSAGE ?? "");
   }
 
   const changeChartData = (data: any) => {
     setChartData(data);
   }
+
+  const changeVideoChartData = (data: any) => {
+    setVideoChartData(data);
+  }
+
   useEffect(() => {
     main()
   }, [])
@@ -160,18 +171,31 @@ const page = () => {
           <div className='flex gap-4 mb-4'>
             <button
               className='px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors'
-              onClick={() => { changeChartData(videoStatsData?.dailyVideo ?? []); setIsMonthly(false) }}
+              onClick={() => { changeVideoChartData(videoStatsData?.allStyles ?? []); }}
             >
               All Styles
             </button>
             <button
               className='px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors'
-              onClick={() => { changeChartData(videoStatsData?.monthlyVideo ?? []); setIsMonthly(true) }}
+              onClick={() => { changeVideoChartData(videoStatsData?.topLanguages ?? []) }}
             >
               7 Languages
             </button>
           </div>
-          
+          {!isStyles && (
+            <Chart
+              isDate={false}
+              isAmount={false}
+              data={videoChartData} XAxisKey="_id" />
+          )}
+          {isStyles && (
+            <Chart
+              isDate={false}
+              isAmount={false}
+              data={videoChartData}
+              XAxisKey="_id"
+            />
+          )}
         </div>
       </div>
     </div>

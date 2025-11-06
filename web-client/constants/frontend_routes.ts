@@ -26,5 +26,10 @@ export const FRONTEND_ROUTES = {
   USER_STATS : "/zennvid/admin/users",
   TRANSCATION_STATS : "/zennvid/admin/transcation",
   VIDEO_STATS : "/zennvid/admin/video",
+  USER_ACCOUNTS : "/zennvid/admin/user-accounts",
+
+  /**feed */
+  FEED : "/zennvid/feed",
+  
 
 };

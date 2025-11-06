@@ -63,6 +63,11 @@ export const VideoLayoutGrid = ({ cards, onDelete, onShare, onDownload }: VideoL
     setSelected(null)
   }
 
+  const handleVideoDelete = (id: string) => {
+    setSelected(null)
+    onDelete?.(id)
+  }
+
   return (
     <div className="w-full min-h-screen p-6 md:p-10 ml-36">
       <div className="max-w-7xl mx-auto">
@@ -91,12 +96,12 @@ export const VideoLayoutGrid = ({ cards, onDelete, onShare, onDownload }: VideoL
                   <SelectedVideoCard
                     selected={selected}
                     onClose={handleOutsideClick}
-                    onDelete={onDelete}
+                    onDelete={handleVideoDelete}
                     onShare={onShare}
                     onDownload={onDownload}
                   />
                 ) : (
-                  <VideoThumbnail card={card} onDelete={onDelete} onShare={onShare} onDownload={onDownload} />
+                  <VideoThumbnail card={card} onDelete={handleVideoDelete} onShare={onShare} onDownload={onDownload} />
                 )}
               </motion.div>
             </div>
@@ -134,7 +139,7 @@ const VideoThumbnail = ({ card, onDelete, onShare, onDownload }: VideoThumbnailP
     setIsHovered(true)
     if (videoRef.current) {
       videoRef.current.currentTime = 0
-      videoRef.current.play().catch(() => {})
+      videoRef.current.play().catch(() => { })
     }
   }
 
@@ -144,6 +149,7 @@ const VideoThumbnail = ({ card, onDelete, onShare, onDownload }: VideoThumbnailP
       videoRef.current.pause()
     }
   }
+
 
   const handleMenuAction = (action: string, e: React.MouseEvent) => {
     e.stopPropagation()

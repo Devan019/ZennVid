@@ -15,11 +15,13 @@ import {
 const Chart = ({
   data,
   XAxisKey,
-  isAmount=true
+  isAmount=true,
+  isDate=true
 }: {
   data: { _id: string; amount : number }[] | { _id: string; count: number }[]
   XAxisKey: string
   isAmount?: boolean
+  isDate?: boolean
 }) => {
   if (!data || data.length === 0) {
     return (
@@ -29,7 +31,6 @@ const Chart = ({
     )
   }
   const {theme} = useTheme();
-  console.log(data, isAmount)
 
   return (
     <div style={{ width: '100%', height: 350 }}>
@@ -38,12 +39,15 @@ const Chart = ({
           data={data}
           margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
         >
-          <XAxis
+          {isDate && (<XAxis
             tickFormatter={(date) => new Date(date).toLocaleDateString('en-US', {
               month: 'short',
               day: 'numeric'
             })}
-            dataKey={XAxisKey} angle={-30} textAnchor="end" />
+            dataKey={XAxisKey} angle={-30} textAnchor="end" />)}
+          {!isDate && (<XAxis
+            dataKey={XAxisKey} angle={-30} textAnchor="end" />)}
+          
           <YAxis />
           {isAmount && (<Tooltip
            formatter={(value: any) => [`₹${value}`, "Amount"]}

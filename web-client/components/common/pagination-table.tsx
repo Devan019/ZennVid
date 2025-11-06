@@ -3,7 +3,7 @@ import { DataTable } from "./data-table";
 import { memo } from "react";
 
 export const PaginationTable = memo((
-  { columns, data, page, limit, total, totalPages, onPageChange, onLimitChange, searchTerm, onSearch, datePickerColumns, selectedDate, setSelectedDate }:
+  { columns, data, page, limit, total, totalPages, onPageChange, onLimitChange, searchTerm, onSearch, datePickerColumns, selectedDate, setSelectedDate, isAction, ActionNode }:
     {
       columns: ColumnDef<any>[];
       data: any[];
@@ -18,6 +18,8 @@ export const PaginationTable = memo((
       datePickerColumns?: string[];
       selectedDate?: Date | undefined,
       setSelectedDate?: (date: Date | undefined) => void
+      isAction?: boolean;
+      ActionNode?: React.ReactNode;
     }
 ) => {
 
@@ -39,6 +41,8 @@ export const PaginationTable = memo((
         datePickerColumns={datePickerColumns}
         selectedDate={selectedDate}
         setSelectedDate={setSelectedDate}
+        isAction={isAction}
+        ActionNode={ActionNode}
       />
     </div>
   )

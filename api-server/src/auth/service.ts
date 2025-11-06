@@ -105,6 +105,15 @@ export const signInUserService = async ({ email, password, provider }: { email: 
       email
     });
 
+    if (!user?.password) {
+      return {
+        status: 400,
+        message: "Not a credentials based sign in",
+        success: false,
+        data: null
+      };
+    }
+
     const passwordMatch = await passwordCompare(password, user.password);
 
     if (!user || !(passwordMatch)) {
@@ -133,7 +142,7 @@ export const signInUserService = async ({ email, password, provider }: { email: 
       provider: user.provider,
       username: user.username,
       credits: user.credits,
-      role : user.role,
+      role: user.role,
     });
 
     return {
@@ -157,7 +166,7 @@ export const signInUserService = async ({ email, password, provider }: { email: 
 
 export const GetUserByTokenService = async (token: string) => {
   try {
-   
+
     if (!token) {
       return {
         status: 401,
@@ -235,15 +244,58 @@ export const CreateAdminService = async ({ email, password, username }: { email:
 }
 
 export const GetAllUserService = async (
-  { page, limit }: { page: number; limit: number }
+  { page, limit, search, createdAt }: { page: number; limit: number; search?: string; createdAt?: Date | string | undefined }
 ) => {
   try {
-    const users = await User.find({}).select("-password").sort({ createdAt: -1 }).skip((page - 1) * limit).limit(limit);
+
+    const isNumber = !isNaN(search as any);
+
+    const matchConditions: any = {};
+
+
+    if (search) {
+      matchConditions.$or = [
+        { email: { $regex: search, $options: "i" } },
+        { username: { $regex: search, $options: "i" } },
+        { role: { $regex: search, $options: "i" } },
+        { provider: { $regex: search, $options: "i" } },
+        ...(isNumber
+          ? [
+            { credits: Number(search) },
+          ]
+          : []),
+      ];
+    }
+
+    if (createdAt) {
+      const startOfDay = new Date(createdAt);
+      const endOfDay = new Date(createdAt);
+      endOfDay.setHours(23, 59, 59, 999);
+
+      matchConditions.createdAt = {
+        $gte: startOfDay,
+        $lte: endOfDay,
+      };
+    }
+
+    const users = await User.aggregate([
+      { $match: matchConditions },
+      { $match: { role: "user" } },
+      { $sort: { createdAt: -1 } },
+      { $skip: (page - 1) * limit },
+      { $limit: limit },
+      { $project: { password: 0 } }
+    ])
     return {
       status: 200,
       message: "Users fetched successfully",
       success: true,
-      data: users
+      data: {
+        users,
+        total: await User.countDocuments(matchConditions),
+        page: page,
+        limit: limit
+      }
     };
   } catch (error) {
     return {
@@ -293,10 +345,10 @@ export const DeleteUserService = async (userId: string) => {
   }
 }
 
-export const UpdateUserService = async (userId:string, username:string, credits:number) => {
+export const UpdateUserService = async (userId: string, username: string, credits: number) => {
   try {
-    const user =  await User.findById(userId);
-    if(!user){
+    const user = await User.findById(userId);
+    if (!user) {
       return {
         status: 404,
         message: "User not found",
@@ -323,3 +375,21 @@ export const UpdateUserService = async (userId:string, username:string, credits:
   }
 }
 
+export const getAllUsersAsCSVService = async () => {
+  try {
+    const users = await User.find({role : "user"}).select("-password");
+    return {
+      status: 200,
+      message: "Users fetched successfully",
+      success: true,
+      data: users
+    };
+  } catch (error) {
+    return {
+      status: 500,
+      message: "Internal server error",
+      success: false,
+      data: error
+    };
+  }
+}
