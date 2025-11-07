@@ -29,7 +29,8 @@ export function VideoFeed() {
 
   useEffect(() => {
     fetchFeedVideos();
-  }, [feedQuery.data])
+
+  }, [])
 
 
   const slideVariants = {
@@ -62,16 +63,19 @@ export function VideoFeed() {
   useEffect(() => {
     let scrollTimeout: NodeJS.Timeout | null = null
 
-    const handleWheel = (e: WheelEvent) => {
-      if (scrollTimeout) return
 
-      if (e.deltaY > 50) paginate(1)
-      else if (e.deltaY < -50) paginate(-1)
+    const handleWheel = (e: WheelEvent) => {
+      if (!scrollRef.current?.contains(e.target as Node)) return;
+
+      if (scrollTimeout) return;
+
+      if (e.deltaY > 50) paginate(1);
+      else if (e.deltaY < -50) paginate(-1);
 
       scrollTimeout = setTimeout(() => {
-        scrollTimeout = null
-      }, 700) // prevent multiple triggers per scroll
-    }
+        scrollTimeout = null;
+      }, 700);
+    };
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "ArrowDown") {
@@ -83,7 +87,6 @@ export function VideoFeed() {
       }
     }
 
-    // ✅ no passive true
     window.addEventListener("wheel", handleWheel)
     document.addEventListener("keydown", handleKeyDown)
 
@@ -96,7 +99,7 @@ export function VideoFeed() {
 
   if (posts.length === 0) {
     return (
-      <div className="relative w-full h-screen flex items-center justify-center bg-background">
+      <div className="ml-[35vw] relative w-full h-screen flex items-center justify-center bg-background">
         <p className="text-muted-foreground">No videos available in the feed.</p>
       </div>
     )
@@ -105,10 +108,10 @@ export function VideoFeed() {
   return (
     <div
       ref={scrollRef}
-      className="relative w-full h-screen overflow-hidden bg-background flex items-center justify-center"
+      className="ml-[35vw] relative w-full h-screen overflow-hidden flex items-center justify-center z-[999] dark:bg-zinc-900 bg-white text-black dark:text-white"
     >
       {/* Video Container */}
-      <div className="relative w-full h-full max-w-md md:max-w-lg">
+      <div className="relative w-full h-full ">
         <AnimatePresence initial={false} custom={direction} mode="wait">
           <motion.div
             key={currentIndex}

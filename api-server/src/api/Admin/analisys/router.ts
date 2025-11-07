@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { changeDailyDeveloper, changeDailyRevenue, changeDailyUser, changeDailyVideo, getDeveloperStats, getTransactionHistory, getTranscationStats, getUserStats, getVideoStats } from "./controller";
+import { changeDailyDeveloper, changeDailyRevenue, changeDailyUser, changeDailyVideo, getDeveloperStats, getTransactionHistory, getTranscationStats, getUserStats, getVideoStats, transactionCSV } from "./controller";
 
 /** 3 -> User stats, Developer stats, Transaction stats */
 const  StatsRouter = Router();
@@ -13,5 +13,5 @@ StatsRouter.post("/change-daily-revenue", changeDailyRevenue);
 StatsRouter.post("/change-daily-video", changeDailyVideo);
 StatsRouter.post("/change-daily-user", changeDailyUser);
 StatsRouter.post("/change-daily-developer", changeDailyDeveloper);
-
+StatsRouter.get("/transaction-csv", transactionCSV);
 export default StatsRouter

@@ -73,16 +73,6 @@ const page = () => {
           <h2 className='text-xl font-semibold mb-4'>Statistics Overview</h2>
           <div className='flex justify-start items-center gap-4 flex-wrap'>
             <StatsCard
-              label={"Today's Users"}
-              value={userStatsData?.todayCreatedUsers[0]?.count ?? 0}
-              icon={<UserCircle />}
-            />
-            <StatsCard
-              label={"Total Users"}
-              value={userStatsData?.substats[0]?.users ?? 0}
-              icon={<UserIcon />}
-            />
-            <StatsCard
               label={"Total Credits"}
               value={userStatsData?.substats[0]?.credits ?? 0}
               icon={<FaMoneyBillTransfer />}
@@ -102,7 +92,7 @@ const page = () => {
 
         {/** Chart Section - Component 2 */}
         <div className='border-2 border-gray-300 dark:border-gray-600 rounded-lg p-6 m-4  shadow-sm'>
-          <h2 className='text-xl font-semibold mb-4'>Developer Chart</h2>
+          <h2 className='text-xl font-semibold mb-4'>User Chart</h2>
           <div className='flex gap-4 mb-4'>
             <button
               className='px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors'

@@ -1115,3 +1115,32 @@ export const changeDailyVideoService = async (date: Date, state: "Prev" | "Next"
     }
   }
 }
+
+export const transactionsCSVService = async() => {
+  try {
+    const transactions = await Transaction.find().populate("user", "username email").lean();
+    const sendTranscations = transactions.map((transcation, index:number) => ({
+      No : index + 1,
+      PaymentID: transcation.payment_id,
+      Amount: transcation.amount,
+      CreditsReceived: transcation.credits_received,
+      CreatedAt: new Date(transcation.createdAt).toLocaleDateString(),
+      email: (transcation.user as any)?.email || 'N/A',
+      username: (transcation.user as any)?.username || 'N/A',
+    }));
+    return {
+      status: 200,
+      data: sendTranscations,
+      message: "Transactions fetched successfully",
+      success: true
+    }
+  } catch (error) {
+    console.log(error)
+    return {
+      status: 500,
+      data: null,
+      message: "Internal server error",
+      success: false
+    }
+  }
+}

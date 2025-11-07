@@ -40,7 +40,6 @@ const getFeedsService = async() => {
         path: 'video',
         select: 'videoUrl type title style language voiceCharacter',
       })
-      .populate('likes.user', 'username profilePicture')
       .populate('comments.user', 'username profilePicture')
       .sort({ createdAt: -1 });
     return {
@@ -119,7 +118,9 @@ const LikeCountUpdateService = async(
     if(isLiked){
       feed.likes = feed.likes.filter((likeId:string) => likeId.toString() !== userId);
     } else {
-      feed.likes.push(userId as any);
+      feed.likes = [...feed.likes,{
+        user: userId
+      }];
     }
 
     await feed.save();
@@ -127,7 +128,10 @@ const LikeCountUpdateService = async(
     return {
       status: 200,
       message: isLiked ? "Like removed successfully" : "Like added successfully",
-      data: feed,
+      data: {
+        likeCount : feed.likes.length,
+        isLiked: !isLiked
+      },
       success: true
     }
 
@@ -145,11 +149,11 @@ const feedCommentService = async(
   {
     feedId,
     userId,
-    content
+    content,
   } : {
     feedId: string,
     userId: string,
-    content: string
+    content: string,
   }
 ) => {
   try {
@@ -169,12 +173,19 @@ const feedCommentService = async(
       content: content
     } as any);
 
-    await feed.save();
+    const newFeed = await feed.save();
+    const populatedFeed = await newFeed.populate('comments.user', 'username profilePicture');
 
     return {
       status: 200,
       message: "Comment added successfully",
-      data: feed,
+      data:{
+        _id: feed.comments[feed.comments.length - 1]._id,
+        content: content,
+        createdAt: feed.comments[feed.comments.length - 1].createdAt,
+        updatedAt: feed.comments[feed.comments.length - 1].updatedAt,
+        user: populatedFeed.comments[populatedFeed.comments.length - 1].user
+      },
       success: true
     }
   }

@@ -6,25 +6,22 @@ import { UserProvider } from '@/context/UserProvider'
 import { Home, UserCog, UserPenIcon, VideoOff } from 'lucide-react'
 import { ThemeProvider } from 'next-themes'
 import React from 'react'
-import { FaMagic } from 'react-icons/fa'
-import { GiLipstick } from 'react-icons/gi'
-import { TbApi, TbTransactionBitcoin, TbTransactionRupee } from 'react-icons/tb'
 
 const layout = ({ children }: {
   children: React.ReactNode
 }) => {
   const menuItems = [
     {
-      href: FRONTEND_ROUTES.USER_STATS,
-      icon: "UserPenIcon",
-      label: "User Stats",
-      tooltip: "User Stats"
-    },
-    {
       href: FRONTEND_ROUTES.TRANSCATION_STATS,
       icon: "TbTransactionBitcoin",
       label: "Transcation Stats",
       tooltip: "Transcation Stats"
+    },
+    {
+      href: FRONTEND_ROUTES.USER_STATS,
+      icon: "UserPenIcon",
+      label: "User Stats",
+      tooltip: "User Stats"
     },
     {
       href: FRONTEND_ROUTES.DEVELOPER_STATS,

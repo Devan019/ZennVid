@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ResponseData } from '@/constants/response';
 import { User } from '@/context/UserProvider';
-import { deleteUser, getAllUser, getCSVUsers, updateUser } from '@/lib/apiProvider';
+import { createUser, deleteUser, getAllUser, getCSVUsers } from '@/lib/apiProvider';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import React, { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner';
@@ -21,11 +21,42 @@ const page = () => {
   const datePickerColumns = ["createdAt"];
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [selectedUser, setSelectedUser] = useState<User>();
-  const [isUpdateOpen, setIsUpdateOpen] = useState(false)
   const [isDeleteOpen, setIsDeleteOpen] = useState(false)
   const [isCreateOpen, setIsCreateOpen] = useState(false)
+  const [createUserObject, setcreateUserObject] = useState({
+    email: '',
+    password: '',
+    username: '',
+    provider: 'credentials'
+  })
   const [csvData, setCsvData] = useState();
   const totalRef = useRef(0);
+
+  const createUserMutation = useMutation({
+    mutationKey: ['create-user'],
+    mutationFn: async ({ email, password, provider, username }: {
+      email: string,
+      password: string,
+      provider: string,
+      username: string
+    }) => {
+      const response = await createUser({ 
+        username,
+        email,
+        password,
+        provider
+        });
+      return response;
+    },
+    onSuccess: (data: ResponseData) => {
+      if(data.SUCCESS){
+        toast.success(data.MESSAGE);
+        setIsCreateOpen(false);
+      }else{
+        toast.error(data.MESSAGE);
+      }
+    }
+  });
 
   const fetchUserMutation = useMutation({
     mutationKey: ['fetch-users'],
@@ -82,30 +113,6 @@ const page = () => {
   })
 
 
-  const updateUserMutation = useMutation({
-    mutationKey: ['update-user'],
-    mutationFn: async ({ userId, username, credits }: { userId: string, username: string, credits: number }) => {
-      const response = await updateUser({ userId, username, credits });
-      return response;
-    },
-    onSuccess: (data: ResponseData) => {
-      setTableData(tableData.map((user) => {
-        if (user._id === data.DATA?._id) {
-          return {
-            ...user,
-            username: data.DATA?.username,
-            credits: data.DATA?.credits,
-          }
-        }
-
-        return user;
-      }));
-      toast.success(data.MESSAGE);
-    },
-    onError: (error) => {
-      console.log("Error updating user:", error);
-    }
-  })
 
   const pageChange = (newPage: number) => {
     setPage(newPage);
@@ -131,13 +138,6 @@ const page = () => {
     }, 500);
   };
   const usernameRef = useRef<HTMLInputElement | null>(null);
-  useEffect(() => {
-    if (isUpdateOpen) {
-      setTimeout(() => {
-        usernameRef.current?.setSelectionRange(0, 0);
-      }, 50);
-    }
-  }, [isUpdateOpen]);
 
   useEffect(() => {
     setPage(1)
@@ -166,86 +166,6 @@ const page = () => {
     main()
   }, [])
 
-  const updateModal = (
-    <div>
-      <Label>Username</Label>
-      <Input
-        autoFocus={false}
-        ref={usernameRef}
-        type="text"
-        value={selectedUser?.username}
-        onChange={(evt: React.ChangeEvent<HTMLInputElement>) => {
-          setSelectedUser((user) => {
-            if (!user) return user;
-            return {
-              ...user,
-              username: evt.target.value
-            };
-          });
-        }}
-      />
-      <Label>Email</Label>
-      <Input
-        type="email"
-        value={selectedUser?.email}
-        disabled
-
-      />
-      <Label>Credits</Label>
-      <Input
-        type="number"
-        value={selectedUser?.credits}
-        onChange={(evt: React.ChangeEvent<HTMLInputElement>) => {
-          setSelectedUser((user) => {
-            if (!user) return user;
-            return {
-              ...user,
-              credits: Number(evt.target.value)
-            };
-          });
-        }}
-      />
-      <Label>Role</Label>
-      <Input
-        type="text"
-        value={selectedUser?.role}
-        disabled
-      />
-      <Label>Provider</Label>
-      <Input
-        type="text"
-        value={selectedUser?.provider}
-        disabled
-      />
-      <Button
-        type="submit"
-        className="mt-4 bg-blue-500 text-white hover:bg-blue-600"
-        onClick={(e) => {
-          e.preventDefault();
-          if (selectedUser) {
-            updateUserMutation.mutate({
-              userId: selectedUser._id,
-              username: selectedUser.username,
-              credits: selectedUser.credits
-            });
-            setIsUpdateOpen(false);
-          }
-        }}
-      >
-        Update User
-      </Button>
-      <Button
-        type="button"
-        className="mt-4 ml-4 bg-gray-500 text-white hover:bg-gray-600"
-        onClick={() => {
-          setSelectedUser(undefined);
-          setIsUpdateOpen(false);
-        }}
-      >
-        Cancel
-      </Button>
-    </div>
-  )
 
   const deleteModal = (
     <div>
@@ -273,6 +193,34 @@ const page = () => {
     </div>
   )
 
+  const createModal = (
+    <div>
+      <Label>Username</Label>
+      <Input
+      value={createUserObject.username}
+      onChange={(e) => setcreateUserObject({ ...createUserObject, username: e.target.value })}
+      type="text"  />
+      <Label>Email</Label>
+      <Input
+      value={createUserObject.email}
+      onChange={(e) => setcreateUserObject({ ...createUserObject, email: e.target.value })}
+      type="email"  />
+      <Label>Password</Label>
+      <Input
+      value={createUserObject.password}
+      onChange={(e) => setcreateUserObject({ ...createUserObject, password: e.target.value })}
+      type="password"  />
+      <Button
+        className="mt-4 bg-green-500 text-white hover:bg-green-600"
+        onClick={() => {
+          createUserMutation.mutate(createUserObject);
+        }}
+      >
+        Create User
+      </Button>
+    </div>
+  )
+
   const ActionNode = (
     <div>
       <Button
@@ -280,7 +228,7 @@ const page = () => {
         size="sm"
         className="bg-green-500 text-white hover:bg-green-600"
         onClick={() => {
-          // handle create new user
+          setIsCreateOpen(true);
         }}
       >
         Create New User
@@ -313,19 +261,7 @@ const page = () => {
       cell: ({ row }: any) => {
         return (
           <div>
-            {/* update button */}
-            <Button
-              variant="outline"
-              size="sm"
-              className="mr-2 bg-blue-500 text-white hover:bg-blue-600"
-              onClick={() => {
-                // handle update
-                setSelectedUser(row.original);
-                setIsUpdateOpen(true);
-              }}
-            >
-              Update
-            </Button>
+            
             {/* delete button */}
             <Button
               variant="outline"
@@ -353,18 +289,18 @@ const page = () => {
     <div className='ml-[25vw] mt-16'>
       <h1>User Accounts</h1>
       <Modal
-        title='Update Account'
-        isOpen={isUpdateOpen}
-        onClose={() => setIsUpdateOpen(false)}
-      >
-        {updateModal}
-      </Modal>
-      <Modal
         title='Delete Account'
         isOpen={isDeleteOpen}
         onClose={() => setIsDeleteOpen(false)}
       >
         {deleteModal}
+      </Modal>
+      <Modal
+        title='Create Account'
+        isOpen={isCreateOpen}
+        onClose={() => setIsCreateOpen(false)}
+      >
+        {createModal}
       </Modal>
       <PaginationTable
         columns={columns}
@@ -382,6 +318,7 @@ const page = () => {
         searchTerm={search}
         isAction={true}
         ActionNode={ActionNode}
+
       />
     </div>
   )

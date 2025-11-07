@@ -37,7 +37,6 @@ export const createTmpUserService = async (
     const newUser = new TmpUser({
       email,
       password: encodePassword,
-      provider: provider || Provider.CREDENTIALS,
       otp,
       username,
     });
@@ -82,20 +81,31 @@ export const createTmpUserService = async (
 }
 
 export const createUserService = async (user: IUser) => {
-  const newUser = new User({
-    email: user.email,
-    password: user.password,
-    provider: user.provider,
-    username: user.username,
-    role: UserRole.USER
-  });
-  await newUser.save();
+  try {
+    const newUser = new User({
+      email: user.email,
+      password: user.password,
+      provider: user.provider,
+      username: user.username,
+      role: UserRole.USER
+    });
+    await newUser.save();
 
-  return {
-    status: 201,
-    message: "User created successfully",
-    success: true,
-    data: { user: newUser }
+
+    return {
+      status: 201,
+      message: "User created successfully",
+      success: true,
+      data: { user: newUser }
+    }
+  } catch (error) {
+    console.log(error)
+    return {
+      status: 500,
+      message: "Internal server error",
+      success: false,
+      data: error
+    }
   }
 }
 
@@ -377,7 +387,7 @@ export const UpdateUserService = async (userId: string, username: string, credit
 
 export const getAllUsersAsCSVService = async () => {
   try {
-    const users = await User.find({role : "user"}).select("-password");
+    const users = await User.find({ role: "user" }).select("-password");
     return {
       status: 200,
       message: "Users fetched successfully",

@@ -26,7 +26,6 @@ export const PaginationTable = memo((
   return (
     <div className='m-4'>
       {/* table  */}
-      <h2 className='mt-8 mb-4'>Recent Transactions</h2>
       <DataTable
         limit={limit}
         page={page}

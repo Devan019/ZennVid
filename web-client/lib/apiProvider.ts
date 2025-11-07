@@ -1,4 +1,4 @@
-import { ADMIN_USER, AUTH_CREDENTIALS_URI, CREATEAPP, CSV_USERS, DAILY_DEVELOPER, DAILY_USER, DAILY_VIDEO, DEVELOPER_STATS, FEED, generateVideo, generateVideoScript, GETAPPS, getVideos, OPENAPI_STATS, SADTALKER, SEND_KEY_URI, TX_CHARTCHANGE, TX_HISTORY, TX_STATS, UPDATE_CREDITS, USER_STATS, userProfileRoute, VIDEO_STATS } from "@/constants/backend_routes";
+import { ADMIN_USER, AUTH_CREDENTIALS_URI, CREATEAPP, CSV_USERS, DAILY_DEVELOPER, DAILY_USER, DAILY_VIDEO, DEVELOPER_STATS, FEED, generateVideo, generateVideoScript, GETAPPS, getVideos, OPENAPI_STATS, SADTALKER, SEND_KEY_URI, TRANSACTION_CSV, TX_CHARTCHANGE, TX_HISTORY, TX_STATS, UPDATE_CREDITS, USER_STATS, userProfileRoute, VIDEO_STATS } from "@/constants/backend_routes";
 import axios from "axios";
 
 
@@ -276,15 +276,15 @@ export const updateUser = async(
 
 /** create user */
 export const createUser = async(
-  {email, password, username, role} : {
+  {email, password, username, provider} : {
     email : string,
     password : string,
     username : string,
-    role : string
+    provider : string
   }
 ) => {
   try {
-    const api = await axios.post(`${ADMIN_USER}`, {email, password, username, role}, {withCredentials: true});
+    const api = await axios.post(`${ADMIN_USER}`, {email, password, username, provider}, {withCredentials: true});
     return api.data;
   } catch (error:any) {
     return error.response.data;
@@ -424,7 +424,7 @@ export const deleteFeedPost = async({ feedId } : { feedId: string }) => {
 /** like count update */
 export const feedLikeCountUpdate = async({ feedId, userId } : { feedId: string, userId: string }) => {
   try {
-    const api = await axios.post(`${FEED}/like`, { feedId, userId }, { withCredentials: true });
+    const api = await axios.put(`${FEED}/${feedId}/like`, { feedId, userId }, { withCredentials: true });
     return api.data;
   } catch (error: any) {
     return error.response.data;
@@ -433,7 +433,7 @@ export const feedLikeCountUpdate = async({ feedId, userId } : { feedId: string, 
 /** feed comment */
 export const feedComment = async({ feedId, userId, content } : { feedId: string, userId: string, content: string }) => {
   try { 
-    const api = await axios.post(`${FEED}/comment`, { feedId, userId, content }, { withCredentials: true });
+    const api = await axios.post(`${FEED}/${feedId}/comment`, { userId, content }, { withCredentials: true });
     return api.data;
   } catch (error: any) {
     return error.response.data;
@@ -444,6 +444,16 @@ export const feedComment = async({ feedId, userId, content } : { feedId: string,
 export const feedCommentDelete = async({ commentId } : { commentId: string }) => {
   try {
     const api = await axios.delete(`${FEED}/comment/${commentId}`, { withCredentials: true });
+    return api.data;
+  } catch (error: any) {
+    return error.response.data;
+  }
+}
+
+/** get transaction csv */
+export const getTransactionCSV = async() => {
+  try {
+    const api = await axios.get(`${TRANSACTION_CSV}`, { withCredentials: true });
     return api.data;
   } catch (error: any) {
     return error.response.data;

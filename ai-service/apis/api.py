@@ -131,12 +131,10 @@ class GroqScript(BaseModel):
 
 @app.post("/script-gen")
 async def groq_script(req: GroqScript):
-    from helpers.gemini_script import generate_story_script
+    from helpers.groq_script import generate_story_script_groq
 
-    script = generate_story_script(req.title, req.style, req.seconds, req.language)
+    script = generate_story_script_groq(req.title, req.style, req.seconds, req.language)
 
-    # Clean markdown fencing if present
-    
     return {"script": script}
 
 
@@ -272,8 +270,8 @@ class VideoPro(BaseModel):
 async def videoGenPro(req: VideoPro):
     import logging
     logging.basicConfig(level=logging.INFO)
-    
-    from helpers.gemini_script import generate_story_script
+
+    from helpers.groq_script import generate_story_script_groq
     from helpers.gemini_image_gen import generate_image
     from helpers.translate import getTranslateText
     from helpers.wisper_model import generate_captions
@@ -281,7 +279,8 @@ async def videoGenPro(req: VideoPro):
     from helpers.ffmepg import create_video
 
     logging.info("Step 1: Generating story script...")
-    script = generate_story_script(req.topic, req.theme, req.seconds, req.language)
+    script = generate_story_script_groq(req.topic, req.theme, req.seconds, req.language)
+    print("Generated Script:", script)
 
     logging.info("Step 2: Generating images...")
     images = []

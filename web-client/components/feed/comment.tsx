@@ -4,6 +4,12 @@ import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { X, Send } from "lucide-react"
 import { IFeed } from "./video-card"
+import { useMutation } from "@tanstack/react-query"
+import { feedComment } from "@/lib/apiProvider"
+import { useUser } from "@/context/UserProvider"
+import { ResponseData } from "@/constants/response"
+import { toast } from "sonner"
+import { getTimeSince } from "@/lib/calculateTime"
 
 
 interface CommentPanelProps {
@@ -14,20 +20,30 @@ interface CommentPanelProps {
 export function CommentPanel({ feed, onClose }: CommentPanelProps) {
   const [newComment, setNewComment] = useState("")
   const [comments, setComments] = useState(feed.comments)
+  const { user } = useUser()
+
+  const commentMutation = useMutation({
+    mutationKey: ["addComment"],
+    mutationFn: async () => {
+      return await feedComment({ feedId: feed._id, userId: user?._id ?? "", content: newComment });
+    },
+    onSuccess: (data: ResponseData) => {
+      if (data.SUCCESS) {
+        const addedComment = data.DATA;
+        setComments((prevComments) => [...prevComments, addedComment]);
+        setNewComment("");
+        toast.success(data.MESSAGE || "Comment added successfully");
+      }else{
+        toast.error(data.MESSAGE || "Failed to add comment");
+      }
+    },
+    onError: () => {
+      toast.error("An error occurred while adding the comment");
+    }
+  })
 
   const handleAddComment = () => {
-    if (newComment.trim()) {
-      const newCommentObj = {
-        _id: `${comments.length + 1}`,
-        user: {
-          email: "current@user.com",
-          username: "You",
-        },
-        content: newComment,
-      }
-      setComments([newCommentObj, ...comments])
-      setNewComment("")
-    }
+    commentMutation.mutate();
   }
 
   return (
@@ -42,7 +58,7 @@ export function CommentPanel({ feed, onClose }: CommentPanelProps) {
       <div className="flex items-center justify-between p-4 border-b border-border">
         <div>
           <h3 className="font-semibold text-foreground">Comments</h3>
-          <p className="text-xs text-muted-foreground">{comments.length} comments</p>
+          <p className="text-xs text-muted-foreground">{comments?.length} comments</p>
         </div>
         <motion.button
           onClick={onClose}
@@ -67,17 +83,15 @@ export function CommentPanel({ feed, onClose }: CommentPanelProps) {
               className="flex gap-3"
             >
               <div className="w-8 h-8 rounded-full bg-gradient-to-br from-accent to-accent/50 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
-                {comment.user.username.charAt(0).toUpperCase()}
+                {comment?.user?.username?.charAt(0)?.toUpperCase()}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-semibold text-foreground truncate">{comment.user.username}</span>
-                  <span className="text-xs text-muted-foreground whitespace-nowrap">just now</span>
+                  <span className="text-sm font-semibold text-foreground truncate">{comment?.user?.username}</span>
+                  <span className="text-xs text-muted-foreground whitespace-nowrap">{getTimeSince(new Date(comment?.createdAt))} </span>
                 </div>
-                <p className="text-sm text-foreground/80 mt-1 break-words">{comment.content}</p>
-                <button className="text-xs text-muted-foreground mt-1 hover:text-accent transition-colors">
-                  ♥️ Like
-                </button>
+                <p className="text-sm text-foreground/80 mt-1 break-words">{comment?.content}</p>
+               
               </div>
             </motion.div>
           ))}

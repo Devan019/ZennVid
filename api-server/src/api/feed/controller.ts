@@ -38,7 +38,12 @@ const getFeed = expressAsyncHandler(async (req: Request, res: Response) => {
 
 const feedLikeCountUpdate = expressAsyncHandler(async (req: Request, res: Response) => {
   try {
-    const { feedId, userId } = LikeSchema.parse(req.body);
+    const { feedId } = req.params;
+    if(!feedId){
+      return formatResponse(res, 400, "Feed ID is required", false, null);
+    }
+    const { userId } = LikeSchema.parse(req.body);
+    console.log("feedId:", feedId, "userId:", userId);
     const response:ISendResponse = await LikeCountUpdateService({ feedId, userId });
     return formatResponse(res, response.status, response.message, response.success, response.data); 
   } catch (error) {
@@ -48,7 +53,11 @@ const feedLikeCountUpdate = expressAsyncHandler(async (req: Request, res: Respon
 
 const feedComment = expressAsyncHandler(async (req: Request, res: Response) => {
   try {
-    const { feedId, userId, content } = CommentSchema.parse(req.body);
+    const { userId, content } = CommentSchema.parse(req.body);
+    const { feedId } = req.params;
+    if(!feedId){
+      return formatResponse(res, 400, "Feed ID is required", false, null);
+    }
     const response:ISendResponse = await feedCommentService({ feedId, userId, content });
     return formatResponse(res, response.status, response.message, response.success, response.data);
   } catch (error) {

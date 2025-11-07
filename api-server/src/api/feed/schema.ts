@@ -6,12 +6,10 @@ const feedCreateSchema = z.object({
 })
 
 const LikeSchema = z.object({
-  feedId : z.string().min(1, "Feed ID is required"),
   userId : z.string().min(1, "User ID is required"),
 })
 
 const CommentSchema = z.object({
-  feedId : z.string().min(1, "Feed ID is required"),
   userId : z.string().min(1, "User ID is required"),
   content : z.string().min(1, "Content is required"),
 })

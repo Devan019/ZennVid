@@ -66,4 +66,6 @@ export const DAILY_VIDEO = `${api}/admin/stats/change-daily-video`
 
 export const CSV_USERS = `${api}/admin/users/csv`
 
+export const TRANSACTION_CSV = `${api}/admin/stats/transaction-csv`
+
 export const FEED = `${api}/feed`

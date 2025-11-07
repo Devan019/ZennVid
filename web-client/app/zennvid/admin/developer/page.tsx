@@ -72,11 +72,6 @@ const page = () => {
           <h2 className='text-xl font-semibold mb-4'>Statistics Overview</h2>
           <div className='flex justify-start items-center gap-4 flex-wrap'>
             <StatsCard
-              label={"Today's Developers"}
-              value={developerStatsData?.todayDevelopers[0]?.count ?? 0}
-              icon={<FaCode />}
-            />
-            <StatsCard
               label={"Total Developers"}
               value={developerStatsData?.substats[0]?.developers ?? 0}
               icon={<CodeIcon />}

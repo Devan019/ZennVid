@@ -7,11 +7,12 @@ import { PaginationTable } from '@/components/common/pagination-table';
 import { Button } from '@/components/ui/button';
 import { Transaction, TransactionStat } from '@/constants/admin_analisys';
 import { ResponseData } from '@/constants/response';
-import { changeDailyRevenue, getTransactionHistory, txStats } from '@/lib/apiProvider';
+import { changeDailyRevenue, getTransactionCSV, getTransactionHistory, txStats } from '@/lib/apiProvider';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { ColumnDef } from '@tanstack/react-table';
 import { ChartBarIcon, ChevronLeft, ChevronRight, ClipboardEdit } from 'lucide-react';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { CSVLink } from 'react-csv';
 import { FaMoneyBill, FaMoneyBillWave, FaSortAmountDown } from 'react-icons/fa';
 import { GiCreditsCurrency, GiPayMoney } from 'react-icons/gi';
 import { TbTransactionBitcoin } from 'react-icons/tb';
@@ -30,8 +31,8 @@ const page = () => {
   const [search, setSearch] = useState("");
   const datePickerColumns = ["createdAt"];
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [CSVdata, setCSVdata] = useState()
 
- 
 
   const txMutation = useMutation({
     mutationFn: async () => {
@@ -91,6 +92,11 @@ const page = () => {
     queryFn: txStats
   })
 
+  const transcationCSVQuery = useQuery({
+    queryKey: ['transcationHistory'],
+    queryFn: () => getTransactionCSV()
+  })
+
   const setDataViaMain = (data: any, message: string) => {
     setTxStatsData(data)
     setChartData(data.revenue?.dailyRevenue ?? [])
@@ -111,8 +117,14 @@ const page = () => {
       return;
     }
 
+    if( transcationCSVQuery.data) {
+      setCSVdata(transcationCSVQuery.data?.DATA || [])
+    }
+
     const query = await txQuery.refetch();
-    setDataViaMain(query.data?.DATA,  query.data?.MESSAGE ?? "")
+    const csvQuery = await transcationCSVQuery.refetch();
+    setCSVdata(csvQuery.data?.DATA || [])
+    setDataViaMain(query.data?.DATA, query.data?.MESSAGE ?? "")
   }
 
   const changeChartData = (data: any) => {
@@ -120,6 +132,7 @@ const page = () => {
   }
   useEffect(() => {
     main()
+    
   }, [])
 
   const onPageChange = useCallback((newPage: number) => {
@@ -148,12 +161,29 @@ const page = () => {
     }, 500);
   };
 
-   useEffect(() => {
-    if(!selectedDate) return;
+  
+
+  useEffect(() => {
+    if (!selectedDate) return;
     setPage(1)
     txMutation.mutate();
   }, [selectedDate]);
 
+  const ActionNode = (
+    <>
+      {CSVdata && (
+        <CSVLink data={CSVdata} filename="transaction.csv">
+          <Button
+            variant="outline"
+            size="sm"
+            className="bg-yellow-500 text-white hover:bg-yellow-600 ml-3"
+          >
+            Download CSV
+          </Button>
+        </CSVLink>
+      )}
+    </>
+  )
   return (
     <div className='ml-[25vw] mt-16'>
       <h1 className='pb-4 text-center'>Transaction Stats</h1>
@@ -259,6 +289,8 @@ const page = () => {
             datePickerColumns={datePickerColumns}
             selectedDate={selectedDate}
             setSelectedDate={setSelectedDate}
+            isAction={true}
+            ActionNode={ActionNode}
           />
         </div>
 

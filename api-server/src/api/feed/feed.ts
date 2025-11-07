@@ -1,11 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 
 const LikeSchema = new Schema({
-  feed: {
-    type: Schema.Types.ObjectId,
-    ref: "Feed",
-    required: true
-  },
   user: {
     type: Schema.Types.ObjectId,
     ref: "User",
@@ -14,11 +9,6 @@ const LikeSchema = new Schema({
 }, {timestamps: true});
 
 const CommentSchema = new Schema({
-  feed : {
-    type: Schema.Types.ObjectId,
-    ref: "Feed",
-    required: true
-  },
   user: {
     type: Schema.Types.ObjectId,
     ref: "User",

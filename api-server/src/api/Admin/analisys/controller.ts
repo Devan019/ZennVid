@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import expressAsyncHandler from "../../../utils/expressAsync";
 import { formatResponse } from "../../../utils/formateResponse";
 import { ISendResponse } from "../../../constants/interfaces";
-import { changeDailyDeveloperService, changeDailyRevenueService, changeDailyUserService, changeDailyVideoService, developerStatsService, revenueStatsService, transcationHistroyService, userStatsService, videoStatsService } from "./service";
+import { changeDailyDeveloperService, changeDailyRevenueService, changeDailyUserService, changeDailyVideoService, developerStatsService, revenueStatsService, transactionsCSVService, transcationHistroyService, userStatsService, videoStatsService } from "./service";
 import { paginationSchema } from "./schema";
 
 export const getUserStats = expressAsyncHandler(async (req: Request, res: Response) => {
@@ -106,5 +106,14 @@ export const changeDailyDeveloper = expressAsyncHandler(async (req: Request, res
   catch (error) {
     console.log(error)
     return formatResponse(res, 500, "Error daily developer", false, null);
+  }
+});
+export const transactionCSV = expressAsyncHandler(async (req: Request, res: Response) => {
+  try {
+    const response:ISendResponse = await transactionsCSVService();
+    return formatResponse(res, response.status, response.message, response.success, response.data)
+  } catch (error) {
+    console.log(error)
+    return formatResponse(res, 500, "Error fetching transaction CSV", false, null);
   }
 });
