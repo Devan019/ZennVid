@@ -24,7 +24,7 @@ export function Footer() {
                   <Zap className="w-6 h-6 text-white" />
                 </div>
                 <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                  VideoAI
+                  ZennVid
                 </span>
               </div>
               <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
@@ -124,22 +124,22 @@ export function Footer() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               <div className="flex items-center space-x-3">
                 <Mail className="w-5 h-5 text-purple-500" />
-                <span className="text-gray-600 dark:text-gray-300">hello@videoai.com</span>
+                <span className="text-gray-600 dark:text-gray-300">devanchauhan012@gmail.com</span>
               </div>
               <div className="flex items-center space-x-3">
                 <Phone className="w-5 h-5 text-purple-500" />
-                <span className="text-gray-600 dark:text-gray-300">+1 (555) 123-4567</span>
+                <span className="text-gray-600 dark:text-gray-300">+91 90232 40018</span>
               </div>
               <div className="flex items-center space-x-3">
                 <MapPin className="w-5 h-5 text-purple-500" />
-                <span className="text-gray-600 dark:text-gray-300">San Francisco, CA</span>
+                <span className="text-gray-600 dark:text-gray-300">Nadiad, Gujarat, India</span>
               </div>
             </div>
           </motion.div>
 
           {/* Bottom Bar */}
           <div className="border-t border-gray-200 dark:border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center">
-            <p className="text-gray-500 dark:text-gray-400 text-sm">© 2024 VideoAI. All rights reserved.</p>
+            <p className="text-gray-500 dark:text-gray-400 text-sm">© 2025 ZennVid. All rights reserved.</p>
             <div className="flex space-x-6 mt-4 md:mt-0">
               <a
                 href="#"
