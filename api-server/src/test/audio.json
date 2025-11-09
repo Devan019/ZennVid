@@ -1,0 +1,1502 @@
+[
+  {
+    "shortName": "af-ZA-AdriNeural",
+    "gender": "Female",
+    "language": "Afrikaans (South Africa)"
+  },
+  {
+    "shortName": "af-ZA-WillemNeural",
+    "gender": "Male",
+    "language": "Afrikaans (South Africa)"
+  },
+  {
+    "shortName": "sq-AL-AnilaNeural",
+    "gender": "Female",
+    "language": "Albanian (Albania)"
+  },
+  {
+    "shortName": "sq-AL-IlirNeural",
+    "gender": "Male",
+    "language": "Albanian (Albania)"
+  },
+  {
+    "shortName": "am-ET-AmehaNeural",
+    "gender": "Male",
+    "language": "Amharic (Ethiopia)"
+  },
+  {
+    "shortName": "am-ET-MekdesNeural",
+    "gender": "Female",
+    "language": "Amharic (Ethiopia)"
+  },
+  {
+    "shortName": "ar-DZ-AminaNeural",
+    "gender": "Female",
+    "language": "Arabic (Algeria)"
+  },
+  {
+    "shortName": "ar-DZ-IsmaelNeural",
+    "gender": "Male",
+    "language": "Arabic (Algeria)"
+  },
+  {
+    "shortName": "ar-BH-AliNeural",
+    "gender": "Male",
+    "language": "Arabic (Bahrain)"
+  },
+  {
+    "shortName": "ar-BH-LailaNeural",
+    "gender": "Female",
+    "language": "Arabic (Bahrain)"
+  },
+  {
+    "shortName": "ar-EG-SalmaNeural",
+    "gender": "Female",
+    "language": "Arabic (Egypt)"
+  },
+  {
+    "shortName": "ar-EG-ShakirNeural",
+    "gender": "Male",
+    "language": "Arabic (Egypt)"
+  },
+  {
+    "shortName": "ar-IQ-BasselNeural",
+    "gender": "Male",
+    "language": "Arabic (Iraq)"
+  },
+  {
+    "shortName": "ar-IQ-RanaNeural",
+    "gender": "Female",
+    "language": "Arabic (Iraq)"
+  },
+  {
+    "shortName": "ar-JO-SanaNeural",
+    "gender": "Female",
+    "language": "Arabic (Jordan)"
+  },
+  {
+    "shortName": "ar-JO-TaimNeural",
+    "gender": "Male",
+    "language": "Arabic (Jordan)"
+  },
+  {
+    "shortName": "ar-KW-FahedNeural",
+    "gender": "Male",
+    "language": "Arabic (Kuwait)"
+  },
+  {
+    "shortName": "ar-KW-NouraNeural",
+    "gender": "Female",
+    "language": "Arabic (Kuwait)"
+  },
+  {
+    "shortName": "ar-LB-LaylaNeural",
+    "gender": "Female",
+    "language": "Arabic (Lebanon)"
+  },
+  {
+    "shortName": "ar-LB-RamiNeural",
+    "gender": "Male",
+    "language": "Arabic (Lebanon)"
+  },
+  {
+    "shortName": "ar-LY-ImanNeural",
+    "gender": "Female",
+    "language": "Arabic (Libya)"
+  },
+  {
+    "shortName": "ar-LY-OmarNeural",
+    "gender": "Male",
+    "language": "Arabic (Libya)"
+  },
+  {
+    "shortName": "ar-MA-JamalNeural",
+    "gender": "Male",
+    "language": "Arabic (Morocco)"
+  },
+  {
+    "shortName": "ar-MA-MounaNeural",
+    "gender": "Female",
+    "language": "Arabic (Morocco)"
+  },
+  {
+    "shortName": "ar-OM-AbdullahNeural",
+    "gender": "Male",
+    "language": "Arabic (Oman)"
+  },
+  {
+    "shortName": "ar-OM-AyshaNeural",
+    "gender": "Female",
+    "language": "Arabic (Oman)"
+  },
+  {
+    "shortName": "ar-QA-AmalNeural",
+    "gender": "Female",
+    "language": "Arabic (Qatar)"
+  },
+  {
+    "shortName": "ar-QA-MoazNeural",
+    "gender": "Male",
+    "language": "Arabic (Qatar)"
+  },
+  {
+    "shortName": "ar-SA-HamedNeural",
+    "gender": "Male",
+    "language": "Arabic (Saudi Arabia)"
+  },
+  {
+    "shortName": "ar-SA-ZariyahNeural",
+    "gender": "Female",
+    "language": "Arabic (Saudi Arabia)"
+  },
+  {
+    "shortName": "ar-SY-AmanyNeural",
+    "gender": "Female",
+    "language": "Arabic (Syria)"
+  },
+  {
+    "shortName": "ar-SY-LaithNeural",
+    "gender": "Male",
+    "language": "Arabic (Syria)"
+  },
+  {
+    "shortName": "ar-TN-HediNeural",
+    "gender": "Male",
+    "language": "Arabic (Tunisia)"
+  },
+  {
+    "shortName": "ar-TN-ReemNeural",
+    "gender": "Female",
+    "language": "Arabic (Tunisia)"
+  },
+  {
+    "shortName": "ar-AE-FatimaNeural",
+    "gender": "Female",
+    "language": "Arabic (United Arab Emirates)"
+  },
+  {
+    "shortName": "ar-AE-HamdanNeural",
+    "gender": "Male",
+    "language": "Arabic (United Arab Emirates)"
+  },
+  {
+    "shortName": "ar-YE-MaryamNeural",
+    "gender": "Female",
+    "language": "Arabic (Yemen)"
+  },
+  {
+    "shortName": "ar-YE-SalehNeural",
+    "gender": "Male",
+    "language": "Arabic (Yemen)"
+  },
+  {
+    "shortName": "az-AZ-BabekNeural",
+    "gender": "Male",
+    "language": "Azerbaijani (Azerbaijan)"
+  },
+  {
+    "shortName": "az-AZ-BanuNeural",
+    "gender": "Female",
+    "language": "Azerbaijani (Azerbaijan)"
+  },
+  {
+    "shortName": "bn-BD-NabanitaNeural",
+    "gender": "Female",
+    "language": "Bengali (Bangladesh)"
+  },
+  {
+    "shortName": "bn-BD-PradeepNeural",
+    "gender": "Male",
+    "language": "Bengali (Bangladesh)"
+  },
+  {
+    "shortName": "bn-IN-BashkarNeural",
+    "gender": "Male",
+    "language": "Bengali (India)"
+  },
+  {
+    "shortName": "bn-IN-TanishaaNeural",
+    "gender": "Female",
+    "language": "Bengali (India)"
+  },
+  {
+    "shortName": "bs-BA-GoranNeural",
+    "gender": "Male",
+    "language": "Bosnian (Bosnia and Herzegovina)"
+  },
+  {
+    "shortName": "bs-BA-VesnaNeural",
+    "gender": "Female",
+    "language": "Bosnian (Bosnia and Herzegovina)"
+  },
+  {
+    "shortName": "bg-BG-BorislavNeural",
+    "gender": "Male",
+    "language": "Bulgarian (Bulgaria)"
+  },
+  {
+    "shortName": "bg-BG-KalinaNeural",
+    "gender": "Female",
+    "language": "Bulgarian (Bulgaria)"
+  },
+  {
+    "shortName": "my-MM-NilarNeural",
+    "gender": "Female",
+    "language": "Burmese (Myanmar)"
+  },
+  {
+    "shortName": "my-MM-ThihaNeural",
+    "gender": "Male",
+    "language": "Burmese (Myanmar)"
+  },
+  {
+    "shortName": "ca-ES-EnricNeural",
+    "gender": "Male",
+    "language": "Catalan (Spain)"
+  },
+  {
+    "shortName": "ca-ES-JoanaNeural",
+    "gender": "Female",
+    "language": "Catalan (Spain)"
+  },
+  {
+    "shortName": "zh-HK-HiuGaaiNeural",
+    "gender": "Female",
+    "language": "Chinese (Cantonese, Hong Kong)"
+  },
+  {
+    "shortName": "zh-HK-HiuMaanNeural",
+    "gender": "Female",
+    "language": "Chinese (Cantonese, Hong Kong)"
+  },
+  {
+    "shortName": "zh-HK-WanLungNeural",
+    "gender": "Male",
+    "language": "Chinese (Cantonese, Hong Kong)"
+  },
+  {
+    "shortName": "zh-CN-XiaoxiaoNeural",
+    "gender": "Female",
+    "language": "Chinese (Mandarin, Simplified)"
+  },
+  {
+    "shortName": "zh-CN-XiaoyiNeural",
+    "gender": "Female",
+    "language": "Chinese (Mandarin, Simplified)"
+  },
+  {
+    "shortName": "zh-CN-YunjianNeural",
+    "gender": "Male",
+    "language": "Chinese (Mandarin, Simplified)"
+  },
+  {
+    "shortName": "zh-CN-YunxiNeural",
+    "gender": "Male",
+    "language": "Chinese (Mandarin, Simplified)"
+  },
+  {
+    "shortName": "zh-CN-YunxiaNeural",
+    "gender": "Male",
+    "language": "Chinese (Mandarin, Simplified)"
+  },
+  {
+    "shortName": "zh-CN-YunyangNeural",
+    "gender": "Male",
+    "language": "Chinese (Mandarin, Simplified)"
+  },
+  {
+    "shortName": "zh-CN-liaoning-XiaobeiNeural",
+    "gender": "Female",
+    "language": "Chinese (Liaoning Mandarin)"
+  },
+  {
+    "shortName": "zh-TW-HsiaoChenNeural",
+    "gender": "Female",
+    "language": "Chinese (Taiwanese Mandarin)"
+  },
+  {
+    "shortName": "zh-TW-YunJheNeural",
+    "gender": "Male",
+    "language": "Chinese (Taiwanese Mandarin)"
+  },
+  {
+    "shortName": "zh-TW-HsiaoYuNeural",
+    "gender": "Female",
+    "language": "Chinese (Taiwanese Mandarin)"
+  },
+  {
+    "shortName": "zh-CN-shaanxi-XiaoniNeural",
+    "gender": "Female",
+    "language": "Chinese (Shaanxi Mandarin)"
+  },
+  {
+    "shortName": "hr-HR-GabrijelaNeural",
+    "gender": "Female",
+    "language": "Croatian (Croatia)"
+  },
+  {
+    "shortName": "hr-HR-SreckoNeural",
+    "gender": "Male",
+    "language": "Croatian (Croatia)"
+  },
+  {
+    "shortName": "cs-CZ-AntoninNeural",
+    "gender": "Male",
+    "language": "Czech (Czech Republic)"
+  },
+  {
+    "shortName": "cs-CZ-VlastaNeural",
+    "gender": "Female",
+    "language": "Czech (Czech Republic)"
+  },
+  {
+    "shortName": "da-DK-ChristelNeural",
+    "gender": "Female",
+    "language": "Danish (Denmark)"
+  },
+  {
+    "shortName": "da-DK-JeppeNeural",
+    "gender": "Male",
+    "language": "Danish (Denmark)"
+  },
+  {
+    "shortName": "nl-BE-ArnaudNeural",
+    "gender": "Male",
+    "language": "Dutch (Belgium)"
+  },
+  {
+    "shortName": "nl-BE-DenaNeural",
+    "gender": "Female",
+    "language": "Dutch (Belgium)"
+  },
+  {
+    "shortName": "nl-NL-ColetteNeural",
+    "gender": "Female",
+    "language": "Dutch (Netherlands)"
+  },
+  {
+    "shortName": "nl-NL-FennaNeural",
+    "gender": "Female",
+    "language": "Dutch (Netherlands)"
+  },
+  {
+    "shortName": "nl-NL-MaartenNeural",
+    "gender": "Male",
+    "language": "Dutch (Netherlands)"
+  },
+  {
+    "shortName": "en-AU-NatashaNeural",
+    "gender": "Female",
+    "language": "English (Australia)"
+  },
+  {
+    "shortName": "en-AU-WilliamNeural",
+    "gender": "Male",
+    "language": "English (Australia)"
+  },
+  {
+    "shortName": "en-CA-ClaraNeural",
+    "gender": "Female",
+    "language": "English (Canada)"
+  },
+  {
+    "shortName": "en-CA-LiamNeural",
+    "gender": "Male",
+    "language": "English (Canada)"
+  },
+  {
+    "shortName": "en-HK-SamNeural",
+    "gender": "Male",
+    "language": "English (Hong Kong)"
+  },
+  {
+    "shortName": "en-HK-YanNeural",
+    "gender": "Female",
+    "language": "English (Hong Kong)"
+  },
+  {
+    "shortName": "en-IN-NeerjaNeural",
+    "gender": "Female",
+    "language": "English (India)"
+  },
+  {
+    "shortName": "en-IN-PrabhatNeural",
+    "gender": "Male",
+    "language": "English (India)"
+  },
+  {
+    "shortName": "en-IE-ConnorNeural",
+    "gender": "Male",
+    "language": "English (Ireland)"
+  },
+  {
+    "shortName": "en-IE-EmilyNeural",
+    "gender": "Female",
+    "language": "English (Ireland)"
+  },
+  {
+    "shortName": "en-KE-AsiliaNeural",
+    "gender": "Female",
+    "language": "English (Kenya)"
+  },
+  {
+    "shortName": "en-KE-ChilembaNeural",
+    "gender": "Male",
+    "language": "English (Kenya)"
+  },
+  {
+    "shortName": "en-NZ-MitchellNeural",
+    "gender": "Male",
+    "language": "English (New Zealand)"
+  },
+  {
+    "shortName": "en-NZ-MollyNeural",
+    "gender": "Female",
+    "language": "English (New Zealand)"
+  },
+  {
+    "shortName": "en-NG-AbeoNeural",
+    "gender": "Male",
+    "language": "English (Nigeria)"
+  },
+  {
+    "shortName": "en-NG-EzinneNeural",
+    "gender": "Female",
+    "language": "English (Nigeria)"
+  },
+  {
+    "shortName": "en-PH-JamesNeural",
+    "gender": "Male",
+    "language": "English (Philippines)"
+  },
+  {
+    "shortName": "en-PH-RosaNeural",
+    "gender": "Female",
+    "language": "English (Philippines)"
+  },
+  {
+    "shortName": "en-SG-LunaNeural",
+    "gender": "Female",
+    "language": "English (Singapore)"
+  },
+  {
+    "shortName": "en-SG-WayneNeural",
+    "gender": "Male",
+    "language": "English (Singapore)"
+  },
+  {
+    "shortName": "en-ZA-LeahNeural",
+    "gender": "Female",
+    "language": "English (South Africa)"
+  },
+  {
+    "shortName": "en-ZA-LukeNeural",
+    "gender": "Male",
+    "language": "English (South Africa)"
+  },
+  {
+    "shortName": "en-TZ-ElimuNeural",
+    "gender": "Male",
+    "language": "English (Tanzania)"
+  },
+  {
+    "shortName": "en-TZ-ImaniNeural",
+    "gender": "Female",
+    "language": "English (Tanzania)"
+  },
+  {
+    "shortName": "en-GB-LibbyNeural",
+    "gender": "Female",
+    "language": "English (United Kingdom)"
+  },
+  {
+    "shortName": "en-GB-MaisieNeural",
+    "gender": "Female",
+    "language": "English (United Kingdom)"
+  },
+  {
+    "shortName": "en-GB-RyanNeural",
+    "gender": "Male",
+    "language": "English (United Kingdom)"
+  },
+  {
+    "shortName": "en-GB-SoniaNeural",
+    "gender": "Female",
+    "language": "English (United Kingdom)"
+  },
+  {
+    "shortName": "en-GB-ThomasNeural",
+    "gender": "Male",
+    "language": "English (United Kingdom)"
+  },
+  {
+    "shortName": "en-US-AriaNeural",
+    "gender": "Female",
+    "language": "English (United States)"
+  },
+  {
+    "shortName": "en-US-AnaNeural",
+    "gender": "Female",
+    "language": "English (United States)"
+  },
+  {
+    "shortName": "en-US-ChristopherNeural",
+    "gender": "Male",
+    "language": "English (United States)"
+  },
+  {
+    "shortName": "en-US-EricNeural",
+    "gender": "Male",
+    "language": "English (United States)"
+  },
+  {
+    "shortName": "en-US-GuyNeural",
+    "gender": "Male",
+    "language": "English (United States)"
+  },
+  {
+    "shortName": "en-US-JennyNeural",
+    "gender": "Female",
+    "language": "English (United States)"
+  },
+  {
+    "shortName": "en-US-MichelleNeural",
+    "gender": "Female",
+    "language": "English (United States)"
+  },
+  {
+    "shortName": "en-US-RogerNeural",
+    "gender": "Male",
+    "language": "English (United States)"
+  },
+  {
+    "shortName": "en-US-SteffanNeural",
+    "gender": "Male",
+    "language": "English (United States)"
+  },
+  {
+    "shortName": "et-EE-AnuNeural",
+    "gender": "Female",
+    "language": "Estonian (Estonia)"
+  },
+  {
+    "shortName": "et-EE-KertNeural",
+    "gender": "Male",
+    "language": "Estonian (Estonia)"
+  },
+  {
+    "shortName": "fil-PH-AngeloNeural",
+    "gender": "Male",
+    "language": "Filipino (Philippines)"
+  },
+  {
+    "shortName": "fil-PH-BlessicaNeural",
+    "gender": "Female",
+    "language": "Filipino (Philippines)"
+  },
+  {
+    "shortName": "fi-FI-HarriNeural",
+    "gender": "Male",
+    "language": "Finnish (Finland)"
+  },
+  {
+    "shortName": "fi-FI-NooraNeural",
+    "gender": "Female",
+    "language": "Finnish (Finland)"
+  },
+  {
+    "shortName": "fr-BE-CharlineNeural",
+    "gender": "Female",
+    "language": "French (Belgium)"
+  },
+  {
+    "shortName": "fr-BE-GerardNeural",
+    "gender": "Male",
+    "language": "French (Belgium)"
+  },
+  {
+    "shortName": "fr-CA-AntoineNeural",
+    "gender": "Male",
+    "language": "French (Canada)"
+  },
+  {
+    "shortName": "fr-CA-JeanNeural",
+    "gender": "Male",
+    "language": "French (Canada)"
+  },
+  {
+    "shortName": "fr-CA-SylvieNeural",
+    "gender": "Female",
+    "language": "French (Canada)"
+  },
+  {
+    "shortName": "fr-FR-DeniseNeural",
+    "gender": "Female",
+    "language": "French (France)"
+  },
+  {
+    "shortName": "fr-FR-EloiseNeural",
+    "gender": "Female",
+    "language": "French (France)"
+  },
+  {
+    "shortName": "fr-FR-HenriNeural",
+    "gender": "Male",
+    "language": "French (France)"
+  },
+  {
+    "shortName": "fr-CH-ArianeNeural",
+    "gender": "Female",
+    "language": "French (Switzerland)"
+  },
+  {
+    "shortName": "fr-CH-FabriceNeural",
+    "gender": "Male",
+    "language": "French (Switzerland)"
+  },
+  {
+    "shortName": "gl-ES-RoiNeural",
+    "gender": "Male",
+    "language": "Galician (Spain)"
+  },
+  {
+    "shortName": "gl-ES-SabelaNeural",
+    "gender": "Female",
+    "language": "Galician (Spain)"
+  },
+  {
+    "shortName": "ka-GE-EkaNeural",
+    "gender": "Female",
+    "language": "Georgian (Georgia)"
+  },
+  {
+    "shortName": "ka-GE-GiorgiNeural",
+    "gender": "Male",
+    "language": "Georgian (Georgia)"
+  },
+  {
+    "shortName": "de-AT-IngridNeural",
+    "gender": "Female",
+    "language": "German (Austria)"
+  },
+  {
+    "shortName": "de-AT-JonasNeural",
+    "gender": "Male",
+    "language": "German (Austria)"
+  },
+  {
+    "shortName": "de-DE-AmalaNeural",
+    "gender": "Female",
+    "language": "German (Germany)"
+  },
+  {
+    "shortName": "de-DE-ConradNeural",
+    "gender": "Male",
+    "language": "German (Germany)"
+  },
+  {
+    "shortName": "de-DE-KatjaNeural",
+    "gender": "Female",
+    "language": "German (Germany)"
+  },
+  {
+    "shortName": "de-DE-KillianNeural",
+    "gender": "Male",
+    "language": "German (Germany)"
+  },
+  {
+    "shortName": "de-CH-JanNeural",
+    "gender": "Male",
+    "language": "German (Switzerland)"
+  },
+  {
+    "shortName": "de-CH-LeniNeural",
+    "gender": "Female",
+    "language": "German (Switzerland)"
+  },
+  {
+    "shortName": "el-GR-AthinaNeural",
+    "gender": "Female",
+    "language": "Greek (Greece)"
+  },
+  {
+    "shortName": "el-GR-NestorasNeural",
+    "gender": "Male",
+    "language": "Greek (Greece)"
+  },
+  {
+    "shortName": "gu-IN-DhwaniNeural",
+    "gender": "Female",
+    "language": "Gujarati (India)"
+  },
+  {
+    "shortName": "gu-IN-NiranjanNeural",
+    "gender": "Male",
+    "language": "Gujarati (India)"
+  },
+  {
+    "shortName": "he-IL-AvriNeural",
+    "gender": "Male",
+    "language": "Hebrew (Israel)"
+  },
+  {
+    "shortName": "he-IL-HilaNeural",
+    "gender": "Female",
+    "language": "Hebrew (Israel)"
+  },
+  {
+    "shortName": "hi-IN-MadhurNeural",
+    "gender": "Male",
+    "language": "Hindi (India)"
+  },
+  {
+    "shortName": "hi-IN-SwaraNeural",
+    "gender": "Female",
+    "language": "Hindi (India)"
+  },
+  {
+    "shortName": "hu-HU-NoemiNeural",
+    "gender": "Female",
+    "language": "Hungarian (Hungary)"
+  },
+  {
+    "shortName": "hu-HU-TamasNeural",
+    "gender": "Male",
+    "language": "Hungarian (Hungary)"
+  },
+  {
+    "shortName": "is-IS-GudrunNeural",
+    "gender": "Female",
+    "language": "Icelandic (Iceland)"
+  },
+  {
+    "shortName": "is-IS-GunnarNeural",
+    "gender": "Male",
+    "language": "Icelandic (Iceland)"
+  },
+  {
+    "shortName": "id-ID-ArdiNeural",
+    "gender": "Male",
+    "language": "Indonesian (Indonesia)"
+  },
+  {
+    "shortName": "id-ID-GadisNeural",
+    "gender": "Female",
+    "language": "Indonesian (Indonesia)"
+  },
+  {
+    "shortName": "ga-IE-ColmNeural",
+    "gender": "Male",
+    "language": "Irish (Ireland)"
+  },
+  {
+    "shortName": "ga-IE-OrlaNeural",
+    "gender": "Female",
+    "language": "Irish (Ireland)"
+  },
+  {
+    "shortName": "it-IT-DiegoNeural",
+    "gender": "Male",
+    "language": "Italian (Italy)"
+  },
+  {
+    "shortName": "it-IT-ElsaNeural",
+    "gender": "Female",
+    "language": "Italian (Italy)"
+  },
+  {
+    "shortName": "it-IT-IsabellaNeural",
+    "gender": "Female",
+    "language": "Italian (Italy)"
+  },
+  {
+    "shortName": "ja-JP-KeitaNeural",
+    "gender": "Male",
+    "language": "Japanese (Japan)"
+  },
+  {
+    "shortName": "ja-JP-NanamiNeural",
+    "gender": "Female",
+    "language": "Japanese (Japan)"
+  },
+  {
+    "shortName": "jv-ID-DimasNeural",
+    "gender": "Male",
+    "language": "Javanese (Indonesia)"
+  },
+  {
+    "shortName": "jv-ID-SitiNeural",
+    "gender": "Female",
+    "language": "Javanese (Indonesia)"
+  },
+  {
+    "shortName": "kn-IN-GaganNeural",
+    "gender": "Male",
+    "language": "Kannada (India)"
+  },
+  {
+    "shortName": "kn-IN-SapnaNeural",
+    "gender": "Female",
+    "language": "Kannada (India)"
+  },
+  {
+    "shortName": "kk-KZ-AigulNeural",
+    "gender": "Female",
+    "language": "Kazakh (Kazakhstan)"
+  },
+  {
+    "shortName": "kk-KZ-DauletNeural",
+    "gender": "Male",
+    "language": "Kazakh (Kazakhstan)"
+  },
+  {
+    "shortName": "km-KH-PisethNeural",
+    "gender": "Male",
+    "language": "Khmer (Cambodia)"
+  },
+  {
+    "shortName": "km-KH-SreymomNeural",
+    "gender": "Female",
+    "language": "Khmer (Cambodia)"
+  },
+  {
+    "shortName": "ko-KR-InJoonNeural",
+    "gender": "Male",
+    "language": "Korean (Korea)"
+  },
+  {
+    "shortName": "ko-KR-SunHiNeural",
+    "gender": "Female",
+    "language": "Korean (Korea)"
+  },
+  {
+    "shortName": "lo-LA-ChanthavongNeural",
+    "gender": "Male",
+    "language": "Lao (Laos)"
+  },
+  {
+    "shortName": "lo-LA-KeomanyNeural",
+    "gender": "Female",
+    "language": "Lao (Laos)"
+  },
+  {
+    "shortName": "lv-LV-EveritaNeural",
+    "gender": "Female",
+    "language": "Latvian (Latvia)"
+  },
+  {
+    "shortName": "lv-LV-NilsNeural",
+    "gender": "Male",
+    "language": "Latvian (Latvia)"
+  },
+  {
+    "shortName": "lt-LT-LeonasNeural",
+    "gender": "Male",
+    "language": "Lithuanian (Lithuania)"
+  },
+  {
+    "shortName": "lt-LT-OnaNeural",
+    "gender": "Female",
+    "language": "Lithuanian (Lithuania)"
+  },
+  {
+    "shortName": "mk-MK-AleksandarNeural",
+    "gender": "Male",
+    "language": "Macedonian (North Macedonia)"
+  },
+  {
+    "shortName": "mk-MK-MarijaNeural",
+    "gender": "Female",
+    "language": "Macedonian (North Macedonia)"
+  },
+  {
+    "shortName": "ms-MY-OsmanNeural",
+    "gender": "Male",
+    "language": "Malay (Malaysia)"
+  },
+  {
+    "shortName": "ms-MY-YasminNeural",
+    "gender": "Female",
+    "language": "Malay (Malaysia)"
+  },
+  {
+    "shortName": "ml-IN-MidhunNeural",
+    "gender": "Male",
+    "language": "Malayalam (India)"
+  },
+  {
+    "shortName": "ml-IN-SobhanaNeural",
+    "gender": "Female",
+    "language": "Malayalam (India)"
+  },
+  {
+    "shortName": "mt-MT-GraceNeural",
+    "gender": "Female",
+    "language": "Maltese (Malta)"
+  },
+  {
+    "shortName": "mt-MT-JosephNeural",
+    "gender": "Male",
+    "language": "Maltese (Malta)"
+  },
+  {
+    "shortName": "mr-IN-AarohiNeural",
+    "gender": "Female",
+    "language": "Marathi (India)"
+  },
+  {
+    "shortName": "mr-IN-ManoharNeural",
+    "gender": "Male",
+    "language": "Marathi (India)"
+  },
+  {
+    "shortName": "mn-MN-BataaNeural",
+    "gender": "Male",
+    "language": "Mongolian (Mongolia)"
+  },
+  {
+    "shortName": "mn-MN-YesuiNeural",
+    "gender": "Female",
+    "language": "Mongolian (Mongolia)"
+  },
+  {
+    "shortName": "ne-NP-HemkalaNeural",
+    "gender": "Female",
+    "language": "Nepali (Nepal)"
+  },
+  {
+    "shortName": "ne-NP-SagarNeural",
+    "gender": "Male",
+    "language": "Nepali (Nepal)"
+  },
+  {
+    "shortName": "nb-NO-FinnNeural",
+    "gender": "Male",
+    "language": "Norwegian Bokmål (Norway)"
+  },
+  {
+    "shortName": "nb-NO-PernilleNeural",
+    "gender": "Female",
+    "language": "Norwegian Bokmål (Norway)"
+  },
+  {
+    "shortName": "ps-AF-GulNawazNeural",
+    "gender": "Male",
+    "language": "Pashto (Afghanistan)"
+  },
+  {
+    "shortName": "ps-AF-LatifaNeural",
+    "gender": "Female",
+    "language": "Pashto (Afghanistan)"
+  },
+  {
+    "shortName": "fa-IR-DilaraNeural",
+    "gender": "Female",
+    "language": "Persian (Iran)"
+  },
+  {
+    "shortName": "fa-IR-FaridNeural",
+    "gender": "Male",
+    "language": "Persian (Iran)"
+  },
+  {
+    "shortName": "pl-PL-MarekNeural",
+    "gender": "Male",
+    "language": "Polish (Poland)"
+  },
+  {
+    "shortName": "pl-PL-ZofiaNeural",
+    "gender": "Female",
+    "language": "Polish (Poland)"
+  },
+  {
+    "shortName": "pt-BR-AntonioNeural",
+    "gender": "Male",
+    "language": "Portuguese (Brazil)"
+  },
+  {
+    "shortName": "pt-BR-FranciscaNeural",
+    "gender": "Female",
+    "language": "Portuguese (Brazil)"
+  },
+  {
+    "shortName": "pt-PT-DuarteNeural",
+    "gender": "Male",
+    "language": "Portuguese (Portugal)"
+  },
+  {
+    "shortName": "pt-PT-RaquelNeural",
+    "gender": "Female",
+    "language": "Portuguese (Portugal)"
+  },
+  {
+    "shortName": "ro-RO-AlinaNeural",
+    "gender": "Female",
+    "language": "Romanian (Romania)"
+  },
+  {
+    "shortName": "ro-RO-EmilNeural",
+    "gender": "Male",
+    "language": "Romanian (Romania)"
+  },
+  {
+    "shortName": "ru-RU-DmitryNeural",
+    "gender": "Male",
+    "language": "Russian (Russia)"
+  },
+  {
+    "shortName": "ru-RU-SvetlanaNeural",
+    "gender": "Female",
+    "language": "Russian (Russia)"
+  },
+  {
+    "shortName": "sr-RS-NicholasNeural",
+    "gender": "Male",
+    "language": "Serbian (Serbia)"
+  },
+  {
+    "shortName": "sr-RS-SophieNeural",
+    "gender": "Female",
+    "language": "Serbian (Serbia)"
+  },
+  {
+    "shortName": "si-LK-SameeraNeural",
+    "gender": "Male",
+    "language": "Sinhala (Sri Lanka)"
+  },
+  {
+    "shortName": "si-LK-ThiliniNeural",
+    "gender": "Female",
+    "language": "Sinhala (Sri Lanka)"
+  },
+  {
+    "shortName": "sk-SK-LukasNeural",
+    "gender": "Male",
+    "language": "Slovak (Slovakia)"
+  },
+  {
+    "shortName": "sk-SK-ViktoriaNeural",
+    "gender": "Female",
+    "language": "Slovak (Slovakia)"
+  },
+  {
+    "shortName": "sl-SI-PetraNeural",
+    "gender": "Female",
+    "language": "Slovenian (Slovenia)"
+  },
+  {
+    "shortName": "sl-SI-RokNeural",
+    "gender": "Male",
+    "language": "Slovenian (Slovenia)"
+  },
+  {
+    "shortName": "so-SO-MuuseNeural",
+    "gender": "Male",
+    "language": "Somali (Somalia)"
+  },
+  {
+    "shortName": "so-SO-UbaxNeural",
+    "gender": "Female",
+    "language": "Somali (Somalia)"
+  },
+  {
+    "shortName": "es-AR-ElenaNeural",
+    "gender": "Female",
+    "language": "Spanish (Argentina)"
+  },
+  {
+    "shortName": "es-AR-TomasNeural",
+    "gender": "Male",
+    "language": "Spanish (Argentina)"
+  },
+  {
+    "shortName": "es-BO-MarceloNeural",
+    "gender": "Male",
+    "language": "Spanish (Bolivia)"
+  },
+  {
+    "shortName": "es-BO-SofiaNeural",
+    "gender": "Female",
+    "language": "Spanish (Bolivia)"
+  },
+  {
+    "shortName": "es-CL-CatalinaNeural",
+    "gender": "Female",
+    "language": "Spanish (Chile)"
+  },
+  {
+    "shortName": "es-CL-LorenzoNeural",
+    "gender": "Male",
+    "language": "Spanish (Chile)"
+  },
+  {
+    "shortName": "es-CO-GonzaloNeural",
+    "gender": "Male",
+    "language": "Spanish (Colombia)"
+  },
+  {
+    "shortName": "es-CO-SalomeNeural",
+    "gender": "Female",
+    "language": "Spanish (Colombia)"
+  },
+  {
+    "shortName": "es-CR-JuanNeural",
+    "gender": "Male",
+    "language": "Spanish (Costa Rica)"
+  },
+  {
+    "shortName": "es-CR-MariaNeural",
+    "gender": "Female",
+    "language": "Spanish (Costa Rica)"
+  },
+  {
+    "shortName": "es-CU-BelkysNeural",
+    "gender": "Female",
+    "language": "Spanish (Cuba)"
+  },
+  {
+    "shortName": "es-CU-ManuelNeural",
+    "gender": "Male",
+    "language": "Spanish (Cuba)"
+  },
+  {
+    "shortName": "es-DO-EmilioNeural",
+    "gender": "Male",
+    "language": "Spanish (Dominican Republic)"
+  },
+  {
+    "shortName": "es-DO-RamonaNeural",
+    "gender": "Female",
+    "language": "Spanish (Dominican Republic)"
+  },
+  {
+    "shortName": "es-EC-AndreaNeural",
+    "gender": "Female",
+    "language": "Spanish (Ecuador)"
+  },
+  {
+    "shortName": "es-EC-LuisNeural",
+    "gender": "Male",
+    "language": "Spanish (Ecuador)"
+  },
+  {
+    "shortName": "es-SV-LorenaNeural",
+    "gender": "Female",
+    "language": "Spanish (El Salvador)"
+  },
+  {
+    "shortName": "es-SV-RodrigoNeural",
+    "gender": "Male",
+    "language": "Spanish (El Salvador)"
+  },
+  {
+    "shortName": "es-GQ-JavierNeural",
+    "gender": "Male",
+    "language": "Spanish (Equatorial Guinea)"
+  },
+  {
+    "shortName": "es-GQ-TeresaNeural",
+    "gender": "Female",
+    "language": "Spanish (Equatorial Guinea)"
+  },
+  {
+    "shortName": "es-GT-AndresNeural",
+    "gender": "Male",
+    "language": "Spanish (Guatemala)"
+  },
+  {
+    "shortName": "es-GT-MartaNeural",
+    "gender": "Female",
+    "language": "Spanish (Guatemala)"
+  },
+  {
+    "shortName": "es-HN-CarlosNeural",
+    "gender": "Male",
+    "language": "Spanish (Honduras)"
+  },
+  {
+    "shortName": "es-HN-KarlaNeural",
+    "gender": "Female",
+    "language": "Spanish (Honduras)"
+  },
+  {
+    "shortName": "es-MX-DaliaNeural",
+    "gender": "Female",
+    "language": "Spanish (Mexico)"
+  },
+  {
+    "shortName": "es-MX-JorgeNeural",
+    "gender": "Male",
+    "language": "Spanish (Mexico)"
+  },
+  {
+    "shortName": "es-NI-FedericoNeural",
+    "gender": "Male",
+    "language": "Spanish (Nicaragua)"
+  },
+  {
+    "shortName": "es-NI-YolandaNeural",
+    "gender": "Female",
+    "language": "Spanish (Nicaragua)"
+  },
+  {
+    "shortName": "es-PA-MargaritaNeural",
+    "gender": "Female",
+    "language": "Spanish (Panama)"
+  },
+  {
+    "shortName": "es-PA-RobertoNeural",
+    "gender": "Male",
+    "language": "Spanish (Panama)"
+  },
+  {
+    "shortName": "es-PY-MarioNeural",
+    "gender": "Male",
+    "language": "Spanish (Paraguay)"
+  },
+  {
+    "shortName": "es-PY-TaniaNeural",
+    "gender": "Female",
+    "language": "Spanish (Paraguay)"
+  },
+  {
+    "shortName": "es-PE-AlexNeural",
+    "gender": "Male",
+    "language": "Spanish (Peru)"
+  },
+  {
+    "shortName": "es-PE-CamilaNeural",
+    "gender": "Female",
+    "language": "Spanish (Peru)"
+  },
+  {
+    "shortName": "es-PR-KarinaNeural",
+    "gender": "Female",
+    "language": "Spanish (Puerto Rico)"
+  },
+  {
+    "shortName": "es-PR-VictorNeural",
+    "gender": "Male",
+    "language": "Spanish (Puerto Rico)"
+  },
+  {
+    "shortName": "es-ES-AlvaroNeural",
+    "gender": "Male",
+    "language": "Spanish (Spain)"
+  },
+  {
+    "shortName": "es-ES-ElviraNeural",
+    "gender": "Female",
+    "language": "Spanish (Spain)"
+  },
+  {
+    "shortName": "es-US-AlonsoNeural",
+    "gender": "Male",
+    "language": "Spanish (United States)"
+  },
+  {
+    "shortName": "es-US-PalomaNeural",
+    "gender": "Female",
+    "language": "Spanish (United States)"
+  },
+  {
+    "shortName": "es-UY-MateoNeural",
+    "gender": "Male",
+    "language": "Spanish (Uruguay)"
+  },
+  {
+    "shortName": "es-UY-ValentinaNeural",
+    "gender": "Female",
+    "language": "Spanish (Uruguay)"
+  },
+  {
+    "shortName": "es-VE-PaolaNeural",
+    "gender": "Female",
+    "language": "Spanish (Venezuela)"
+  },
+  {
+    "shortName": "es-VE-SebastianNeural",
+    "gender": "Male",
+    "language": "Spanish (Venezuela)"
+  },
+  {
+    "shortName": "su-ID-JajangNeural",
+    "gender": "Male",
+    "language": "Sundanese (Indonesia)"
+  },
+  {
+    "shortName": "su-ID-TutiNeural",
+    "gender": "Female",
+    "language": "Sundanese (Indonesia)"
+  },
+  {
+    "shortName": "sw-KE-RafikiNeural",
+    "gender": "Male",
+    "language": "Swahili (Kenya)"
+  },
+  {
+    "shortName": "sw-KE-ZuriNeural",
+    "gender": "Female",
+    "language": "Swahili (Kenya)"
+  },
+  {
+    "shortName": "sw-TZ-DaudiNeural",
+    "gender": "Male",
+    "language": "Swahili (Tanzania)"
+  },
+  {
+    "shortName": "sw-TZ-RehemaNeural",
+    "gender": "Female",
+    "language": "Swahili (Tanzania)"
+  },
+  {
+    "shortName": "sv-SE-MattiasNeural",
+    "gender": "Male",
+    "language": "Swedish (Sweden)"
+  },
+  {
+    "shortName": "sv-SE-SofieNeural",
+    "gender": "Female",
+    "language": "Swedish (Sweden)"
+  },
+  {
+    "shortName": "ta-IN-PallaviNeural",
+    "gender": "Female",
+    "language": "Tamil (India)"
+  },
+  {
+    "shortName": "ta-IN-ValluvarNeural",
+    "gender": "Male",
+    "language": "Tamil (India)"
+  },
+  {
+    "shortName": "ta-MY-KaniNeural",
+    "gender": "Female",
+    "language": "Tamil (Malaysia)"
+  },
+  {
+    "shortName": "ta-MY-SuryaNeural",
+    "gender": "Male",
+    "language": "Tamil (Malaysia)"
+  },
+  {
+    "shortName": "ta-SG-AnbuNeural",
+    "gender": "Male",
+    "language": "Tamil (Singapore)"
+  },
+  {
+    "shortName": "ta-SG-VenbaNeural",
+    "gender": "Female",
+    "language": "Tamil (Singapore)"
+  },
+  {
+    "shortName": "ta-LK-KumarNeural",
+    "gender": "Male",
+    "language": "Tamil (Sri Lanka)"
+  },
+  {
+    "shortName": "ta-LK-SaranyaNeural",
+    "gender": "Female",
+    "language": "Tamil (Sri Lanka)"
+  },
+  {
+    "shortName": "te-IN-MohanNeural",
+    "gender": "Male",
+    "language": "Telugu (India)"
+  },
+  {
+    "shortName": "te-IN-ShrutiNeural",
+    "gender": "Female",
+    "language": "Telugu (India)"
+  },
+  {
+    "shortName": "th-TH-NiwatNeural",
+    "gender": "Male",
+    "language": "Thai (Thailand)"
+  },
+  {
+    "shortName": "th-TH-PremwadeeNeural",
+    "gender": "Female",
+    "language": "Thai (Thailand)"
+  },
+  {
+    "shortName": "tr-TR-AhmetNeural",
+    "gender": "Male",
+    "language": "Turkish (Turkey)"
+  },
+  {
+    "shortName": "tr-TR-EmelNeural",
+    "gender": "Female",
+    "language": "Turkish (Turkey)"
+  },
+  {
+    "shortName": "uk-UA-OstapNeural",
+    "gender": "Male",
+    "language": "Ukrainian (Ukraine)"
+  },
+  {
+    "shortName": "uk-UA-PolinaNeural",
+    "gender": "Female",
+    "language": "Ukrainian (Ukraine)"
+  },
+  {
+    "shortName": "ur-IN-GulNeural",
+    "gender": "Female",
+    "language": "Urdu (India)"
+  },
+  {
+    "shortName": "ur-IN-SalmanNeural",
+    "gender": "Male",
+    "language": "Urdu (India)"
+  },
+  {
+    "shortName": "ur-PK-AsadNeural",
+    "gender": "Male",
+    "language": "Urdu (Pakistan)"
+  },
+  {
+    "shortName": "ur-PK-UzmaNeural",
+    "gender": "Female",
+    "language": "Urdu (Pakistan)"
+  },
+  {
+    "shortName": "uz-UZ-MadinaNeural",
+    "gender": "Female",
+    "language": "Uzbek (Uzbekistan)"
+  },
+  {
+    "shortName": "uz-UZ-SardorNeural",
+    "gender": "Male",
+    "language": "Uzbek (Uzbekistan)"
+  },
+  {
+    "shortName": "vi-VN-HoaiMyNeural",
+    "gender": "Female",
+    "language": "Vietnamese (Vietnam)"
+  },
+  {
+    "shortName": "vi-VN-NamMinhNeural",
+    "gender": "Male",
+    "language": "Vietnamese (Vietnam)"
+  },
+  {
+    "shortName": "cy-GB-AledNeural",
+    "gender": "Male",
+    "language": "Welsh (United Kingdom)"
+  },
+  {
+    "shortName": "cy-GB-NiaNeural",
+    "gender": "Female",
+    "language": "Welsh (United Kingdom)"
+  },
+  {
+    "shortName": "zu-ZA-ThandoNeural",
+    "gender": "Female",
+    "language": "Zulu (South Africa)"
+  },
+  {
+    "shortName": "zu-ZA-ThembaNeural",
+    "gender": "Male",
+    "language": "Zulu (South Africa)"
+  }
+]

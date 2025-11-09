@@ -1,41 +1,39 @@
 # ZennVid
 
-ZennVid is a full-stack platform for generating, processing, and serving multimedia content, including video, audio, and text, with advanced AI/ML capabilities. It supports a wide range of languages and styles, leveraging modern backend and frontend technologies.
+ZennVid is a full-stack platform for generating, processing, and serving multimedia content — video, audio, and text — using advanced AI/ML capabilities. The platform supports multiple languages, voice styles, and two primary video modes (SadTalker and Magic Video). The README below documents the user and developer flows, the architecture, APIs, and examples.
 
 ---
 
 ## Project Overview
 
-ZennVid enables users to generate and manipulate multimedia content using AI-driven models. It supports multiple languages and voice styles, making it suitable for global applications such as e-learning, entertainment, and accessibility.
+ZennVid enables users to create short videos from text or prompts using AI models. Users can authenticate, buy credits, pick a video mode, and produce a final video which is stored and surfaced in a dashboard. Developers can generate API keys and use platform APIs under a credit model.
 
 ---
 
-![ZennVid Architecture Flow](./flow.png)
+## Flowchart — User & Developer Journey
+
+![ZennVid Flowchart](./flow.png)
 
 ---
-
-## Features
-
-- **Text-to-Speech (TTS)**: Multi-language, multi-voice support.
-- **Video Generation**: Style-based video rendering (realistic, anime, cartoon, etc.).
-- **Audio Processing**: Voice gender and language selection.
-- **RESTful API**: For integration with other platforms.
-- **Frontend Dashboard**: For managing and previewing content.
-- **Two Video Modes**: SadTalker (talking face) and Magic Video (AI-generated script and images).
-
----
-
 
 ## Architecture & Flow (Text Summary)
 
-1. **User Authentication**: Users sign up or log in via Next.js frontend using OAuth. Auth is validated by Express middleware.
-2. **Dashboard & Credits**: After login, users access the dashboard, where they can upload content or buy credits (via Razorpay).
-3. **Video Generation Modes**:
-   - **SadTalker**: Users input a script. XTTS generates audio, SadTalker (Python) creates a talking face, Whisper generates captions, and FFmpeg exports the video.
-   - **Magic Video**: Gemini generates a script and up to 5 images, Edge-TTS generates audio, Whisper generates captions, and FFmpeg exports the video.
-4. **Export & Storage**: Final videos are saved to Cloudinary. Metadata is stored in MongoDB via the Express backend.
-5. **Video Retrieval**: All videos are accessible via the dashboard, fetched from the Express API.
-6. **Developer Portal**: Developers can generate API keys (Express + MongoDB), receive them via email (Nodemailer), and use platform APIs (translation, audio, caption) with credits.
+1. Authentication
+   - Users sign up or log in via the Next.js frontend. They can choose OTP login or Google OAuth. OTPs are generated, stored temporarily, and validated; OAuth flows use the Google APIs and are validated by Express/Next.js middleware.
+2. Access & Roles
+   - Verified users are granted access to the Dashboard and, depending on role, to Admin and Developer portals.
+   - Admins can manage users, view transactions, developer usage, and video analytics.
+3. Developer Portal
+   - Developers can request API keys (stored in MongoDB), receive them by email (Nodemailer), and consume platform APIs (translation, audio generation, caption generation) under a credit model (e.g., 10 credits per API call).
+4. Dashboard & Credits
+   - The Dashboard (Next.js) is the primary product UI where users purchase credits (Razorpay), upload assets, choose video modes, preview jobs, and view generated videos.
+5. Video Modes
+   - SadTalker (20 credits): Input script -> XTTS voice clone generates audio -> SadTalker (Python) generates talking-face video -> Whisper generates captions -> FFmpeg exports final video.
+   - Magic Video (20 credits): GPT-OSS-20B (script generation) -> Edge-TTS creates audio -> stable-diffusion-xl-base-1.0 (Hugging Face) generates images -> Whisper captions -> FFmpeg export.
+6. Export, Storage & Metadata
+   - Final videos are saved to Cloudinary. Video metadata (owner, title, URLs, thumbnails, duration, shares, stats) is saved to MongoDB via the Express backend. An API endpoint provides retrieval for the Dashboard and Feed pages.
+7. Share & Feed
+   - Users can share generated videos to a Feed (Reel-style). The Feed page queries shared videos and renders them for browsing.
 
 ---
 
@@ -47,128 +45,60 @@ ZennVid enables users to generate and manipulate multimedia content using AI-dri
 http://localhost:3000/api
 ```
 
-### Endpoints
+### Auth / Users
 
-#### `POST /api/tts`
-Generate speech audio from text.
+- POST `/api/auth/otp` — request OTP (body: { phoneOrEmail })
+- POST `/api/auth/verify-otp` — verify OTP (body: { id, otp })
+- POST `/api/auth/oauth/google` — handle Google OAuth callback / token exchange
 
-**Request Body:**
-```json
-{
-  "text": "Hello, world!",
-  "language": "English (United States)",
-  "gender": "Female",
-  "style": "realistic"
-}
-```
+### Video & Media
 
-**Response:**
-```json
-{
-  "audioUrl": "/audio/tts-12345.wav"
-}
-```
+- POST `/api/tts` — generate speech audio from text (XTTS/Edge-TTS)
+- POST `/api/video` — submit a video generation job (SadTalker or Magic)
+- GET `/api/videos` — list videos for a user or feed
+- POST `/api/videos/:id/share` — mark video as shared to feed
 
-#### `POST /api/video`
-Generate a video with a selected style.
-
-**Request Body:**
-```json
-{
-  "script": "Welcome to ZennVid!",
-  "style": "anime"
-}
-```
-
-**Response:**
-```json
-{
-  "videoUrl": "/video/vid-67890.mp4"
-}
-```
-
-#### `GET /api/voices`
-List all available voices.
-
-**Response:**
-```json
-[
-  {
-    "language": "English (United States)",
-    "gender": "Female",
-    "shortName": "en-US-AriaNeural"
-  },
-  ...
-]
-```
+Refer to the `api-server` folder for route implementations and schemas.
 
 ---
 
-## Machine Learning Models
+## Machine Learning & Media Stack
 
-- **XTTS (voice clone)**: Used in SadTalker mode to generate personalized audio from text.
-- **SadTalker**: Python-based model for generating talking face videos from audio and text.
-- **Gemini**: Generates scripts and up to 5 images for Magic Video mode.
-- **Edge-TTS**: Generates audio for Magic Video mode.
-- **Whisper**: Generates captions for videos.
-- **FFmpeg**: Used for final video export and processing.
+- XTTS — voice cloning (SadTalker pipeline)
+- SadTalker — talking face video generation (Python)
+- GPT-OSS-20B — in-house / self-hosted script generation (Magic Video)
+- Edge-TTS — audio generation for Magic Video
+- stabilityai/stable-diffusion-xl-base-1.0 — image generation (Hugging Face)
+- Whisper — caption generation
+- FFmpeg — final export and containerization
 
 ---
 
 ## Backend
 
-- **Language**: TypeScript (Node.js)
-- **Framework**: Express.js
-- **API Layer**: RESTful endpoints
-- **Authentication**: OAuth, Express middleware
-- **Database**: MongoDB (for video metadata)
-- **Audio/Video Processing**: Integration with Python (SadTalker), XTTS, Whisper, FFmpeg, and cloud AI services.
+- Language: TypeScript (Node.js)
+- Framework: Express.js
+- Database: MongoDB (metadata, API keys, users, transactions)
+- Storage: Cloudinary (videos and thumbnails)
+- Payment: Razorpay (credits)
+
+See `api-server/src` for implementation details and routes.
 
 ---
 
 ## Frontend
 
-- **Language**: TypeScript/JavaScript
-- **Framework**: Next.js (React)
-- **UI Library**: Material-UI or Ant Design
-- **Features**: Login/Signup, dashboard, upload panel, video preview, and management.
+- Framework: Next.js (React)
+- Pages: Login, Dashboard, Upload, Developer Portal, Feed, Admin
+- Components: video preview, share controls, transactions, credit purchase flow
 
----
-
-## Libraries & Frameworks
-
-### Backend
-
-- **Express.js**: Web server and routing
-- **TypeScript**: Type safety
-- **Multer**: File uploads
-- **dotenv**: Environment variable management
-- **Mongoose**: MongoDB integration
-- **Cloudinary SDK**: Video storage
-- **Python Integration**: For SadTalker and XTTS
-
-### Frontend
-
-- **Next.js**: React-based SSR/SSG framework
-- **React.js**: UI framework
-- **Redux / Zustand**: State management
-- **Material-UI / Ant Design**: UI components
-- **Axios / Fetch**: API calls
-
-### Machine Learning
-
-- **XTTS**: Voice cloning for personalized TTS.
-- **SadTalker**: Talking face video generation.
-- **Gemini**: Script and image generation.
-- **Edge-TTS**: Audio generation.
-- **Whisper**: Caption generation.
-- **FFmpeg**: Video processing.
+See `web-client/app` and `web-client/components` for the UI code.
 
 ---
 
 ## Examples
 
-### Generate Speech Audio
+### Request TTS
 
 ```typescript
 // POST /api/tts
@@ -176,9 +106,8 @@ const response = await fetch('/api/tts', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
-    text: "Hello, world!",
-    language: "English (United States)",
-    gender: "Female",
+    text: "Hello, ZennVid!",
+    voice: "en-US-AriaNeural",
     style: "realistic"
   })
 });
@@ -186,7 +115,7 @@ const data = await response.json();
 console.log(data.audioUrl);
 ```
 
-### Generate Video
+### Submit Video Job
 
 ```typescript
 // POST /api/video
@@ -194,12 +123,13 @@ const response = await fetch('/api/video', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
-    script: "Welcome to ZennVid!",
-    style: "anime"
+    mode: 'sadTalker', // or 'magic'
+    script: 'Welcome to ZennVid!',
+    options: { style: 'anime' }
   })
 });
 const data = await response.json();
-console.log(data.videoUrl);
+console.log(data.jobId);
 ```
 
 ---
@@ -207,7 +137,6 @@ console.log(data.videoUrl);
 ## Constants
 
 ### Styles
-
 - Realistic
 - Anime
 - Cartoon
@@ -215,24 +144,23 @@ console.log(data.videoUrl);
 - Sketch
 - Pixel Art
 
-### Voice Languages
+### Credit Model
+- SadTalker: 20 credits
+- Magic Video: 20 credits
+- Developer API calls: 10 credits per API
 
-See [`src/constants/common.ts`](./src/constants/common.ts) for the full enum list.
-
-### Voice Genders
-
-- Male
-- Female
-
-### Voice Full Names
-
-Voice short names are mapped for each language and gender, e.g.:
-
-- `EnglishUnitedStatesFemale = "en-US-AriaNeural"`
-- `JapaneseJapanMale = "ja-JP-KeitaNeural"`
-
-See [`src/constants/common.ts`](./src/constants/common.ts) for the full mapping.
+### Voice Languages & Mappings
+Refer to `audio.json` and `api-server/src/constants/Voicemappping.ts` for full mappings.
 
 ---
 
-> **Note:** For a full list of supported voices and languages, see [`audio.json`](./audio.json).
+## Where to look in the repo
+
+- `web-client/` — Next.js frontend (pages & components)
+- `api-server/` — Express backend, routes, schemas, and utilities
+- `ai-service/` — Python helpers, XTTS/SadTalker orchestration, media pipelines
+- `SadTalker/` — SadTalker model code and helpers
+
+---
+
+> Note: this README presents a high-level view tied to the current code layout. For implementation details, inspect the route files and services inside `api-server/src` and the frontend components inside `web-client/components` and `web-client/app`.

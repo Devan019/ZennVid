@@ -2,7 +2,6 @@
 
 ai-service/coqui.ai/TTS
 
-audio.json
 caption.json
 groq-script.json
 sample_res.json
