@@ -6,8 +6,9 @@ export const FRONTEND_ROUTES = {
   DASHBOARD: "/zennvid/dashboard/magic-video",
   MAGIC_VIDEO: "/zennvid/dashboard/magic-video",
   SADTALKER: "/zennvid/dashboard/sadtalker",
-  YOURVIDEO : "/zennvid/dashboard/your-videos",
-  ZENNVID : "/zennvid/dashboard/magic-video",
+  YOURVIDEO: "/zennvid/dashboard/your-videos",
+  ANIME_MATCHER: "/zennvid/dashboard/anime-matcher",
+  ZENNVID: "/zennvid/dashboard/magic-video",
 
   /**openapi */
   OPENAPI: "/zennvid/openapi",
@@ -18,18 +19,18 @@ export const FRONTEND_ROUTES = {
   TEXT_AUDIO: "/zennvid/openapi/audio-gen",
 
   /**pricing */
-  PRICING : "/zennvid/pricing",
+  PRICING: "/zennvid/pricing",
 
   /**admin */
-  ADMIN : "/zennvid/admin/transcation",
-  DEVELOPER_STATS : "/zennvid/admin/developer",
-  USER_STATS : "/zennvid/admin/users",
-  TRANSCATION_STATS : "/zennvid/admin/transcation",
-  VIDEO_STATS : "/zennvid/admin/video",
-  USER_ACCOUNTS : "/zennvid/admin/user-accounts",
+  ADMIN: "/zennvid/admin/transcation",
+  DEVELOPER_STATS: "/zennvid/admin/developer",
+  USER_STATS: "/zennvid/admin/users",
+  TRANSCATION_STATS: "/zennvid/admin/transcation",
+  VIDEO_STATS: "/zennvid/admin/video",
+  USER_ACCOUNTS: "/zennvid/admin/user-accounts",
 
   /**feed */
-  FEED : "/zennvid/feed",
-  
+  FEED: "/zennvid/feed",
+
 
 };

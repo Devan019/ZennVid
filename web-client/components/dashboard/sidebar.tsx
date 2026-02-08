@@ -1,6 +1,6 @@
 "use client"
 
-import { Moon, Sun, Home, Video, LogOut, MenuIcon, Menu, icons, VideoOff, LucideProps, Cog, Book, Languages, Speaker, UserPenIcon, UserCog, Videotape } from "lucide-react";
+import { Moon, Sun, Home, Video, LogOut, MenuIcon, Menu, icons, VideoOff, LucideProps, Cog, Book, Languages, Speaker, UserPenIcon, UserCog, Videotape, Sparkles } from "lucide-react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -41,7 +41,8 @@ const iconMap: Record<string, React.ElementType> = {
   TbApi: TbApi,
   UserCog: UserCog,
   TbApiApp: TbApiApp,
-  Videotape : Videotape
+  Videotape: Videotape,
+  sparkles: Sparkles
 }
 
 export function AppSidebar({ menuItems }: {

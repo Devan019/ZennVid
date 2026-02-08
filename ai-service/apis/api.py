@@ -5,10 +5,38 @@ from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.responses import FileResponse, JSONResponse 
 import edge_tts
 from typing import Any
+from fastapi.staticfiles import StaticFiles
+import open_clip
 from pydantic import BaseModel
+import torch
 from classes.pydentic_class import VoiceRequest
 app = FastAPI()
+app.mount("/images", StaticFiles(directory="anime-service/character-dataset"), name="images")
+    
 tmp_str : str = ""
+
+
+# Load CLIP model once (startup)
+model, _, preprocess = open_clip.create_model_and_transforms(
+    'ViT-B-32', pretrained='openai'
+)
+model.eval()
+
+
+# Load embeddings.json once
+with open("embeddings.json", "r") as f:
+    characters_data = json.load(f)
+    
+# Convert embeddings to tensors for faster similarity
+for char in characters_data:
+    # if using averaged embedding
+    if "embedding" in char:
+        char["embedding_tensor"] = torch.tensor(char["embedding"])
+    else:
+        # if multiple embeddings stored
+        char["embedding_tensor"] = [
+            torch.tensor(e) for e in char["embeddings"]
+        ]
 
 tmp_image_prompt = ["a sleek, silver airship soaring through a bright blue sky with fluffy white clouds, flying towards a cluster of floating cities in the distance",
                 "a futuristic city floating in the air with towering skyscrapers, neon lights, and a massive central dome, with the airship docking at a landing pad",
@@ -258,6 +286,10 @@ def voice_clone_test(request: VideoClone):
     output_path =  "https://res.cloudinary.com/dpnae0bod/video/upload/v1755247789/zennvid/zner5iwqabtnko8mrj4q.wav"
     return {"audio" : output_path}
 
+@app.post("/anime-matching")
+async def anime_matching(file: UploadFile = File(...)):
+    from helpers.anime_matching.anime_match import match_image
+    return await match_image(file, characters_data, preprocess, model)
 
 class VideoPro(BaseModel):
     topic: str

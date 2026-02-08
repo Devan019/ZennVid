@@ -36,18 +36,24 @@ const layout = ({ children }: {
       icon: "videoOff",
       label: "Your Videos",
       tooltip: "Your Videos"
+    },
+    {
+      href: FRONTEND_ROUTES.ANIME_MATCHER,
+      icon: "sparkles",
+      label: "Anime Matcher",
+      tooltip: "Find your anime twin"
     }
   ];
   return (
     <div>
       <ThemeProvider>
         <QueryClientProviderWrapper>
-            <SidebarProvider >
-              <AppSidebar menuItems={menuItems} />
-              {children}
-              <div className="fixed top-1/2 left-1/4 w-64 h-64 bg-purple-200/30 dark:bg-purple-500/10 rounded-full blur-3xl -z-10" />
-              <div className="fixed bottom-1/4 right-1/4 w-96 h-96 bg-pink-200/30 dark:bg-pink-500/10 rounded-full blur-3xl -z-10" />
-            </SidebarProvider>
+          <SidebarProvider >
+            <AppSidebar menuItems={menuItems} />
+            {children}
+            <div className="fixed top-1/2 left-1/4 w-64 h-64 bg-purple-200/30 dark:bg-purple-500/10 rounded-full blur-3xl -z-10" />
+            <div className="fixed bottom-1/4 right-1/4 w-96 h-96 bg-pink-200/30 dark:bg-pink-500/10 rounded-full blur-3xl -z-10" />
+          </SidebarProvider>
         </QueryClientProviderWrapper>
       </ThemeProvider>
     </div>

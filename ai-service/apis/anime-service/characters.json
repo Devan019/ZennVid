@@ -1,0 +1,182 @@
+[
+  {
+    "id": "light",
+    "name": "Light Yagami",
+    "anime": "Death Note"
+  },
+  {
+    "id": "l",
+    "name": "L Lawliet",
+    "anime": "Death Note"
+  },
+  {
+    "id": "ryuk",
+    "name": "Ryuk",
+    "anime": "Death Note"
+  },
+  {
+    "id": "misa",
+    "name": "Misa Amane",
+    "anime": "Death Note"
+  },
+  {
+    "id": "near",
+    "name": "Near",
+    "anime": "Death Note"
+  },
+  {
+    "id": "mello",
+    "name": "Mello",
+    "anime": "Death Note"
+  },
+  {
+    "id": "saitama",
+    "name": "Saitama",
+    "anime": "One Punch Man"
+  },
+  {
+    "id": "genos",
+    "name": "Genos",
+    "anime": "One Punch Man"
+  },
+  {
+    "id": "sonic",
+    "name": "Speed-o'-Sound Sonic",
+    "anime": "One Punch Man"
+  },
+  {
+    "id": "tatsumaki",
+    "name": "Tatsumaki",
+    "anime": "One Punch Man"
+  },
+  {
+    "id": "fubuki",
+    "name": "Fubuki",
+    "anime": "One Punch Man"
+  },
+  {
+    "id": "garou",
+    "name": "Garou",
+    "anime": "One Punch Man"
+  },
+  {
+    "id": "isagi",
+    "name": "Isagi Yoichi",
+    "anime": "Blue Lock"
+  },
+  {
+    "id": "bachira",
+    "name": "Bachira Meguru",
+    "anime": "Blue Lock"
+  },
+  {
+    "id": "chigiri",
+    "name": "Chigiri Hyoma",
+    "anime": "Blue Lock"
+  },
+  {
+    "id": "nagi",
+    "name": "Nagi Seishiro",
+    "anime": "Blue Lock"
+  },
+  {
+    "id": "rin",
+    "name": "Itoshi Rin",
+    "anime": "Blue Lock"
+  },
+  {
+    "id": "ego",
+    "name": "Ego Jinpachi",
+    "anime": "Blue Lock"
+  },
+  {
+    "id": "luffy",
+    "name": "Monkey D. Luffy",
+    "anime": "One Piece"
+  },
+  {
+    "id": "zoro",
+    "name": "Roronoa Zoro",
+    "anime": "One Piece"
+  },
+  {
+    "id": "nami",
+    "name": "Nami",
+    "anime": "One Piece"
+  },
+  {
+    "id": "sanji",
+    "name": "Sanji",
+    "anime": "One Piece"
+  },
+  {
+    "id": "robin",
+    "name": "Nico Robin",
+    "anime": "One Piece"
+  },
+  {
+    "id": "franky",
+    "name": "Franky",
+    "anime": "One Piece"
+  },
+  {
+    "id": "eren",
+    "name": "Eren Yeager",
+    "anime": "Attack on Titan"
+  },
+  {
+    "id": "mikasa",
+    "name": "Mikasa Ackerman",
+    "anime": "Attack on Titan"
+  },
+  {
+    "id": "armin",
+    "name": "Armin Arlert",
+    "anime": "Attack on Titan"
+  },
+  {
+    "id": "annie",
+    "name": "Annie Leonhart",
+    "anime": "Attack on Titan"
+  },
+  {
+    "id": "jean",
+    "name": "Jean Kirstein",
+    "anime": "Attack on Titan"
+  },
+  {
+    "id": "sasha",
+    "name": "Sasha Blouse",
+    "anime": "Attack on Titan"
+  },
+  {
+    "id": "tanjiro",
+    "name": "Tanjiro Kamado",
+    "anime": "Demon Slayer"
+  },
+  {
+    "id": "nezuko",
+    "name": "Nezuko Kamado",
+    "anime": "Demon Slayer"
+  },
+  {
+    "id": "zenitsu",
+    "name": "Zenitsu Agatsuma",
+    "anime": "Demon Slayer"
+  },
+  {
+    "id": "shinobu",
+    "name": "Shinobu Kocho",
+    "anime": "Demon Slayer"
+  },
+  {
+    "id": "tengen",
+    "name": "Tengen Uzui",
+    "anime": "Demon Slayer"
+  },
+  {
+    "id": "mitsuri",
+    "name": "Mitsuri Kanroji",
+    "anime": "Demon Slayer"
+  }
+]

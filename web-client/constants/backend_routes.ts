@@ -69,3 +69,5 @@ export const CSV_USERS = `${api}/admin/users/csv`
 export const TRANSACTION_CSV = `${api}/admin/stats/transaction-csv`
 
 export const FEED = `${api}/feed`
+
+export const ANIME_MATCHING = `${api}/anime/anime-matching`

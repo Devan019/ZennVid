@@ -1,4 +1,4 @@
-import { ADMIN_USER, AUTH_CREDENTIALS_URI, CREATEAPP, CSV_USERS, DAILY_DEVELOPER, DAILY_USER, DAILY_VIDEO, DEVELOPER_STATS, FEED, generateVideo, generateVideoScript, GETAPPS, getVideos, OPENAPI_STATS, SADTALKER, SEND_KEY_URI, TRANSACTION_CSV, TX_CHARTCHANGE, TX_HISTORY, TX_STATS, UPDATE_CREDITS, USER_STATS, userProfileRoute, VIDEO_STATS } from "@/constants/backend_routes";
+import { ADMIN_USER, ANIME_MATCHING, AUTH_CREDENTIALS_URI, CREATEAPP, CSV_USERS, DAILY_DEVELOPER, DAILY_USER, DAILY_VIDEO, DEVELOPER_STATS, FEED, generateVideo, generateVideoScript, GETAPPS, getVideos, OPENAPI_STATS, SADTALKER, SEND_KEY_URI, TRANSACTION_CSV, TX_CHARTCHANGE, TX_HISTORY, TX_STATS, UPDATE_CREDITS, USER_STATS, userProfileRoute, VIDEO_STATS } from "@/constants/backend_routes";
 import axios from "axios";
 
 
@@ -454,6 +454,16 @@ export const feedCommentDelete = async({ commentId } : { commentId: string }) =>
 export const getTransactionCSV = async() => {
   try {
     const api = await axios.get(`${TRANSACTION_CSV}`, { withCredentials: true });
+    return api.data;
+  } catch (error: any) {
+    return error.response.data;
+  }
+}
+
+/**anime matching */
+export const animeMatching = async({formData} : {formData: FormData}) => {
+  try {
+    const api = await axios.post(`${ANIME_MATCHING}`, formData, { withCredentials: true });
     return api.data;
   } catch (error: any) {
     return error.response.data;

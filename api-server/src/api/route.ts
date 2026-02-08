@@ -11,6 +11,7 @@ import AdminUserRouter from "./Admin/user/route";
 import StatsRouter from "./Admin/analisys/router";
 import { scriptRouter } from "../script/route";
 import FeedRouter from "./feed/route";
+import AnimeRouter from "./anime/route";
 // import { getVideos } from "./getVideo/controller";
 // ===
 export const ApiRouter = Router();
@@ -27,6 +28,8 @@ ApiRouter.use("/admin",isAuthenticated, AdminUserRouter);
 /** feed */
 ApiRouter.use("/feed", FeedRouter);
 
+/** anime matching */
+ApiRouter.use("/anime", AnimeRouter);
 /**credits */
 ApiRouter.post("/update-credit", isAuthenticated, updateCredit);
 
