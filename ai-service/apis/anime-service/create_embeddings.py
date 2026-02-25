@@ -3,11 +3,13 @@ import torch
 from PIL import Image
 import os
 import json
+import dotenv
+dotenv.load_dotenv()
 
 print("Loading model...")
 
 model, _, preprocess = open_clip.create_model_and_transforms(
-    'ViT-B-32', pretrained='openai'
+    os.getenv("IMAGE_EMBEDDING_MODEL"), pretrained=os.getenv("IMAGE_EMBEDDING_PRETRAINED")
 )
 model.eval()
 

@@ -11,7 +11,6 @@ client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
 def generate_story_script_groq(title: str, style: str, seconds: int, language: str) -> list[dict]:
     """
-    Same functionality as your Gemini version, but using Groq.
 
     Returns:
         list[dict]: A list of 5 objects with 'prompt' & 'description'

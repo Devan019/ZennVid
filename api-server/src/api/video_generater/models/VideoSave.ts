@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 export enum VideoType {
   MAGIC_VIDEO = "magic_video",
-  SADTALKER = "SadTalker"
+  SYNC_STUDIO_VIDEO = "sync_studio_video"
 }
 
 const videoGeneraterSchema = new mongoose.Schema({
@@ -11,9 +11,16 @@ const videoGeneraterSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
-  videoUrl: {
-    type: String,
-    required: true
+  videoMetadata:{
+    publicId : {
+      type: String,
+    },
+    resourceType:{
+      type: String,
+    },
+    format:{
+      type: String,
+    }
   },
   type:{
     type: String,
@@ -35,6 +42,6 @@ const videoGeneraterSchema = new mongoose.Schema({
 }, {timestamps : true})
 
 
-const VideoGenerater = mongoose.models.VideoGenerater || mongoose.model('VideoGenerater', videoGeneraterSchema);
+const Video = mongoose.models.Video ?? mongoose.model('Video', videoGeneraterSchema);
 
-export default VideoGenerater;
+export default Video;

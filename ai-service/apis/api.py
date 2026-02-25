@@ -18,7 +18,7 @@ tmp_str : str = ""
 
 # Load CLIP model once (startup)
 model, _, preprocess = open_clip.create_model_and_transforms(
-    'ViT-B-32', pretrained='openai'
+    os.getenv("IMAGE_EMBEDDING_MODEL"), pretrained=os.getenv("IMAGE_EMBEDDING_PRETRAINED")
 )
 model.eval()
 

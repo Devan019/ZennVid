@@ -1,8 +1,7 @@
 import { Router } from "express";
-import { videoGeneraterController } from "./video_generater/controller";
+import { syncStudio, magicVideo } from "./video_generater/controller";
 import { isAuthenticated } from "../middleware";
 import { deleteVideo, getVideos } from "./videoapi/controller";
-import { lipSync } from "./video_generater/service";
 import { CreateNewApp, dashboardStats, GetAllApps, SendKeyToEmail } from "./openapi/controller";
 import { GenAudio, GenCaptions, GetVoices, Languages, Translater } from "./openapi/api/controller";
 import { checkApiKey } from "./openapi/api/checkApiKey";
@@ -11,10 +10,24 @@ import AdminUserRouter from "./Admin/user/route";
 import StatsRouter from "./Admin/analisys/router";
 import { scriptRouter } from "../script/route";
 import FeedRouter from "./feed/route";
-import AnimeRouter from "./anime/route";
+import multer from "multer";
+import path from "path";
+import { animeMatching } from "./anime/controller";
+
 // import { getVideos } from "./getVideo/controller";
 // ===
 export const ApiRouter = Router();
+
+// Storage config
+const storage = multer.diskStorage({
+  destination: "uploads/",
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));
+  },
+});
+
+const upload = multer({ storage });
+
 
 /** script */
 ApiRouter.use("/script", scriptRouter);
@@ -29,16 +42,16 @@ ApiRouter.use("/admin",isAuthenticated, AdminUserRouter);
 ApiRouter.use("/feed", FeedRouter);
 
 /** anime matching */
-ApiRouter.use("/anime", AnimeRouter);
+ApiRouter.use("/anime", upload.single("image"),isAuthenticated, animeMatching);
 /**credits */
 ApiRouter.post("/update-credit", isAuthenticated, updateCredit);
 
 /**videoapi */
 /** prompt to video gen */
-ApiRouter.post("/generate-video",isAuthenticated ,videoGeneraterController);
+ApiRouter.post("/magic-video",isAuthenticated ,magicVideo);
 ApiRouter.get("/videos", isAuthenticated, getVideos);
 /** sadtalker */
-ApiRouter.post("/sadtalker", isAuthenticated, lipSync);
+ApiRouter.post("/syncstudio-video",upload.fields([{name: "image", maxCount: 1}, {name: "audio", maxCount: 1}]), isAuthenticated, syncStudio);
 /** delete */
 ApiRouter.delete("/videos/:videoId", isAuthenticated, deleteVideo);
 

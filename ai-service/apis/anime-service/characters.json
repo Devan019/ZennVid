@@ -5,13 +5,13 @@
     "anime": "Death Note"
   },
   {
-    "id": "l",
+    "id": "L",
     "name": "L Lawliet",
     "anime": "Death Note"
   },
   {
-    "id": "ryuk",
-    "name": "Ryuk",
+    "id": "soichiro",
+    "name": "Soichiro Yagami",
     "anime": "Death Note"
   },
   {
@@ -28,36 +28,6 @@
     "id": "mello",
     "name": "Mello",
     "anime": "Death Note"
-  },
-  {
-    "id": "saitama",
-    "name": "Saitama",
-    "anime": "One Punch Man"
-  },
-  {
-    "id": "genos",
-    "name": "Genos",
-    "anime": "One Punch Man"
-  },
-  {
-    "id": "sonic",
-    "name": "Speed-o'-Sound Sonic",
-    "anime": "One Punch Man"
-  },
-  {
-    "id": "tatsumaki",
-    "name": "Tatsumaki",
-    "anime": "One Punch Man"
-  },
-  {
-    "id": "fubuki",
-    "name": "Fubuki",
-    "anime": "One Punch Man"
-  },
-  {
-    "id": "garou",
-    "name": "Garou",
-    "anime": "One Punch Man"
   },
   {
     "id": "isagi",
@@ -90,34 +60,59 @@
     "anime": "Blue Lock"
   },
   {
-    "id": "luffy",
-    "name": "Monkey D. Luffy",
-    "anime": "One Piece"
+    "id": "ushijima",
+    "name": "Wakatoshi Ushijima",
+    "anime": "Haikyuu"
   },
   {
-    "id": "zoro",
-    "name": "Roronoa Zoro",
-    "anime": "One Piece"
+    "id": "atsumu",
+    "name": "Atsumu Miya",
+    "anime": "Haikyuu"
   },
   {
-    "id": "nami",
-    "name": "Nami",
-    "anime": "One Piece"
+    "id": "kageyama",
+    "name": "Tobio Kageyama",
+    "anime": "Haikyuu"
   },
   {
-    "id": "sanji",
-    "name": "Sanji",
-    "anime": "One Piece"
+    "id": "hinata",
+    "name": "Shoyo Hinata",
+    "anime": "Haikyuu"
   },
   {
-    "id": "robin",
-    "name": "Nico Robin",
-    "anime": "One Piece"
+    "id": "bokuto",
+    "name": "Kotaro Bokuto",
+    "anime": "Haikyuu"
   },
   {
-    "id": "franky",
-    "name": "Franky",
-    "anime": "One Piece"
+    "id": "oikawa",
+    "name": "Toru Oikawa",
+    "anime": "Haikyuu"
+  },
+  {
+    "id": "osamu",
+    "name": "Osamu Miya",
+    "anime": "Haikyuu"
+  },
+  {
+    "id": "hoshiumi",
+    "name": "Korai Hoshiumi",
+    "anime": "Haikyuu"
+  },
+  {
+    "id": "kuroo",
+    "name": "Tetsuro Kuroo",
+    "anime": "Haikyuu"
+  },
+  {
+    "id": "akaashi",
+    "name": "Keiji Akaashi",
+    "anime": "Haikyuu"
+  },
+  {
+    "id": "aran",
+    "name": "Aran Ojiro",
+    "anime": "Haikyuu"
   },
   {
     "id": "eren",

@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import expressAsyncHandler from "../../utils/expressAsync";
 import { formatResponse } from "../../utils/formateResponse";
-import { videoGeneraterService } from "./service";
+import { magicVideoCreationService, syncStudioCreationVideo } from "./service";
 
 import VideoGenerater from "./models/VideoSave";
 
@@ -14,17 +14,30 @@ export interface ScriptGen {
   scenes: scriptModule[]
 }
 
-export const videoGeneraterController = expressAsyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+export const magicVideo = expressAsyncHandler(async (req: Request, res: Response, next: NextFunction) => {
   try {
     if (req.user.credits < 20) {
       return formatResponse(res, 400, "Not enough credits", false, null);
     }
-    const response = await videoGeneraterService(req, res, next);
+    const response = await magicVideoCreationService(req, res, next);
     return formatResponse(res, 200, "Video generated successfully", true, response);
   } catch (error) {
     return formatResponse(res, 500, "Internal server error", false, error);
   }
 });
+
+export const  syncStudio = expressAsyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    if (req.user.credits < 20) {
+      return formatResponse(res, 400, "Not enough credits", false, null);
+    }
+    const response = await syncStudioCreationVideo(req, res, next);
+    return formatResponse(res, 200, "Video generated successfully", true, response);
+  }catch (error) {
+    return formatResponse(res, 500, "Internal server error", false, error);
+  }
+});
+
 
 export const videoSave = expressAsyncHandler(async (req: Request, res: Response, next: NextFunction) => {
   try {
