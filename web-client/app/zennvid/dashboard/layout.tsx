@@ -26,10 +26,10 @@ const layout = ({ children }: {
       tooltip: "Magic Video"
     },
     {
-      href: FRONTEND_ROUTES.SADTALKER,
+      href: FRONTEND_ROUTES.SYNCSTUDIO,
       icon: "lipstick",
-      label: "SadTalker (20 credits)",
-      tooltip: "SadTalker"
+      label: "SyncStudio (20 credits)",
+      tooltip: "SyncStudio"
     },
     {
       href: FRONTEND_ROUTES.YOURVIDEO,

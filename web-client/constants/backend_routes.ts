@@ -26,7 +26,7 @@ export const AUTH_GOOGLE_OAUTH_URI = `${oauth}/login/google`;
 
 export const getVideos = `${api}/videos`
 
-export const SADTALKER = `${api}/sadtalker`
+export const SYNCSTUDIO_API = `${api}/syncstudio-video`
 
 export const CREATEAPP = `${api}/openapi/app`
 

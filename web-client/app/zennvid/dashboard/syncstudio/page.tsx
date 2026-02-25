@@ -2,25 +2,19 @@
 
 import { motion } from "framer-motion";
 import { useState } from "react";
-import Image from "next/image";
 import { useMutation } from "@tanstack/react-query";
-import { sadTalker } from "@/lib/apiProvider";
+import { syncStudio } from "@/lib/apiProvider";
 import { delay } from "@/lib/delay";
 import TerminalLoader from "@/components/dashboard/magic-video/progressLoader";
 import VideoPreviewDialog from "@/components/dashboard/magic-video/downloadVideo";
 import { toast } from "sonner";
 
-interface FamousPerson {
-  name: string;
-  image: string;
-  quote: string;
-  backend_image?: string;
-}
-
 const VideoCreator = () => {
   const [title, setTitle] = useState("");
   const [speech, setSpeech] = useState("");
-  const [selectedPerson, setSelectedPerson] = useState<FamousPerson | null>(null);
+  const [characterName, setCharacterName] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [audioFile, setAudioFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [videoUrl, setVideoUrl] = useState<string>("");
   const [videoloading, setvideoloading] = useState(false);
@@ -45,12 +39,12 @@ const VideoCreator = () => {
 
 
 
-  const sadTalkerMutation = useMutation({
-    mutationKey: ['sadTalker'],
-    mutationFn: async ({ description, character, title, style, language }: { description: string; character: string; title: string; style: string; language: string }) => {
+  const syncStudioMutation = useMutation({
+    mutationKey: ['syncStudio'],
+    mutationFn: async ({ formData }: { formData: FormData }) => {
       setvideoloading(true)
       setisGeneratered(false)
-      const data = await sadTalker({ description, character, title, style, language });
+      const data = await syncStudio({ formData });
       if (!data.SUCCESS) {
         toast.error(data.MESSAGE);
         return data;
@@ -62,7 +56,7 @@ const VideoCreator = () => {
       setVideoUrl(data.DATA.videoUrl);
       return data.DATA;
     },
-    onSuccess: (data : any) => {
+    onSuccess: (data: any) => {
       if (!data.SUCCESS) {
         toast.error(data.MESSAGE);
         return;
@@ -86,48 +80,36 @@ const VideoCreator = () => {
     }
   });
 
-  const famousPeople: FamousPerson[] = [
-    {
-      name: "Elon Musk",
-      image: "/images/elon_musk.jpg",
-      quote: "When something is important enough, you do it even if the odds are not in your favor.",
-      backend_image: "./images/elon_musk.jpg"
-    },
-    {
-      name: "Mark Zuckerberg",
-      image: "/images/mark_zuckerberg.png",
-      quote: "The biggest risk is not taking any risk.",
-      backend_image: "./images/mark_zuckerberg.png"
-    },
-  ];
-
   const handleSubmit = async () => {
-    if (!title || !speech || !selectedPerson) {
-      alert("Please fill all fields and select a person");
+    if (!title || !speech || !characterName || !imageFile || !audioFile) {
+      alert("Please fill all fields and upload image and audio files");
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      const response = await sadTalkerMutation.mutateAsync({
-        description: speech,
-        character: selectedPerson.name,
-        title,
-        style: "realistic",
-        language: "english"
-      });
+      const formData = new FormData();
+      formData.append("description", speech);
+      formData.append("character", characterName);
+      formData.append("title", title);
+      formData.append("style", "realistic");
+      formData.append("language", "english");
+      formData.append("image", imageFile);
+      formData.append("audio", audioFile);
+
+      const response = await syncStudioMutation.mutateAsync({ formData });
 
       if (response.data) {
         setVideoUrl(response.data.videoUrl);
-
       }
       setTitle("");
       setSpeech("");
-      setSelectedPerson(null);
+      setCharacterName("");
+      setImageFile(null);
+      setAudioFile(null);
     } catch (error) {
       console.error("Error submitting:", error);
-
     } finally {
       setIsSubmitting(false);
     }
@@ -195,45 +177,54 @@ const VideoCreator = () => {
           </div>
         </div>
 
-        {/* People Selection */}
-        <div className="mb-8">
-          <label className="block mb-4 font-medium text-gray-700 dark:text-gray-300">
-            Select a Person
+        {/* Character Name Input */}
+        <div className="mb-6">
+          <label className="block mb-2 font-medium text-gray-700 dark:text-gray-300">
+            Character Name
           </label>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {famousPeople.map((person) => (
-              <motion.div
-                key={person.name}
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => setSelectedPerson(person)}
-                className={`p-4 rounded-lg cursor-pointer transition-all bg-white dark:bg-gray-800 border-2 ${selectedPerson?.name === person.name
-                  ? 'border-blue-600 dark:border-blue-500'
-                  : 'border-gray-200 dark:border-gray-700'
-                  }`}
-              >
-                <div className="flex items-center space-x-4">
-                  <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700">
-                    <Image
-                      src={person.image}
-                      alt={person.name}
-                      className="w-full h-full object-cover"
-                      width={64}
-                      height={64}
-                    />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-blue-600 dark:text-blue-300">
-                      {person.name}
-                    </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      {person.quote.length > 60 ? `${person.quote.substring(0, 60)}...` : person.quote}
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+          <input
+            type="text"
+            value={characterName}
+            onChange={(e) => setCharacterName(e.target.value)}
+            className="w-full p-3 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600"
+            placeholder="Enter character name"
+          />
+        </div>
+
+        {/* Image File Upload */}
+        <div className="mb-6">
+          <label className="block mb-2 font-medium text-gray-700 dark:text-gray-300">
+            Upload Image
+          </label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => setImageFile(e.target.files?.[0] || null)}
+            className="w-full p-3 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600"
+          />
+          {imageFile && (
+            <div className="text-sm mt-1 text-gray-500 dark:text-gray-400">
+              Selected: {imageFile.name}
+            </div>
+          )}
+        </div>
+
+        {/* Audio File Upload */}
+        <div className="mb-6">
+          <label className="block mb-2 font-medium text-gray-700 dark:text-gray-300">
+            Upload Audio
+          </label>
+          <input
+            type="file"
+            accept="audio/*"
+            onChange={(e) => setAudioFile(e.target.files?.[0] || null)}
+            className="w-full p-3 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600"
+          />
+          {audioFile && (
+            <div className="text-sm mt-1 text-gray-500 dark:text-gray-400">
+              Selected: {audioFile.name}
+            </div>
+          )}
         </div>
 
         {/* Submit Button */}

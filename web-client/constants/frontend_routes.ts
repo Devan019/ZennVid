@@ -5,7 +5,7 @@ export const FRONTEND_ROUTES = {
   /**dashboard */
   DASHBOARD: "/zennvid/dashboard/magic-video",
   MAGIC_VIDEO: "/zennvid/dashboard/magic-video",
-  SADTALKER: "/zennvid/dashboard/sadtalker",
+  SYNCSTUDIO: "/zennvid/dashboard/syncstudio",
   YOURVIDEO: "/zennvid/dashboard/your-videos",
   ANIME_MATCHER: "/zennvid/dashboard/anime-matcher",
   ZENNVID: "/zennvid/dashboard/magic-video",

@@ -10,7 +10,7 @@ import { Separator } from '@/components/ui/separator';
 import { Video, Palette, Languages, Users, Sparkles, Clock } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { VoiceBaseLanguage, VoiceLanguage } from '@/constants/languages';
-import { videoGen } from '@/lib/apiProvider';
+import { magicVideo } from '@/lib/apiProvider';
 import { useMutation } from '@tanstack/react-query';
 import VideoPreviewDialog from './downloadVideo';
 import TerminalLoader from './progressLoader';
@@ -53,7 +53,7 @@ const VideoConfigUI = () => {
       }
       setvideoloading(true)
       setisGeneratered(false)
-      const data = await videoGen({
+      const data = await magicVideo({
         title: videoTitle,
         style: selectedStyle,
         voiceGender,
