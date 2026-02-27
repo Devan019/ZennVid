@@ -29,6 +29,7 @@
   "dependencies": {
     "@auth/express": "^0.11.0",
     "@gradio/client": "^2.0.4",
+    "@pinecone-database/pinecone": "^7.1.0",
     "axios": "^1.10.0",
     "bcrypt": "^6.0.0",
     "cloudinary": "^2.7.0",

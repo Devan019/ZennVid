@@ -84,18 +84,28 @@ const createMagicVideo = async (
 
     //4. caption generation
     const captions = await generateTranscript({
-      audio: audio?.url
+      audio: audio?.url,
+      language: "en"
     })
 
     console.log("\n\n\n\n\nStage 4: cleared",captions);
-    if(!captions){
+    if(!captions || !captions.segments || captions.segments.length === 0){
       console.log("Caption generation failed, exiting.");
       return null;
     }
     //5. video generation
+
+    const finalCaptions = captions.segments.map((segment: any) => ({
+      start: segment.start,
+      end: segment.end,
+      text: segment.text,
+      id: segment.id
+    }))
+
+    
     const videoData = await createVideo({
-      captionsJson: JSON.stringify(captions?.segments ?? []),
-      images: imagePaths,
+      captionsJson: JSON.stringify(finalCaptions),
+      images:  imagePaths.map(img => img.url),
       audio: audio.url
     })
 
@@ -159,13 +169,25 @@ const syncStudioVideo = async ({
 
     //2. create captions
     const captions = await generateTranscript({
-      audio: voiceCloneResult?.url ?? ""
+      audio: voiceCloneResult?.url ?? "",
+      language : "en"
     })
     if(!captions){
       console.log("Caption generation failed, exiting.");
       return null;
     }
     console.log("\n\n\n\n\nStage 2: cleared",captions);
+
+    if(!captions || !captions.segments || captions.segments.length === 0) {
+      console.log("No captions generated, exiting.");
+      return null;
+    }
+    const finalCaptions = captions.segments.map((segment: any) => ({
+      start: segment.start,
+      end: segment.end,
+      text: segment.text,
+      id: segment.id
+    }))
 
     //3. create lip sync video
     const videoData = await lipSync({
@@ -181,7 +203,7 @@ const syncStudioVideo = async ({
     //4. add subtitles to video 
     const finalVideo = await addSubtitles({
       videoPath: videoData?.url ?? "",
-      captions: captions?.segments ?? []
+      captions: finalCaptions 
     });
     if(!finalVideo){
       console.log("Adding subtitles failed, exiting.");

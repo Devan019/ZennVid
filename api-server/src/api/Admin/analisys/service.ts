@@ -598,7 +598,7 @@ export const videoStatsService = async (): Promise<ISendResponse> => {
           sadtalkerVideos: [
             {
               $match: {
-                type: VideoType.SADTALKER
+                type: VideoType.SYNC_STUDIO_VIDEO
               }
             },
             {

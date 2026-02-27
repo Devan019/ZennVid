@@ -2,6 +2,7 @@
 const auth = process.env.NEXT_PUBLIC_AUTH_URL;
 const oauth = process.env.NEXT_PUBLIC_OAUTH_URI;
 const api = process.env.NEXT_PUBLIC_API_URL;
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
 if (!auth) {
   throw new Error("AUTH URL not set");
@@ -15,13 +16,19 @@ if (!api) {
   throw new Error("API URL not set")
 }
 
+if(!baseUrl) {
+  throw new Error("BASE URL not set")
+}
+
+export const BASE_URL = baseUrl;
+
 export const AUTH_CREDENTIALS_URI = `${auth}`;
 export const userProfileRoute = `${auth}/user`;
 
 export const UPDATE_CREDITS = `${api}/update-credit`;
 
 export const generateVideoScript = `${api}/generate-script`
-export const generateVideo = `${api}/generate-video`;
+export const generateVideo = `${api}/magic-video`;
 export const AUTH_GOOGLE_OAUTH_URI = `${oauth}/login/google`;
 
 export const getVideos = `${api}/videos`

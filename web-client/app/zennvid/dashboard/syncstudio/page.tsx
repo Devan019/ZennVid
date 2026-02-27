@@ -45,22 +45,22 @@ const VideoCreator = () => {
       setvideoloading(true)
       setisGeneratered(false)
       const data = await syncStudio({ formData });
+      console.log("syncStudio response:", data);
       if (!data.SUCCESS) {
-        toast.error(data.MESSAGE);
         return data;
       }
-      toast.success(data.MESSAGE);
       setisGeneratered(true);
       await delay(1000 * 10);
       setvideoloading(false)
-      setVideoUrl(data.DATA.videoUrl);
-      return data.DATA;
+      return data;
     },
     onSuccess: (data: any) => {
+      console.log("syncStudio success:", data, data.DATA, data.DATA.url);
       if (!data.SUCCESS) {
         toast.error(data.MESSAGE);
         return;
       }
+      setVideoUrl(data.DATA.url);
       toast.success(data.MESSAGE);
       setDialogState(true);
     },

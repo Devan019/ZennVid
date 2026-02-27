@@ -9,7 +9,7 @@ import { decrypt, encrypt, generateApiKey, sha256Hex } from "../../utils/cyrpto"
 import { sendMail } from "../../utils/SendMail";
 import { keyTemplate } from "./key-template";
 import { OPENAPI_SECERT } from "../../env_var";
-import redisClient from "../../utils/redisClient";
+// import redisClient from "../../utils/redisClient";
 
 const getApisByUser = async ({ id }: { id: string }) => {
   try {
@@ -60,8 +60,8 @@ export const CreateNewApp = expressAsyncHandler(async (req: Request, res: Respon
         from: "onboarding@resend.dev",
         html: keyTemplate({ name, apiKey, user })
       });
-      await redisClient.del(`zennvid:apps:${user.id}`);
-      await redisClient.del(`zennvid:dashboard:${user.id}`);
+      // await redisClient.del(`zennvid:apps:${user.id}`);
+      // await redisClient.del(`zennvid:dashboard:${user.id}`);
 
       return formatResponse(res, 201, "New App Created Successfully", true, {
         appName: name,
@@ -85,8 +85,8 @@ export const CreateNewApp = expressAsyncHandler(async (req: Request, res: Respon
       from: "onboarding@resend.dev",
       html: keyTemplate({ name, apiKey, user })
     });
-    await redisClient.del(`zennvid:apps:${user.id}`);
-    await redisClient.del(`zennvid:dashboard:${user.id}`);
+    // await redisClient.del(`zennvid:apps:${user.id}`);
+    // await redisClient.del(`zennvid:dashboard:${user.id}`);
 
     return formatResponse(res, 201, "New App Created Successfully", true, {
       appName: name,
@@ -102,12 +102,12 @@ export const CreateNewApp = expressAsyncHandler(async (req: Request, res: Respon
 export const GetAllApps = expressAsyncHandler(async (req: Request, res: Response) => {
   try {
     const user = req.user?.id;
-    const apps = await redisClient.get(`zennvid:apps:${user}`)
-    if (apps) {
-      return formatResponse(res, 200, "Apps Fetched Successfully", true, JSON.parse(apps));
-    }
+    // const apps = await redisClient.get(`zennvid:apps:${user}`)
+    // if (apps) {
+    //   return formatResponse(res, 200, "Apps Fetched Successfully", true, JSON.parse(apps));
+    // }
     const apis = await getApisByUser({ id: user! });
-    await redisClient.set(`zennvid:apps:${user}`, JSON.stringify({apis}), 'EX', 60 * 60);
+    // await redisClient.set(`zennvid:apps:${user}`, JSON.stringify({apis}), 'EX', 60 * 60);
     if (!apis) {
       return formatResponse(res, 500, "Internal Server Error", false, {});
     }
@@ -161,10 +161,10 @@ export const dashboardStats = expressAsyncHandler(async (req: Request, res: Resp
   try {
 
     const userId = req.user.id;
-    const stats = await redisClient.get(`zennvid:dashboard:${userId}`);
-    if (stats) {
-      return formatResponse(res, 200, "Apps stats", true, JSON.parse(stats))
-    }
+    // const stats = await redisClient.get(`zennvid:dashboard:${userId}`);
+    // if (stats) {
+    //   return formatResponse(res, 200, "Apps stats", true, JSON.parse(stats))
+    // }
 
     const openapi = await OpenApi.findOne({ user: userId })
 
@@ -176,11 +176,11 @@ export const dashboardStats = expressAsyncHandler(async (req: Request, res: Resp
       })
     }
 
-    await redisClient.set(`zennvid:dashboard:${userId}`, JSON.stringify({
-      "Api Calls": openapi.apiCalls,
-      "Apps": openapi.apps.length,
-      "Remaing Credits": req.user.credits
-    }), 'EX', 60 * 60)
+    // await redisClient.set(`zennvid:dashboard:${userId}`, JSON.stringify({
+    //   "Api Calls": openapi.apiCalls,
+    //   "Apps": openapi.apps.length,
+    //   "Remaing Credits": req.user.credits
+    // }), 'EX', 60 * 60)
 
     return formatResponse(res, 200, "Apps stats", true, {
       "Api Calls": openapi.apiCalls,

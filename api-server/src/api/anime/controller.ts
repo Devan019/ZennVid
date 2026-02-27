@@ -1,8 +1,7 @@
-import axios from "axios";
 import fs from "fs";
-import FormData from "form-data";
 import { formatResponse } from "../../utils/formateResponse";
-import { AI_URI } from "../../env_var";
+import { uploadToCloudinary } from "../../utils/cloudinary";
+import { getMatchAnime } from "../../AI Layer/anime-twin/match_anime";
 
 export const animeMatching = async (req: any, res: any) => {
   let imagePath;
@@ -14,16 +13,19 @@ export const animeMatching = async (req: any, res: any) => {
 
     imagePath = req.file.path;
 
-    const form = new FormData();
-    form.append("file", fs.createReadStream(imagePath));
+    //upload to cloudinary
+    const data = await uploadToCloudinary({
+      filePath: imagePath,
+      folder: "zennvid/anime-matching",
+      resource_type: "image",
+    })
 
-    const response = await axios.post(
-      `${AI_URI}/anime-matching`,
-      form,
-      { headers: form.getHeaders() }
-    );
+    //get matching anime
+    const matchAnime = await getMatchAnime({
+      imagePath: data.url,
+    })
 
-    return formatResponse(res, 200, "Anime matching successful", true, response.data);
+    return formatResponse(res, 200, "Anime matching successful", true, matchAnime);
 
   } catch (err:any) {
     console.log(err);

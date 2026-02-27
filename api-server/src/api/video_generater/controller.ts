@@ -19,8 +19,7 @@ export const magicVideo = expressAsyncHandler(async (req: Request, res: Response
     if (req.user.credits < 20) {
       return formatResponse(res, 400, "Not enough credits", false, null);
     }
-    const response = await magicVideoCreationService(req, res, next);
-    return formatResponse(res, 200, "Video generated successfully", true, response);
+    return await magicVideoCreationService(req, res, next);
   } catch (error) {
     return formatResponse(res, 500, "Internal server error", false, error);
   }
@@ -31,8 +30,7 @@ export const  syncStudio = expressAsyncHandler(async (req: Request, res: Respons
     if (req.user.credits < 20) {
       return formatResponse(res, 400, "Not enough credits", false, null);
     }
-    const response = await syncStudioCreationVideo(req, res, next);
-    return formatResponse(res, 200, "Video generated successfully", true, response);
+    return await syncStudioCreationVideo(req, res, next);
   }catch (error) {
     return formatResponse(res, 500, "Internal server error", false, error);
   }

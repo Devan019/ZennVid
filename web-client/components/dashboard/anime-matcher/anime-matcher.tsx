@@ -11,13 +11,16 @@ import { useMutation } from "@tanstack/react-query";
 import { animeMatching } from "@/lib/apiProvider";
 import { toast } from "sonner";
 import Image from "next/image";
+import { BASE_URL } from "@/constants/backend_routes";
 
 interface AnimeMatchResult {
-  character: string;
+  id: string;
+  name: string;
   anime: string;
-  score: number;
+  genre: string;
+  type: string;
+  image: string;
   description: string;
-  image_url: string;
 }
 
 const AnimeMatcher = () => {
@@ -39,6 +42,7 @@ const AnimeMatcher = () => {
         return;
       }
       if (data && data.DATA) {
+        console.log("Match result:", data.DATA);
         setResult(data.DATA);
         toast.success("Character matched successfully!");
       }
@@ -266,8 +270,8 @@ const AnimeMatcher = () => {
                   <Card className="shadow-lg border-0 backdrop-blur-sm overflow-hidden">
                     <div className="relative bg-gradient-to-br from-pink-500/20 to-purple-600/20 flex items-center justify-center p-6">
                       <Image
-                        src={`http://localhost:8080${result.image_url}`}
-                        alt={result.character}
+                        src={`${BASE_URL}${result.image}`}
+                        alt={result.name}
                         width={400}
                         height={400}
                         className="object-contain max-h-[320px] w-auto rounded-lg shadow-md"
@@ -276,7 +280,7 @@ const AnimeMatcher = () => {
                     </div>
                     <div className="bg-gradient-to-r from-pink-500/10 to-purple-600/10 px-6 py-4 border-b dark:border-gray-700">
                       <h2 className="text-2xl font-bold text-gray-800 dark:text-white capitalize">
-                        {result.character}
+                        {result.name}
                       </h2>
                       <div className="flex items-center gap-2 mt-1">
                         <Tv className="h-4 w-4 text-pink-500" />
@@ -287,11 +291,11 @@ const AnimeMatcher = () => {
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between mb-4">
                         <Badge className="bg-gradient-to-r from-pink-500 to-purple-600 text-white text-sm px-3 py-1">
-                          {(result.score * 100).toFixed(1)}% Match
+                          {result.genre}
                         </Badge>
                         <Badge variant="outline" className="border-purple-400 text-purple-600 dark:text-purple-400">
                           <User className="h-3 w-3 mr-1" />
-                          Character Match
+                          {result.type}
                         </Badge>
                       </div>
 
@@ -299,7 +303,7 @@ const AnimeMatcher = () => {
 
                       <div className="prose prose-sm dark:prose-invert max-w-none">
                         <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-3">
-                          About {result.character}
+                          About {result.name}
                         </h3>
                         <div className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
                           {formatDescription(result.description)}

@@ -5,7 +5,7 @@ import { formatResponse } from "../../utils/formateResponse";
 
 import Video, { VideoType } from "./models/VideoSave";
 import { User } from "../../auth/model/User";
-import redisClient from "../../utils/redisClient";
+// import redisClient from "../../utils/redisClient";
 import { deleteFromCloudinary, getCloudinaryUrl, uploadToCloudinary } from "../../utils/cloudinary";
 import { createMagicVideo, syncStudioVideo } from "../../AI Layer/service";
 import fs from "fs";
@@ -74,7 +74,7 @@ export const magicVideoCreationService = async (req: Request, res: Response, nex
     })
     req.user.credits -= 20;
 
-    await redisClient.del(`zennvid:videos:${req.user.id}`)
+    // await redisClient.del(`zennvid:videos:${req.user.id}`)
 
     return formatResponse(res, 200, "Video generated successfully", true, {
       videoUrl: getCloudinaryUrl(data.publicId, data.resourceType, data.format)
@@ -117,7 +117,7 @@ export const syncStudioCreationVideo = async (req: Request, res: Response, next:
     if (!uploadResult || !uploadResult.publicId || !uploadResult.url) {
       return formatResponse(res, 500, "Image upload failed", false, null);
     }
-    
+
     if (!uploadAudioResult || !uploadAudioResult.publicId || !uploadAudioResult.url) {
       return formatResponse(res, 500, "Audio upload failed", false, null);
     }
@@ -130,7 +130,7 @@ export const syncStudioCreationVideo = async (req: Request, res: Response, next:
       audioPath: uploadAudioResult.url
     });
 
-    if(videoData == null){
+    if (videoData == null) {
       return formatResponse(res, 500, "Video generation failed", false, null);
     }
 
@@ -171,7 +171,7 @@ export const syncStudioCreationVideo = async (req: Request, res: Response, next:
 
     req.user.credits -= 20;
 
-    await redisClient.del(`zennvid:videos:${req.user.id}`)
+    // await redisClient.del(`zennvid:videos:${req.user.id}`)
 
     return formatResponse(res, 200, "Video generated successfully", true, {
       videoUrl: getCloudinaryUrl(videoData.publicId, videoData.resourceType, videoData.format),
@@ -181,13 +181,23 @@ export const syncStudioCreationVideo = async (req: Request, res: Response, next:
 
   } catch (error) {
     return formatResponse(res, 500, "Internal Server Error", false, null);
-  }finally{
-    if(fs.existsSync(imagePath)){
+  } finally {
+    if (fs.existsSync(imagePath)) {
       fs.unlinkSync(imagePath);
     }
-    if(fs.existsSync(audioPath)){
+    if (fs.existsSync(audioPath)) {
       fs.unlinkSync(audioPath);
     }
   }
 
 }
+
+// export const syncStudioCreationVideoTmp = async (req: Request, res: Response, next: NextFunction) => {
+//   return formatResponse(res, 200, "Video generated successfully", true, {
+//     url: 'https://res.cloudinary.com/dpnae0bod/video/upload/v1772186642/zennvid/m5vyj4zx3z301zy1zmws.mp4',
+//     publicId: 'zennvid/m5vyj4zx3z301zy1zmws',
+//     format: 'mp4',
+//     resourceType: 'video'
+//   }
+//   );
+// }

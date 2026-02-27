@@ -33,6 +33,8 @@ const limiter = rateLimit({
 app.set("trust proxy", false);
 app.use(limiter)
 
+app.use(e.static("public"));
+
 app.use(cookieParser());
 app.use(cors(corsOptions));
 app.use("/auth", AuthRouter);

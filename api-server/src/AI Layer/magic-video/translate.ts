@@ -22,14 +22,14 @@ const translateService = async (
       lang: dest,
     });
 
-    return result.data;
+    return (result.data as Array<any>)?.[0]
   } catch (error: any) {
     console.log("Translation error:", error);
     return null;
   }
 }
 
-// voiceClone("Hello, how are you?", "gujarati").then(result => {
+// translateService({text: "Hello, how are you?", dest: "gujarati"}).then(result => {
 //   console.log("Translation result:", result);
 // }).catch(error => {
 //   console.error("Error in translation:", error);

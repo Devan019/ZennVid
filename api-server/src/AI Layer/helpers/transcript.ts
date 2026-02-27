@@ -1,7 +1,8 @@
 import { groq } from "./groq_client";
 
-const generateTranscript = async ({audio} : {
-  audio: string
+const generateTranscript = async ({audio, language = "en"} : {
+  audio: string,
+  language: string
 }) => {
   try {
     //fetch audio from url and convert to buffer
@@ -16,13 +17,14 @@ const generateTranscript = async ({audio} : {
       model: "whisper-large-v3-turbo",
       temperature: 0,
       response_format: "verbose_json",
+      language: language
     });
 
      return {
       transcript: transcription.text.trim(),
       segments: transcription?.segments || [],
       duration: transcription?.duration,
-      language: transcription?.language,
+      language: transcription?.language || language,
     };
   } catch (error) {
     console.log("Error generating transcript:", error);
