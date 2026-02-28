@@ -10,8 +10,8 @@ import { createUser, deleteUser, getAllUser, getCSVUsers } from '@/lib/apiProvid
 import { useMutation, useQuery } from '@tanstack/react-query';
 import React, { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner';
-import { CSVDownload, CSVLink } from "react-csv";
-const page = () => {
+import {  CSVLink } from "react-csv";
+const Page = () => {
 
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
@@ -324,4 +324,4 @@ const page = () => {
   )
 }
 
-export default page
+export default Page

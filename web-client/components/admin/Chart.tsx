@@ -22,6 +22,7 @@ const Chart = ({
   isAmount?: boolean
   isDate?: boolean
 }) => {
+  const {theme} = useTheme();
   if (!data || data.length === 0) {
     return (
       <div className="flex items-center justify-center h-[300px] text-gray-500">
@@ -29,7 +30,6 @@ const Chart = ({
       </div>
     )
   }
-  const {theme} = useTheme();
 
   return (
     <div style={{ width: '100%', height: 350 }}>

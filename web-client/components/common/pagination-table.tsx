@@ -46,3 +46,5 @@ export const PaginationTable = memo((
     </div>
   )
 })
+
+PaginationTable.displayName = "PaginationTable";

@@ -27,3 +27,6 @@ export const StatsCard: React.FC<StatCard> = React.memo(({ label, value, icon })
     </div>
   );
 });
+
+
+StatsCard.displayName = "StatsCard";

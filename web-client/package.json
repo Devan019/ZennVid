@@ -55,7 +55,7 @@
     "@types/react-csv": "^1.1.10",
     "@types/react-dom": "^19",
     "eslint": "^9.39.3",
-    "eslint-config-next": "^15.3.4",
+    "eslint-config-next": "^15.5.12",
     "tailwindcss": "^4",
     "tw-animate-css": "^1.3.6",
     "typescript": "^5"

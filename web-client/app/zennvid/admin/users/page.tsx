@@ -15,7 +15,7 @@ import { toast } from 'sonner';
 
 
 
-const page = () => {
+const Page = () => {
   const [userStatsData, setUserStatsData] = useState<UserStats>();
   const [chartData, setChartData] = useState<any[]>([]);
   const [isMonthly, setIsMonthly] = useState(false);
@@ -158,4 +158,4 @@ const page = () => {
   )
 }
 
-export default page
+export default Page
