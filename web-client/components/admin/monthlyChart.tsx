@@ -6,7 +6,6 @@ import React from "react"
 import {
   Bar,
   BarChart,
-  CartesianGrid,
   Tooltip,
   XAxis,
   YAxis,
@@ -36,6 +35,9 @@ export const MonthlyChart = ({
   data: MonthlyRevenue[]
   isAmount?: boolean
 }) => {
+
+  const { theme } = useTheme()
+
   if (!data || data.length === 0) {
     return (
       <div className="flex items-center justify-center h-[300px] text-gray-500">
@@ -44,7 +46,7 @@ export const MonthlyChart = ({
     )
   }
 
-  const { theme } = useTheme()
+  
 
   const formattedData = data.map(item => ({
     ...item,

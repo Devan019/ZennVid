@@ -1,7 +1,6 @@
 "use client"
 
-import { Moon, Sun, Home, Video, LogOut, MenuIcon, Menu, icons, VideoOff, LucideProps, Cog, Book, Languages, Speaker, UserPenIcon, UserCog, Videotape, Sparkles } from "lucide-react";
-import { useTheme } from "next-themes";
+import { Home, LogOut, Menu, VideoOff, Cog, Book, Languages, Speaker, UserPenIcon, UserCog, Videotape, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -19,10 +18,7 @@ import {
 import { GiLipstick } from "react-icons/gi";
 import ModeToggle from "../common/mode-toggle";
 import { useUser } from "@/context/UserProvider";
-import { FRONTEND_ROUTES } from "@/constants/frontend_routes";
 import { FaMagic } from "react-icons/fa";
-import { ForwardRefExoticComponent, RefAttributes, use } from "react";
-import { IconType } from "react-icons/lib";
 import { TbApi, TbApiApp, TbPhoto, TbTransactionBitcoin } from "react-icons/tb";
 
 const iconMap: Record<string, React.ElementType> = {
@@ -54,7 +50,7 @@ export function AppSidebar({ menuItems }: {
   }[]
 }) {
   const pathname = usePathname();
-  const { openMobile, setOpenMobile, isMobile } = useSidebar();
+  const { setOpenMobile, isMobile } = useSidebar();
   const { logout } = useUser();
   const { user } = useUser();
 
@@ -79,18 +75,7 @@ export function AppSidebar({ menuItems }: {
     }
   };
 
-  const logoVariants = {
-    hidden: { scale: 0.8, opacity: 0 },
-    visible: {
-      scale: 1,
-      opacity: 1,
-      transition: {
-        type: "spring",
-        stiffness: 200,
-        damping: 15
-      }
-    }
-  };
+  
 
   return (
     <Sidebar

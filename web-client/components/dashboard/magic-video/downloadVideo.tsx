@@ -11,7 +11,7 @@ export default function VideoPreviewDialog({
   videoUrl,
 }: {
   open: boolean;
-  onClose: any;
+  onClose: () => void;
   videoUrl: string;
 }) {
   const [downloading, setDownloading] = useState(false);

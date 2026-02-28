@@ -4,7 +4,6 @@ import { SidebarProvider } from '@/components/ui/sidebar'
 import { ThemeProvider } from '@/components/ui/theme-provider'
 import { FRONTEND_ROUTES } from '@/constants/frontend_routes'
 import { QueryClientProviderWrapper } from '@/context/queryProvider'
-import { UserProvider } from '@/context/UserProvider'
 import React from 'react'
 
 const layout = ({ children }: {

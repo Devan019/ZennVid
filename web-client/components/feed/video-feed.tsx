@@ -16,7 +16,7 @@ export function VideoFeed() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [direction, setDirection] = useState(0)
   const scrollRef = useRef<HTMLDivElement>(null)
-  const [posts, setPosts] = useState<any[]>([])
+  const [posts, setPosts] = useState([])
 
   async function fetchFeedVideos() {
     if (feedQuery.data && Array.isArray(feedQuery.data.DATA)) {

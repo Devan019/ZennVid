@@ -18,7 +18,6 @@ import {
   Palette,
   MoreVertical,
   Trash2,
-  X,
   Trash,
 } from "lucide-react"
 
@@ -51,7 +50,7 @@ interface VideoLayoutGridProps {
 
 export const VideoLayoutGrid = ({ cards, onDelete, onShare, onDownload }: VideoLayoutGridProps) => {
   const [selected, setSelected] = useState<VideoCard | null>(null)
-  const [lastSelected, setLastSelected] = useState<VideoCard | null>(null)
+  const [, setLastSelected] = useState<VideoCard | null>(null)
 
   const handleClick = (card: VideoCard) => {
     setLastSelected(selected)
@@ -79,7 +78,7 @@ export const VideoLayoutGrid = ({ cards, onDelete, onShare, onDownload }: VideoL
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 relative">
-          {cards.map((card, i) => (
+          {cards.map((card) => (
             <div key={card.id} className={cn(card.className, "")}>
               <motion.div
                 onClick={() => handleClick(card)}
@@ -131,7 +130,7 @@ interface VideoThumbnailProps {
 }
 
 const VideoThumbnail = ({ card, onDelete, onShare, onDownload }: VideoThumbnailProps) => {
-  const [isHovered, setIsHovered] = useState(false)
+  const [, setIsHovered] = useState(false)
   const [showMenu, setShowMenu] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
 
@@ -251,7 +250,7 @@ interface SelectedVideoCardProps {
   onDownload?: (video: VideoData) => void
 }
 
-const SelectedVideoCard = ({ selected, onClose, onDelete, onShare, onDownload }: SelectedVideoCardProps) => {
+const SelectedVideoCard = ({ selected, onDelete, onShare, onDownload }: SelectedVideoCardProps) => {
   const [isPlaying, setIsPlaying] = useState(false)
   const [isMuted, setIsMuted] = useState(false)
   const [showControls, setShowControls] = useState(true)

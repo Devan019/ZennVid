@@ -1,10 +1,10 @@
 "use client";
 
-import { useRef, useEffect } from 'react';
+import { useRef } from 'react';
 
-export const OtpInput = ({ length = 6, otp = "", setOtp }: { length?: number; otp?: string; setOtp: (otp: string) => void; }) => {
+export const OtpInput = ({ length = 6,  setOtp }: { length?: number; otp?: string; setOtp: (otp: string) => void; }) => {
   const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
-
+  
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
     const value = e.target.value;
     

@@ -1,16 +1,15 @@
 "use client"
 import { Providers, signInSchema, signUpSchema } from "@/types/auth";
 import { motion, AnimatePresence } from "framer-motion"
-import { Mail, User, Shield, EyeOff, Eye, ArrowRight, Lock, InstagramIcon, Facebook } from "lucide-react"
-import { redirect, useRouter } from "next/navigation";
-import { useEffect, useState } from "react"
+import { Mail, User, EyeOff, Eye, ArrowRight, Lock } from "lucide-react"
+import {useRouter } from "next/navigation";
+import {  useState } from "react"
 import { z } from "zod";
-import { FaApple, FaGoogle, FaInstagram, FaTwitter } from "react-icons/fa"
-import { FaMeta, FaSquareXTwitter, FaX, FaXTwitter } from "react-icons/fa6"
+import {  FaGoogle } from "react-icons/fa"
 import { useMutation } from "@tanstack/react-query";
 import { checkUserWithOtp, loginWithCredentials, signUpWithCredentials } from "@/lib/apiProvider";
 import { toast } from "sonner";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogOverlay, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogOverlay, DialogTitle } from "@/components/ui/dialog";
 import { OtpInput } from "@/components/common/OtpInput";
 import { AUTH_GOOGLE_OAUTH_URI } from "@/constants/backend_routes";
 import { FRONTEND_ROUTES } from "@/constants/frontend_routes";
@@ -39,8 +38,6 @@ interface IFormErrors {
   general?: string;
 }
 
-type SignInData = z.infer<typeof signInSchema>;
-type SignUpData = z.infer<typeof signUpSchema>;
 
 const AuthPages: React.FC = () => {
   const router = useRouter();
@@ -96,7 +93,7 @@ const AuthPages: React.FC = () => {
 
       // Redirect to dashboard or appropriate page
     },
-    onError: (error: any) => {
+    onError: (error) => {
       console.error(`${isSignUp ? 'Sign up' : 'Sign in'} error:`, error);
       const errorMessage = error?.message ||
         (isSignUp ? "Failed to create account. Please try again." :
@@ -111,13 +108,13 @@ const AuthPages: React.FC = () => {
       const { email } = formData;
       return await checkUserWithOtp(email, otp);
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
       toast.success("OTP verified successfully! redirecting to home page...");
       setTimeout(() => {
         window.location.href = FRONTEND_ROUTES.HOME;
       }, 1000);
     },
-    onError: (error: any) => {
+    onError: (error) => {
       console.error("OTP verification error:", error);
       toast.error("Invalid OTP. Please try again.");
     },

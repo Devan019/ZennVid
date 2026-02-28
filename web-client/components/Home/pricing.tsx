@@ -54,12 +54,12 @@ export default function PricingComponent() {
 
   const { isAuthenticated } = useUser()
   const [rzpInstance, setRzpInstance] = useState<any>(null);
-  const {user, setUser} = useUser();
+  const { user, setUser } = useUser();
 
   const creditMutation = useMutation({
-    mutationKey : ['update-credits'],
-    mutationFn : updateCredits,
-    onSuccess(data, variables, context) {
+    mutationKey: ['update-credits'],
+    mutationFn: updateCredits,
+    onSuccess(data) {
       console.log("Credits updated successfully:", data);
       if (!data.SUCCESS) {
         toast.error(data.MESSAGE);
@@ -67,17 +67,19 @@ export default function PricingComponent() {
       }
       toast.success(data.MESSAGE);
       // redirect('/dashboard')
-      setUser({ ...user, credits: data.DATA.credits } as any)
+      if (user) {
+        setUser({ ...user, credits: data.DATA.credits })
+      }
     },
   })
 
-  useEffect(()=>{
-    if(rzpInstance){
+  useEffect(() => {
+    if (rzpInstance) {
       rzpInstance.open();
     }
-  },[rzpInstance])
+  }, [rzpInstance])
 
-  useEffect(()=>{
+  useEffect(() => {
     const script = document.createElement('script');
     script.src = "https://checkout.razorpay.com/v1/checkout.js";
     script.async = true;
@@ -87,7 +89,7 @@ export default function PricingComponent() {
       document.body.removeChild(script);
     }
 
-  },[])
+  }, [])
 
 
 
@@ -96,7 +98,7 @@ export default function PricingComponent() {
       return redirect("/auth")
     }
 
-    
+
 
     // Integrate RazorPay payment gateway
     const price = parseInt(plan.price.replace(/[^0-9]/g, ''));
@@ -116,22 +118,25 @@ export default function PricingComponent() {
         name: user?.username || "Customer",
         email: user?.email || "customer@example.com",
       },
-      handler: function (response:any) {
+      handler: function (response: any) {
         // onPaymentSuccess(credits, response.razorpay_payment_id);
-        creditMutation.mutate({credits: plan.credits, paymentId: response.razorpay_payment_id ,amount: price})
+        creditMutation.mutate({ credits: plan.credits, paymentId: response.razorpay_payment_id, amount: price })
       },
     };
-    
+
     const rzp = new window.Razorpay(options);
-    rzp.on('payment.failed', (response:any) => {
-      console.error("Payment failed:", response.error);
+    rzp.on('payment.failed', (response: {
+      error: string
+    }) => {
+
+      console.error("Payment failed:", response?.error);
     });
-    
+
     setRzpInstance(rzp);
 
   };
 
-  
+
 
   return (
     <div className="min-h-screen  duration-300 py-16 px-4">

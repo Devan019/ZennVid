@@ -22,7 +22,7 @@ export function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const router = useRouter()
-  const { user, isAuthenticated, isLoading, logout } = useUser()
+  const { user, isAuthenticated, logout } = useUser()
   const [urls, seturls] = useState<URLS[]>([]);
 
   const defaultUrls: URLS[] = [

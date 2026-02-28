@@ -5,8 +5,8 @@ import { memo } from "react";
 export const PaginationTable = memo((
   { columns, data, page, limit, total, totalPages, onPageChange, onLimitChange, searchTerm, onSearch, datePickerColumns, selectedDate, setSelectedDate, isAction, ActionNode }:
     {
-      columns: ColumnDef<any>[];
-      data: any[];
+      columns: ColumnDef<object>[];
+      data: [];
       page: number;
       limit: number;
       total: number;

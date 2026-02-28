@@ -8,15 +8,14 @@ import { changeDailyDeveloper, developerstats, } from '@/lib/apiProvider';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import {  ChevronLeft, ChevronRight,  CodeIcon } from 'lucide-react';
 import React, {  useEffect, useState } from 'react'
-import { FaCode } from 'react-icons/fa';
 import {  TbApiApp, TbAppWindow } from 'react-icons/tb';
 import { toast } from 'sonner';
 
 
 
-const page = () => {
+const Page = () => {
   const [developerStatsData, setDeveloperStatsData] = useState<DeveloperStats>();
-  const [chartData, setChartData] = useState<any[]>([]);
+  const [chartData, setChartData] = useState<{ _id: string | Date; [key: string]: any }[]>([]);
   const [isMonthly, setIsMonthly] = useState(false);
 
 
@@ -39,7 +38,7 @@ const page = () => {
     queryFn: developerstats
   })
 
-  const setDataViaMain = (data: any, message: any) => {
+  const setDataViaMain = (data:DeveloperStats, message:string) => {
     setDeveloperStatsData(data)
     setChartData(data.dailyUsers ?? []);
     toast.success(message);
@@ -55,7 +54,7 @@ const page = () => {
     setDataViaMain(query.data?.DATA, query.data?.MESSAGE ?? "")
   }
 
-  const changeChartData = (data: any) => {
+  const changeChartData = (data:{[key: string]: any, _id : string| Date}[]) => {
     setChartData(data);
   }
   useEffect(() => {
@@ -101,7 +100,10 @@ const page = () => {
             </button>
             <button
               className='px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors'
-              onClick={() => { changeChartData(developerStatsData?.monthlyUsers ?? []); setIsMonthly(true) }}
+              onClick={() => { 
+                setChartData((developerStatsData?.monthlyUsers ?? []).map((item: any) => ({ ...item, _id: `${item._id.year}-${String(item._id.month).padStart(2, '0')}` })));
+                setIsMonthly(true);
+              }}
             >
               Monthly Developers
             </button>
@@ -119,10 +121,10 @@ const page = () => {
               />
 
               <div className='flex justify-center items-center '>
-                {chartData?.map((item: any) => (
+                {chartData?.map((item) => (
                   <div
                     className='mx-4 text-sm border-b-2 border-transparent hover:border-blue-500 pb-1 cursor-pointer'
-                    key={item._id}> {new Date(item?._id).toLocaleDateString('en-US', {
+                    key={typeof item._id === 'string' ? item._id : item._id.toISOString()}> {new Date(item?._id).toLocaleDateString('en-US', {
                       month: 'short',
                       day: 'numeric'
                     })} </div>
@@ -143,11 +145,11 @@ const page = () => {
           {isMonthly ? (
             <MonthlyChart
             isAmount={false}
-             data={chartData} />
+             data={chartData.map((item: any) => ({ ...item, amount: item.count ?? 0 }))} />
           ) : (
             <Chart
             isAmount={false}
-            data={chartData} XAxisKey="_id" />
+            data={chartData.map((item: any) => ({ ...item, _id: typeof item._id === 'string' ? item._id : new Date(item._id).toISOString().split('T')[0], count: item.count ?? 0 }))} XAxisKey="_id" />
           )}
         </div>
       </div>
@@ -155,4 +157,4 @@ const page = () => {
   )
 }
 
-export default page
+export default Page

@@ -2,8 +2,6 @@ import { AppSidebar } from '@/components/dashboard/sidebar'
 import { SidebarProvider } from '@/components/ui/sidebar'
 import { FRONTEND_ROUTES } from '@/constants/frontend_routes'
 import { QueryClientProviderWrapper } from '@/context/queryProvider'
-import { UserProvider } from '@/context/UserProvider'
-import { Home, UserCog, UserPenIcon, VideoOff } from 'lucide-react'
 import { ThemeProvider } from 'next-themes'
 import React from 'react'
 

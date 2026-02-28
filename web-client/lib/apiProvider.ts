@@ -1,5 +1,12 @@
-import { ADMIN_USER, ANIME_MATCHING, AUTH_CREDENTIALS_URI, CREATEAPP, CSV_USERS, DAILY_DEVELOPER, DAILY_USER, DAILY_VIDEO, DEVELOPER_STATS, FEED, generateVideo, generateVideoScript, GETAPPS, getVideos, OPENAPI_STATS, SEND_KEY_URI, SYNCSTUDIO_API, TRANSACTION_CSV, TX_CHARTCHANGE, TX_HISTORY, TX_STATS, UPDATE_CREDITS, USER_STATS, userProfileRoute, VIDEO_STATS } from "@/constants/backend_routes";
+import { ADMIN_USER, ANIME_MATCHING, AUTH_CREDENTIALS_URI, CREATEAPP, CSV_USERS, DAILY_DEVELOPER, DAILY_USER, DAILY_VIDEO, DEVELOPER_STATS, FEED, generateVideo, GETAPPS, getVideos, OPENAPI_STATS, SEND_KEY_URI, SYNCSTUDIO_API, TRANSACTION_CSV, TX_CHARTCHANGE, TX_HISTORY, TX_STATS, UPDATE_CREDITS, USER_STATS, userProfileRoute, VIDEO_STATS } from "@/constants/backend_routes";
 import axios from "axios";
+
+interface Error{
+  code ?: string;
+  response?:{
+    data: object
+  }
+}
 
 
 //redirect with credentials
@@ -9,8 +16,9 @@ export const loginWithCredentials = async (email: string, password: string) => {
       withCredentials: true
     });
     return api.data;
-  } catch (error: any) {
-    return error.response.data;
+  } catch (error) {
+    const err = error as Error;
+    return err.response?.data;
   }
 };
 
@@ -21,8 +29,9 @@ export const signUpWithCredentials = async (email: string, password: string, use
       withCredentials: true
     });
     return api.data;
-  } catch (error: any) {
-    return error.response.data;
+  } catch (error) {
+    const err = error as Error;
+    return err.response?.data;
   }
 };
 
@@ -33,8 +42,9 @@ export const checkUserWithOtp = async (email: string, otp: string) => {
       withCredentials: true
     });
     return api.data;
-  } catch (error: any) {
-    return error.response.data;
+  } catch (error) {
+    const err = error as Error;
+    return err.response?.data;
   }
 }
 
@@ -45,8 +55,9 @@ export const logoutUser = async () => {
       withCredentials: true,
     });
     return api.data;
-  } catch (error: any) {
-    return error.response.data;
+  } catch (error) {
+    const err = error as Error;
+    return err.response?.data;
   }
 };
 
@@ -57,12 +68,13 @@ export const getUser = async () => {
       withCredentials: true,
     });
     return api.data;
-  } catch (error: any) {
-    if (error.code === "ERR_NETWORK") return {
+  } catch (error) {
+    const err = error as Error;
+    if (err.code === "ERR_NETWORK") return {
       MESSAGE: "Too many requests, please try again after a minute",
       SUCCESS: false,
     }
-    return error.response.data;
+    return err.response?.data;
   }
 };
 
@@ -82,8 +94,9 @@ export const magicVideo = async ({ title, style, voiceGender, voiceLanguage, sec
       withCredentials: true
     })
     return api.data;
-  } catch (error: any) {
-    return error.response.data;
+  } catch (error) {
+    const err = error as Error;
+    return err.response?.data;
   }
 }
 
@@ -95,8 +108,9 @@ export const getUserVideos = async () => {
       withCredentials: true,
     });
     return api.data;
-  } catch (error: any) {
-    return error.response.data;
+  } catch (error) {
+    const err = error as Error;
+    return err.response?.data;
   }
 }
 
@@ -110,8 +124,9 @@ export const syncStudio = async ({ formData }: { formData: FormData }) => {
       }
     });
     return api.data;
-  } catch (error: any) {
-    return error.response.data;
+  } catch (error) {
+    const err = error as Error;
+    return err.response?.data;
   }
 };
 
@@ -120,8 +135,9 @@ export const deleteVideo = async ({ id }: { id: string }) => {
   try {
     const api = await axios.delete(`${getVideos}/${id}`, { withCredentials: true });
     return api.data;
-  } catch (error: any) {
-    return error.response.data;
+  } catch (error) {
+    const err = error as Error;
+    return err.response?.data;
   }
 }
 
@@ -130,8 +146,9 @@ export const createNewApp = async (name: string) => {
   try {
     const api = await axios.post(CREATEAPP, { name }, { withCredentials: true });
     return api.data;
-  } catch (error: any) {
-    return error.response.data;
+  } catch (error) {
+    const err = error as Error;
+    return err.response?.data;
   }
 }
 
@@ -140,8 +157,9 @@ export const getApps = async () => {
   try {
     const api = await axios.get(GETAPPS, { withCredentials: true });
     return api.data;
-  } catch (error: any) {
-    return error.response.data;
+  } catch (error) {
+    const err = error as Error;
+    return err.response?.data;
   }
 }
 
@@ -150,8 +168,9 @@ export const sendKey = async ({ appId }: { appId: string }) => {
   try {
     const api = await axios.post(`${SEND_KEY_URI}`, { appId }, { withCredentials: true });
     return api.data;
-  } catch (error: any) {
-    return error.response.data;
+  } catch (error) {
+    const err = error as Error;
+    return err.response?.data;
   }
 }
 
@@ -161,8 +180,9 @@ export const Stats = async () => {
   try {
     const api = await axios.get(`${OPENAPI_STATS}`, { withCredentials: true })
     return api.data;
-  } catch (error: any) {
-    return error.response.data;
+  } catch (error) {
+    const err = error as Error;
+    return err.response?.data;
   }
 }
 
@@ -175,8 +195,9 @@ export const updateCredits = async ({ credits, paymentId, amount }: {
   try {
     const api = await axios.post(`${UPDATE_CREDITS}`, { credits, paymentId, amount }, { withCredentials: true })
     return api.data;
-  } catch (error: any) {
-    return error.response.data;
+  } catch (error) {
+    const err = error as Error;
+    return err.response?.data;
   }
 }
 
@@ -185,8 +206,9 @@ export const txStats = async () => {
   try {
     const api = await axios.get(`${TX_STATS}`, { withCredentials: true })
     return api.data;
-  } catch (error: any) {
-    return error.response.data;
+  } catch (error) {
+    const err = error as Error;
+    return err.response?.data;
   }
 }
 
@@ -195,8 +217,9 @@ export const userStats = async () => {
   try {
     const api = await axios.get(`${USER_STATS}`, { withCredentials: true })
     return api.data;
-  } catch (error: any) {
-    return error.response.data;
+  } catch (error) {
+    const err = error as Error;
+    return err.response?.data;
   }
 }
 
@@ -205,8 +228,9 @@ export const developerstats = async () => {
   try {
     const api = await axios.get(`${DEVELOPER_STATS}`, { withCredentials: true })
     return api.data;
-  } catch (error: any) {
-    return error.response.data;
+  } catch (error) {
+    const err = error as Error;
+    return err.response?.data;
   }
 }
 
@@ -215,8 +239,9 @@ export const videostats = async () => {
   try {
     const api = await axios.get(`${VIDEO_STATS}`, { withCredentials: true })
     return api.data;
-  } catch (error: any) {
-    return error.response.data;
+  } catch (error) {
+    const err = error as Error;
+    return err.response?.data;
   }
 }
 
@@ -239,8 +264,9 @@ export const getAllUser = async (
       page, limit, search, createdAt
     }, { withCredentials: true })
     return api.data
-  } catch (error: any) {
-    return error.response.data;
+  } catch (error) {
+    const err = error as Error;
+    return err.response?.data;
   }
 }
 
@@ -249,8 +275,9 @@ export const deleteUser = async ({ id }: { id: string }) => {
   try {
     const api = await axios.delete(`${ADMIN_USER}/${id}`, { withCredentials: true });
     return api.data;
-  } catch (error: any) {
-    return error.response.data;
+  } catch (error) {
+    const err = error as Error;
+    return err.response?.data;
   }
 }
 
@@ -265,8 +292,9 @@ export const updateUser = async (
   try {
     const api = await axios.put(`${ADMIN_USER}/${userId}`, { username, credits }, { withCredentials: true });
     return api.data;
-  } catch (error: any) {
-    return error.response.data;
+  } catch (error) {
+    const err = error as Error;
+    return err.response?.data;
   }
 }
 
@@ -282,8 +310,9 @@ export const createUser = async (
   try {
     const api = await axios.post(`${ADMIN_USER}`, { email, password, username, provider }, { withCredentials: true });
     return api.data;
-  } catch (error: any) {
-    return error.response.data;
+  } catch (error) {
+    const err = error as Error;
+    return err.response?.data;
   }
 }
 
@@ -318,8 +347,9 @@ export const changeDailyRevenue = async (
   try {
     const api = await axios.post(`${TX_CHARTCHANGE}`, { date, state }, { withCredentials: true });
     return api.data;
-  } catch (error: any) {
-    return error.response.data;
+  } catch (error) {
+    const err = error as Error;
+    return err.response?.data;
   }
 }
 
@@ -336,8 +366,9 @@ export const changeDailyDeveloper = async (
   try {
     const api = await axios.post(`${DAILY_DEVELOPER}`, { date, state }, { withCredentials: true });
     return api.data;
-  } catch (error: any) {
-    return error.response.data;
+  } catch (error) {
+    const err = error as Error;
+    return err.response?.data;
   }
 }
 
@@ -354,8 +385,9 @@ export const changeDailyUser = async (
   try {
     const api = await axios.post(`${DAILY_USER}`, { date, state }, { withCredentials: true });
     return api.data;
-  } catch (error: any) {
-    return error.response.data;
+  } catch (error) {
+    const err = error as Error;
+    return err.response?.data;
   }
 }
 
@@ -372,8 +404,9 @@ export const changeDailyVideo = async (
   try {
     const api = await axios.post(`${DAILY_VIDEO}`, { date, state }, { withCredentials: true });
     return api.data;
-  } catch (error: any) {
-    return error.response.data;
+  } catch (error) {
+    const err = error as Error;
+    return err.response?.data;
   }
 }
 
@@ -382,8 +415,9 @@ export const getCSVUsers = async () => {
   try {
     const api = await axios.get(`${CSV_USERS}`, { withCredentials: true });
     return api.data;
-  } catch (error: any) {
-    return error.response.data;
+  } catch (error) {
+    const err = error as Error;
+    return err.response?.data;
   }
 }
 
@@ -392,8 +426,9 @@ export const feedCreate = async ({ userId, videoId }: { userId: string, videoId:
   try {
     const api = await axios.post(`${FEED}`, { userId, videoId }, { withCredentials: true });
     return api.data;
-  } catch (error: any) {
-    return error.response.data;
+  } catch (error) {
+    const err = error as Error;
+    return err.response?.data;
   }
 }
 
@@ -402,8 +437,9 @@ export const getFeedPosts = async () => {
   try {
     const api = await axios.get(`${FEED}`, { withCredentials: true });
     return api.data;
-  } catch (error: any) {
-    return error.response.data;
+  } catch (error) {
+    const err = error as Error;
+    return err.response?.data;
   }
 }
 
@@ -412,8 +448,9 @@ export const deleteFeedPost = async ({ feedId }: { feedId: string }) => {
   try {
     const api = await axios.delete(`${FEED}/${feedId}`, { withCredentials: true });
     return api.data;
-  } catch (error: any) {
-    return error.response.data;
+  } catch (error) {
+    const err = error as Error;
+    return err.response?.data;
   }
 }
 
@@ -422,8 +459,9 @@ export const feedLikeCountUpdate = async ({ feedId, userId }: { feedId: string, 
   try {
     const api = await axios.put(`${FEED}/${feedId}/like`, { feedId, userId }, { withCredentials: true });
     return api.data;
-  } catch (error: any) {
-    return error.response.data;
+  } catch (error) {
+    const err = error as Error;
+    return err.response?.data;
   }
 }
 /** feed comment */
@@ -431,8 +469,9 @@ export const feedComment = async ({ feedId, userId, content }: { feedId: string,
   try {
     const api = await axios.post(`${FEED}/${feedId}/comment`, { userId, content }, { withCredentials: true });
     return api.data;
-  } catch (error: any) {
-    return error.response.data;
+  } catch (error) {
+    const err = error as Error;
+    return err.response?.data;
   }
 }
 
@@ -441,8 +480,9 @@ export const feedCommentDelete = async ({ commentId }: { commentId: string }) =>
   try {
     const api = await axios.delete(`${FEED}/comment/${commentId}`, { withCredentials: true });
     return api.data;
-  } catch (error: any) {
-    return error.response.data;
+  } catch (error) {
+    const err = error as Error;
+    return err.response?.data;
   }
 }
 
@@ -451,8 +491,9 @@ export const getTransactionCSV = async () => {
   try {
     const api = await axios.get(`${TRANSACTION_CSV}`, { withCredentials: true });
     return api.data;
-  } catch (error: any) {
-    return error.response.data;
+  } catch (error) {
+    const err = error as Error;
+    return err.response?.data;
   }
 }
 
@@ -461,7 +502,8 @@ export const animeMatching = async ({ formData }: { formData: FormData }) => {
   try {
     const api = await axios.post(`${ANIME_MATCHING}`, formData, { withCredentials: true });
     return api.data;
-  } catch (error: any) {
-    return error.response.data;
+  } catch (error) {
+    const err = error as Error;
+    return err.response?.data;
   }
 }

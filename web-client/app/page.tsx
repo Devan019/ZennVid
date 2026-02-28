@@ -2,7 +2,6 @@
 
 
 import { Features } from "@/components/Home/features"
-import { Reviews } from "@/components/Home/reviews"
 import { Footer } from "@/components/common/footer"
 import { StepHome } from "@/components/Home/steps"
 import PricingComponent from "@/components/Home/pricing"
@@ -19,7 +18,7 @@ export default function Home() {
       lerp: 0.09
     });
 
-    function raf(time: any) {
+    function raf(time:number) {
       lenis.raf(time);
       requestAnimationFrame(raf);
     }

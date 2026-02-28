@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 import { VideoIcon } from "lucide-react"
 import { VideoData, VideoLayoutGrid } from "@/components/ui/video-layout"
 import { useUser } from "@/context/UserProvider"
@@ -10,6 +10,18 @@ import { Input } from "@/components/ui/input"
 import { FaSignsPost } from "react-icons/fa6"
 import Modal from "@/components/common/Modal"
 
+interface vd {
+  content: {
+    title: string,
+    type: string,
+    id?: string | number
+  },
+  id: string | number;
+  _id?: string|number;
+  title? :string;
+  thumbnail?: string;
+}
+
 
 const getGridClassName = (index: number) => {
   const patterns = ["col-span-1", "col-span-1", "col-span-1", "col-span-1", "col-span-1", "col-span-1"]
@@ -17,8 +29,15 @@ const getGridClassName = (index: number) => {
 }
 
 const VideoGallery = () => {
-  const [videoCards, setVideoCards] = useState([]);
-  const [allVideos, setAllVideos] = useState<any[]>([]);
+  interface VideoCardType {
+    id: string;
+    content: VideoData;
+    className: string;
+    thumbnail: string;
+  }
+
+  const [videoCards, setVideoCards] = useState<VideoCardType[]>([]);
+  const [allVideos, setAllVideos] = useState<VideoCardType[]>([]);
   const [query, setQuery] = useState("");
   const [filterType, setFilterType] = useState("all");
   const [debouncedQuery, setDebouncedQuery] = useState("");
@@ -34,7 +53,9 @@ const VideoGallery = () => {
 
 
   useEffect(() => {
-    const filtered: any = allVideos.filter((video: any) => {
+
+    const filtered = allVideos.filter((vid) => {
+      const video = vid as vd;
 
       const matchesSearch = video.content.title
         .toLowerCase()
@@ -82,20 +103,20 @@ const VideoGallery = () => {
     setVideoCards(() => {
       return data?.DATA.map((video: any, index: number) => {
         return {
-          id: video._id,
+          id: String(video._id),
           content: video,
           className: getGridClassName(index),
-          // thumbnail: `/placeholder.svg?height=400&width=600&query=video thumbnail for ${video.title}`,
+          thumbnail: video.thumbnail || `/placeholder.svg?height=400&width=600&query=video thumbnail for ${video.title}`,
         }
       })
     })
     setAllVideos(() => {
-      return data?.DATA.map((video: any, index: number) => {
+      return data?.DATA.map((video: vd, index: number) => {
         return {
-          id: video._id,
+          id: String(video._id),
           content: video,
           className: getGridClassName(index),
-          // thumbnail: `/placeholder.svg?height=400&width=600&query=video thumbnail for ${video.title}`,
+          thumbnail: video.thumbnail || `/placeholder.svg?height=400&width=600&query=video thumbnail for ${video.title}`,
         }
       })
     })
@@ -117,7 +138,7 @@ const VideoGallery = () => {
         toast.success(data.MESSAGE);
       }
     });
-    setAllVideos((prevVideos) => prevVideos.filter((video) => video.id !== id));
+    setAllVideos((prevVideos) => prevVideos.filter((video) => video?.id !== id));
   }
 
   const handleVideoShare = (video: VideoData) => {
@@ -152,30 +173,30 @@ const VideoGallery = () => {
             confirm sharing {activeVideo?.title}
           </div>
           <button
-          onClick={()=>{
-            feedPostMutation.mutate({
-              userId : user?._id as string,
-              videoId : activeVideo?._id as string
-            },{
-              onSuccess : (data : any)=>{
-                if(!data.SUCCESS){
-                  toast.error(data.MESSAGE)
-                  return
+            onClick={() => {
+              feedPostMutation.mutate({
+                userId: user?._id as string,
+                videoId: activeVideo?._id as string
+              }, {
+                onSuccess: (data: any) => {
+                  if (!data.SUCCESS) {
+                    toast.error(data.MESSAGE)
+                    return
+                  }
+                  toast.success(data.MESSAGE)
+
+                },
+                onError: () => {
+                  toast.error("Failed to post to feed")
+                },
+                onSettled: () => {
+                  setisOpen(false)
+                  setActiveVideo(null)
                 }
-                toast.success(data.MESSAGE)
-               
-              },
-              onError : ()=>{
-                toast.error("Failed to post to feed")
-              },
-              onSettled : () => {
-                 setisOpen(false)
-                setActiveVideo(null)
-              }
-            })
-          }}
-          className="mt-4 bg-orange-600 text-white hover:bg-orange-400 hover:cursor-pointer p-2 rounded-lg">
-            POST TO FEED <FaSignsPost className="inline-block ml-2" /> 
+              })
+            }}
+            className="mt-4 bg-orange-600 text-white hover:bg-orange-400 hover:cursor-pointer p-2 rounded-lg">
+            POST TO FEED <FaSignsPost className="inline-block ml-2" />
           </button>
         </div>
       )}

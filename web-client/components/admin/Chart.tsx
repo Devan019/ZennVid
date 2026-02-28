@@ -5,7 +5,6 @@ import React from 'react'
 import {
   Bar,
   BarChart,
-  CartesianGrid,
   Tooltip,
   XAxis,
   YAxis,

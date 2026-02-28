@@ -1,7 +1,7 @@
 import { Rocket } from "lucide-react";
 import Link from "next/link";
 import { FaUserAstronaut } from "react-icons/fa";
-import { GiAlienBug, GiPlanetCore } from "react-icons/gi";
+import { GiPlanetCore } from "react-icons/gi";
 import { TbAlienFilled } from "react-icons/tb";
 // import { Rocket, Alien, Planet, Astronaut } from "@/components/icons"; // You can use any icons library
 
@@ -23,7 +23,7 @@ export default function NotFound() {
         </h2>
         
         <p className="text-xl mb-8 text-gray-300">
-          You've reached the edge of the universe. The page you're looking for 
+          You{"'"}ve reached the edge of the universe. The page you{"'"}re looking for 
           has been abducted by aliens or lost in a black hole.
         </p>
 

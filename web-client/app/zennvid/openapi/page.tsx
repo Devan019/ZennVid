@@ -4,11 +4,10 @@ import { FRONTEND_ROUTES } from '@/constants/frontend_routes';
 import { useUser } from '@/context/UserProvider';
 import { Stats } from '@/lib/apiProvider';
 import { useQuery } from '@tanstack/react-query';
-import { motion, number } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { BookAIcon, Languages, Speaker } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { TbPhoto } from 'react-icons/tb';
 import { toast } from 'sonner';
 
 
@@ -75,7 +74,7 @@ export default function Dashboard() {
       api = (await query.refetch()).data
     }
 
-    let sts:Stats[] = []
+    const sts:Stats[] = []
     Object.entries(api.DATA).forEach((data) => {
       sts.push({
         name : data[0],

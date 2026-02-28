@@ -10,8 +10,8 @@ interface ApiEndpoint {
   endpoint: string;
   description: string;
   credits: number;
-  sampleRequest: any;
-  sampleResponse: any;
+  sampleRequest: object;
+  sampleResponse: object;
 }
 
 interface ApiDocumentationProps {

@@ -304,7 +304,7 @@ const page = () => {
       </Modal>
       <PaginationTable
         columns={columns}
-        data={tableData}
+        data={tableData as any}
         page={page}
         limit={limit}
         total={total}

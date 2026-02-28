@@ -54,7 +54,7 @@ const VideoCreator = () => {
       setvideoloading(false)
       return data;
     },
-    onSuccess: (data: any) => {
+    onSuccess: (data) => {
       console.log("syncStudio success:", data, data.DATA, data.DATA.url);
       if (!data.SUCCESS) {
         toast.error(data.MESSAGE);
@@ -64,7 +64,7 @@ const VideoCreator = () => {
       toast.success(data.MESSAGE);
       setDialogState(true);
     },
-    onError: (error: any) => {
+    onError: (error) => {
       // Handle error
       console.log("SADTalker error:", error);
     },

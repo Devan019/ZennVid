@@ -53,7 +53,7 @@ const generateSpringPath = (
   const perpX = -uy,
     perpY = ux;
 
-  let path = [];
+  const path = [];
   for (let i = 0; i < coilCount; i++) {
     const sx = x1 + ux * (i * d);
     const sy = y1 + uy * (i * d);
@@ -80,7 +80,10 @@ const generateSpringPath = (
   return path.join(' ');
 };
 
-function useMotionValueValue(mv: any) {
+function useMotionValueValue(mv:{
+  on: Function;
+  get: Function
+}) {
   return React.useSyncExternalStore(
     (callback) => {
       const unsub = mv.on('change', callback);

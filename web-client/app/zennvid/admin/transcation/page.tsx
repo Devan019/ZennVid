@@ -2,7 +2,6 @@
 import Chart from '@/components/admin/Chart';
 import MonthlyChart from '@/components/admin/monthlyChart';
 import { StatsCard } from '@/components/admin/StatCard';
-import { DataTable } from '@/components/common/data-table';
 import { PaginationTable } from '@/components/common/pagination-table';
 import { Button } from '@/components/ui/button';
 import { Transaction, TransactionStat } from '@/constants/admin_analisys';
@@ -10,17 +9,17 @@ import { ResponseData } from '@/constants/response';
 import { changeDailyRevenue, getTransactionCSV, getTransactionHistory, txStats } from '@/lib/apiProvider';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { ColumnDef } from '@tanstack/react-table';
-import { ChartBarIcon, ChevronLeft, ChevronRight, ClipboardEdit } from 'lucide-react';
-import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { ChartBarIcon, ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { CSVLink } from 'react-csv';
-import { FaMoneyBill, FaMoneyBillWave, FaSortAmountDown } from 'react-icons/fa';
-import { GiCreditsCurrency, GiPayMoney } from 'react-icons/gi';
+import { FaMoneyBillWave } from 'react-icons/fa';
+import { GiCreditsCurrency } from 'react-icons/gi';
 import { TbTransactionBitcoin } from 'react-icons/tb';
 import { toast } from 'sonner';
 
 
 
-const page = () => {
+const Page = () => {
   const [txStatsData, setTxStatsData] = useState<TransactionStat>();
   const [chartData, setChartData] = useState<any[]>([]);
   const [isMonthly, setIsMonthly] = useState(false);
@@ -282,8 +281,8 @@ const page = () => {
             limit={limit}
             total={total}
             totalPages={Math.ceil(total / limit)}
-            columns={columns}
-            data={tableData}
+            columns={columns as any}
+            data={tableData as any}
             searchTerm={search}
             onSearch={handleSearch}
             datePickerColumns={datePickerColumns}
@@ -299,4 +298,4 @@ const page = () => {
   )
 }
 
-export default page
+export default Page

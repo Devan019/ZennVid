@@ -9,7 +9,11 @@ const TerminalLoader = ({ completed, setCompleted, isVideoLoading, steps, progre
   completed: boolean;
   setCompleted: (completed: boolean) => void;
   isVideoLoading: boolean;
-  steps: any;
+  steps: {
+    label: string;
+    id: string;
+    duration: number;
+  }[];
   progress: any;
   setProgress: (progress: any) => void;
 }) => {
@@ -162,7 +166,7 @@ const TerminalLoader = ({ completed, setCompleted, isVideoLoading, steps, progre
 
           {/* Progress steps */}
           <div className="space-y-6">
-            {steps.map((step:any) => (
+            {steps.map((step) => (
               <div key={step.id} className="flex items-start">
                 <div className="flex-shrink-0 mt-1 mr-3">
                   {progress[step.id as keyof typeof progress] ? (

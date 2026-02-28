@@ -6,20 +6,19 @@ import { VideoStats } from '@/constants/admin_analisys';
 import { ResponseData } from '@/constants/response';
 import { changeDailyVideo, videostats, } from '@/lib/apiProvider';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { set } from 'date-fns';
-import { ChevronLeft, ChevronRight, VideoIcon, Videotape } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Videotape } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
 import { GiMagicHat, GiTalk } from 'react-icons/gi';
 import { toast } from 'sonner';
 
 
 
-const page = () => {
+const Page = () => {
   const [videoStatsData, setVideoStatsData] = useState<VideoStats>();
   const [chartData, setChartData] = useState<any[]>([]);
   const [isMonthly, setIsMonthly] = useState(false);
   const [videoChartData, setVideoChartData] = useState<any[]>([]);
-  const [isStyles, setIsStyles] = useState(false);
+  const [isStyles] = useState(false);
 
 
   const changeDailyVideoMutation = useMutation({
@@ -197,4 +196,4 @@ const page = () => {
   )
 }
 
-export default page
+export default Page

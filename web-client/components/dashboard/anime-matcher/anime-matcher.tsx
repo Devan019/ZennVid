@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Upload, Sparkles, User, Tv, Star, ImageIcon, Loader2 } from "lucide-react";
+import { Upload, Sparkles, User, Tv, ImageIcon, Loader2 } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { animeMatching } from "@/lib/apiProvider";
 import { toast } from "sonner";
@@ -47,7 +47,7 @@ const AnimeMatcher = () => {
         toast.success("Character matched successfully!");
       }
     },
-    onError: (error: any) => {
+    onError: (error) => {
       console.error(error);
       toast.error("An error occurred while matching");
     },

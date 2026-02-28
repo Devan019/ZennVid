@@ -16,7 +16,6 @@ export default function CreateApp() {
   const [apps, setApps] = useState<Array<{ _id: string; appName: string; created_at: string }>>([]);
   const [isOpen, setIsOpen] = useState(false);
   const { isAuthenticated, user } = useUser();
-  const [appStaus, setAppStaus] = useState(false)
   const [app, setApp] = useState<{ _id: string; appName: string; created_at: string }>();
   const [deleteId, setDeleteId] = useState<string | null>(null)
   const [updateId, setUpdateId] = useState<string | null>(null)
@@ -43,7 +42,7 @@ export default function CreateApp() {
       toast.success(data.MESSAGE);
       return null
     },
-    onError(error, variables, context) {
+    onError(error) {
       console.error('Error generating API key:', error);
 
     },
@@ -89,7 +88,9 @@ export default function CreateApp() {
       toast.success(data.MESSAGE);
 
       const apis = data.DATA.apis ?? data.DATA[0];
-      let tmp: any = [];
+      let tmp:{
+         _id: string; appName: string; created_at: string;
+      }[] = [];
       apis.forEach((api: { apps: any[] }) => {
         tmp = tmp.concat(api.apps);
       });
@@ -195,7 +196,7 @@ export default function CreateApp() {
               </p>
             ) : (
               <div className="space-y-3">
-                {apps.map((app: any) => (
+                {apps.map((app) => (
                   <div
                     key={app._id}
                     className="p-4 border border-gray-200 dark:border-gray-600 rounded-lg flex justify-between items-center"

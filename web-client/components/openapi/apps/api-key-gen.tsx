@@ -2,8 +2,6 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { FaEyeSlash } from 'react-icons/fa';
-import { CheckIcon, ClipboardIcon, EyeIcon } from 'lucide-react';
 
 interface ApiKeyGeneratorProps {
   onGenerate: (appname: string) => Promise<{ apiKey: string; success: boolean }>;
@@ -11,10 +9,9 @@ interface ApiKeyGeneratorProps {
 
 export default function ApiKeyGenerator({ onGenerate }: ApiKeyGeneratorProps) {
   const [appname, setAppname] = useState('');
-  const [apiKey, setApiKey] = useState('');
-  const [showApiKey, setShowApiKey] = useState(false);
+  const [, setApiKey] = useState('');
+  const [, setShowApiKey] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [copied, setCopied] = useState(false);
 
   const handleGenerate = async () => {
     if (!appname.trim()) return;
@@ -34,11 +31,6 @@ export default function ApiKeyGenerator({ onGenerate }: ApiKeyGeneratorProps) {
     }
   };
 
-  const copyToClipboard = async () => {
-    await navigator.clipboard.writeText(apiKey);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
 
   return (
     <motion.div

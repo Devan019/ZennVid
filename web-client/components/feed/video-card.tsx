@@ -1,11 +1,10 @@
 "use client"
 
-import { use, useEffect, useRef, useState } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import Image from "next/image"
+import {  useEffect, useRef, useState } from "react"
+import { motion } from "framer-motion"
 import { Heart, MessageCircle, Share2, Play, Pause } from "lucide-react"
 import { CommentPanel } from "./comment"
-import { User, useUser } from "@/context/UserProvider"
+import { useUser } from "@/context/UserProvider"
 import { useMutation } from "@tanstack/react-query"
 import { feedLikeCountUpdate } from "@/lib/apiProvider"
 import { ResponseData } from "@/constants/response"
@@ -53,10 +52,9 @@ interface VideoCardProps {
   feed: IFeed
   onNext: () => void
   onPrev: () => void
-  currentUserEmail?: string
 }
 
-export function VideoCard({ feed, onNext, onPrev, currentUserEmail }: VideoCardProps) {
+export function VideoCard({ feed }: VideoCardProps) {
   const [isPlaying, setIsPlaying] = useState(true)
   const [showComments, setShowComments] = useState(false)
   const [duration, setDuration] = useState("0:00")

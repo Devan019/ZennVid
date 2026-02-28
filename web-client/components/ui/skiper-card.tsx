@@ -82,11 +82,6 @@ function FeatureCard({
   )
 }
 
-const steps = [
-  { id: "1", name: "" },
-  { id: "2", name: "" },
-  { id: "3", name: "" },
-]
 
 export function SkiperCard({
   image = {},
