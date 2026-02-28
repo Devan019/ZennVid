@@ -31,7 +31,7 @@ const corsOptions = {
 //     });
 //   }
 // })
-// app.set("trust proxy", false);
+app.set("trust proxy", 1);
 // app.use(limiter)
 
 app.use(e.static("public"));
