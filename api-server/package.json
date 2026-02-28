@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon",
     "build": "tsc -p .",
-    "serve": "node dist/server",
+    "serve": "tsx src/server.ts",
     "start": "tsx src/server.ts"
   },
   "keywords": [],
