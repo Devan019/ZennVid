@@ -37,10 +37,10 @@ const imageGen = async (prompt: string) => {
   }
 }
 
-imageGen("A serene beach at sunset with vibrant colors and gentle waves").then(url => {
-  console.log("Generated image URL:", url);
-}).catch(error => {
-  console.error("Error generating image:", error);
-});
+// imageGen("A serene beach at sunset with vibrant colors and gentle waves").then(url => {
+//   console.log("Generated image URL:", url);
+// }).catch(error => {
+//   console.error("Error generating image:", error);
+// });
 
 export { imageGen };
