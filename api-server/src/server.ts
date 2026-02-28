@@ -17,21 +17,21 @@ const corsOptions = {
   credentials: true 
 };
 
-const limiter = rateLimit({
-	windowMs: 1 * 60 * 1000,
-	limit: 30, 
-	standardHeaders: 'draft-8', 
-	legacyHeaders: false,
-	ipv6Subnet: 56, 
-  handler : (req, res, next, options)  => {
-     res.status(options.statusCode || 429).json({
-      SUCCESS: false,
-      MESSAGE: "Too many requests, please try again after a minute",
-    });
-  }
-})
-app.set("trust proxy", false);
-app.use(limiter)
+// const limiter = rateLimit({
+// 	windowMs: 1 * 60 * 1000,
+// 	limit: 30, 
+// 	standardHeaders: 'draft-8', 
+// 	legacyHeaders: false,
+// 	ipv6Subnet: 56, 
+//   handler : (req, res, next, options)  => {
+//      res.status(options.statusCode || 429).json({
+//       SUCCESS: false,
+//       MESSAGE: "Too many requests, please try again after a minute",
+//     });
+//   }
+// })
+// app.set("trust proxy", false);
+// app.use(limiter)
 
 app.use(e.static("public"));
 
