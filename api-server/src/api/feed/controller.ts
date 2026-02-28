@@ -18,7 +18,7 @@ const feedCreate = expressAsyncHandler(async (req: Request, res: Response) => {
 const feedDelete = expressAsyncHandler(async (req: Request, res: Response) => {
   try {
     const { feedId } = req.params;
-    const response:ISendResponse = await deletedFeedService({ feedId });
+    const response:ISendResponse = await deletedFeedService({ feedId : feedId as string });
     return formatResponse(res, response.status, response.message, response.success, response.data);
   }
   catch (error) {
@@ -44,7 +44,7 @@ const feedLikeCountUpdate = expressAsyncHandler(async (req: Request, res: Respon
     }
     const { userId } = LikeSchema.parse(req.body);
     console.log("feedId:", feedId, "userId:", userId);
-    const response:ISendResponse = await LikeCountUpdateService({ feedId, userId });
+    const response:ISendResponse = await LikeCountUpdateService({ feedId: feedId as string, userId });
     return formatResponse(res, response.status, response.message, response.success, response.data); 
   } catch (error) {
     return formatResponse(res, 500, "Internal Server Error", false, null);
@@ -58,7 +58,7 @@ const feedComment = expressAsyncHandler(async (req: Request, res: Response) => {
     if(!feedId){
       return formatResponse(res, 400, "Feed ID is required", false, null);
     }
-    const response:ISendResponse = await feedCommentService({ feedId, userId, content });
+    const response:ISendResponse = await feedCommentService({ feedId: feedId as string, userId, content });
     return formatResponse(res, response.status, response.message, response.success, response.data);
   } catch (error) {
     return formatResponse(res, 500, "Internal Server Error", false, null);
@@ -68,7 +68,7 @@ const feedComment = expressAsyncHandler(async (req: Request, res: Response) => {
 const feedCommentDelete = expressAsyncHandler(async (req: Request, res: Response) => {
   try {
     const { commentId } = req.params;
-    const response:ISendResponse = await feedCommentDeleteService({ commentId });
+    const response:ISendResponse = await feedCommentDeleteService({ commentId: commentId as string });
     return formatResponse(res, response.status, response.message, response.success, response.data);
   } catch (error) {
     return formatResponse(res, 500, "Internal Server Error", false, null);

@@ -37,7 +37,7 @@ export const updateUser = expressAsyncHandler(async(req: Request, res: Response)
     console.log("Request body:", req.body, " id " + req.params.id);
     const { username, credits } = UserUpdateValidation.parse(req.body);
     const userId = req.params.id;
-    const response:ISendResponse = await UpdateUserService(userId, username, credits);
+    const response:ISendResponse = await UpdateUserService(userId as string, username, credits);
     return formatResponse(res, response.status, response.message, response.success, response.data);
   } catch (error) {
     return formatResponse(res, 500, "Internal server error", false, error);
@@ -47,7 +47,7 @@ export const updateUser = expressAsyncHandler(async(req: Request, res: Response)
 export const getUser = expressAsyncHandler(async(req: Request, res: Response) => {
   try {
     const userId = req.params.id;
-    const user:ISendResponse = await GetUserByIdService(userId);
+    const user:ISendResponse = await GetUserByIdService(userId as string);
     if (!user) {
       return formatResponse(res, 404, "User not found", false, null);
     }
@@ -60,7 +60,7 @@ export const getUser = expressAsyncHandler(async(req: Request, res: Response) =>
 export const deleteUser = expressAsyncHandler(async(req: Request, res: Response) => {
   try {
     const userId = req.params.id;
-    const deleteResponse: ISendResponse = await DeleteUserService(userId);
+    const deleteResponse: ISendResponse = await DeleteUserService(userId as string);
     return formatResponse(res, deleteResponse.status, deleteResponse.message, deleteResponse.success, null);
   }
   catch (error) {

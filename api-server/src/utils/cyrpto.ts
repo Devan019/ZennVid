@@ -4,7 +4,7 @@ const td = new TextDecoder()
 async function getSubtle() {
   if (typeof globalThis.crypto?.subtle !== "undefined") return globalThis.crypto.subtle
   const { webcrypto } = await import("node:crypto")
-  return webcrypto.subtle
+  return webcrypto.subtle as SubtleCrypto
 }
 async function getRandomBytes(len: number) {
   if (globalThis.crypto?.getRandomValues) {

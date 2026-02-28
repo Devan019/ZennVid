@@ -63,7 +63,7 @@ export const createBulkVideos = expressAsyncHandler(async (req: Request, res: Re
     
     const videosByType = {
       MAGIC_VIDEO: createdVideos.filter(v => v.type === VideoType.MAGIC_VIDEO).length,
-      SADTALKER: createdVideos.filter(v => v.type === VideoType.SADTALKER).length
+      SADTALKER: createdVideos.filter(v => v.type === VideoType.SYNC_STUDIO_VIDEO).length
     };
 
     return formatResponse(

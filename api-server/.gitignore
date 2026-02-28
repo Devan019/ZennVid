@@ -5,3 +5,5 @@ node_modules/
 videos
 
 public/tryout/
+
+dist/

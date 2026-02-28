@@ -7,13 +7,13 @@ const imageGen = async (prompt: string) => {
     const result = await nebius.images.generate({
       "model": "black-forest-labs/flux-schnell",
       "response_format": "url",
-      "response_extension": "png",
-      "width": 1024,
-      "height": 1024,
-      "num_inference_steps": 4,
-      "negative_prompt": "",
-      "seed": -1,
-      "loras": null,
+      // "response_extension": "png",
+      // "width": 1024,
+      // "height": 1024,
+      // "num_inference_steps": 4,
+      // "negative_prompt": "",
+      // "seed": -1,
+      // "loras": null,
       "prompt": prompt
     });
     
@@ -37,10 +37,10 @@ const imageGen = async (prompt: string) => {
   }
 }
 
-// imageGen("A serene beach at sunset with vibrant colors and gentle waves").then(url => {
-//   console.log("Generated image URL:", url);
-// }).catch(error => {
-//   console.error("Error generating image:", error);
-// });
+imageGen("A serene beach at sunset with vibrant colors and gentle waves").then(url => {
+  console.log("Generated image URL:", url);
+}).catch(error => {
+  console.error("Error generating image:", error);
+});
 
 export { imageGen };
