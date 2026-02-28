@@ -6,12 +6,13 @@ import { TestRouter } from "./test/route";
 import { OAuthRouter } from "./oauth/route";
 import { ApiRouter } from "./api/route";
 import connectToMongo from "./utils/mongoConnection";
-import { rateLimit } from 'express-rate-limit'
+import { FRONTEND_URL } from "./env_var";
+// import { rateLimit } from 'express-rate-limit'
 const app = e();
 app.use(e.json());
 
 const corsOptions = {
-  origin: ["http://localhost:3000", "http://localhost:3001"],
+  origin: [FRONTEND_URL],
   methods: ['GET', 'POST', 'PUT', 'DELETE'], 
   allowedHeaders: ['Content-Type', 'Authorization'], 
   credentials: true 
