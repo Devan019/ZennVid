@@ -1,6 +1,9 @@
 import { configDotenv } from "dotenv";
 configDotenv();
 
+
+export const NODE_ENV = process.env.NODE_ENV || "development";
+
 export const PORT = process.env.PORT || 8000;
 export const MONGO_URI = process.env.MINGODB_PROD || "mongodb://localhost:27017/zennvid";
 export const AUTH_SECRET = process.env.AUTH_SECRET

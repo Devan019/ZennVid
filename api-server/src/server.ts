@@ -7,15 +7,17 @@ import { OAuthRouter } from "./oauth/route";
 import { ApiRouter } from "./api/route";
 import connectToMongo from "./utils/mongoConnection";
 import { FRONTEND_URL } from "./env_var";
+
+
 // import { rateLimit } from 'express-rate-limit'
 const app = e();
 app.use(e.json());
 
 const corsOptions = {
   origin: [FRONTEND_URL],
-  methods: ['GET', 'POST', 'PUT', 'DELETE'], 
-  allowedHeaders: ['Content-Type', 'Authorization'], 
-  credentials: true 
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
 };
 
 // const limiter = rateLimit({
@@ -43,11 +45,12 @@ app.use("/test", TestRouter);
 app.use("/oauth", OAuthRouter);
 app.use("/api", ApiRouter);
 
-const PORT = process.env.PORT || 8000;
+const PORT = parseInt(process.env.PORT ?? "8000");
+const IP = process.env.IP ?? "localhost";
 
 const startServer = async () => {
-  app.listen(PORT, () => {
-    console.log(`Server is running on port http://localhost:${PORT}`);
+  app.listen(PORT, IP, () => {
+    console.log(`Server is running on port http://${IP}:${PORT}`);
   });
 
   await connectToMongo();

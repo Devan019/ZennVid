@@ -1,4 +1,5 @@
 import { Response } from "express";
+import { NODE_ENV } from "../env_var";
 
 export const SetCookie = (
   res: Response,
@@ -8,9 +9,9 @@ export const SetCookie = (
 ) => {
   res.cookie(key, value, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: NODE_ENV === "production",
     sameSite:
-      process.env.NODE_ENV === "production" ? "none" : "lax",
+      NODE_ENV === "production" ? "none" : "lax",
     maxAge: time * 1000,
   });
 };
