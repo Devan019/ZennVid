@@ -1,24 +1,11 @@
-
-const auth = process.env.NEXT_PUBLIC_AUTH_URL;
-const oauth = process.env.NEXT_PUBLIC_OAUTH_URI;
-const api = process.env.NEXT_PUBLIC_API_URL;
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-
-if (!auth) {
-  throw new Error("AUTH URL not set");
-}
-
-if (!oauth) {
-  throw new Error("OAUTH URL not set");
-}
-
-if (!api) {
-  throw new Error("API URL not set")
-}
-
 if(!baseUrl) {
   throw new Error("BASE URL not set")
 }
+
+const auth = baseUrl + "/auth";
+const oauth = baseUrl + "/oauth";
+const api = baseUrl + "/api";
 
 export const BASE_URL = baseUrl;
 
