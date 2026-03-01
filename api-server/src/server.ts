@@ -6,7 +6,7 @@ import { TestRouter } from "./test/route";
 import { OAuthRouter } from "./oauth/route";
 import { ApiRouter } from "./api/route";
 import connectToMongo from "./utils/mongoConnection";
-import { FRONTEND_URL } from "./env_var";
+import { FRONTEND_URL, IP_ADDRESS, PORT } from "./env_var";
 
 
 // import { rateLimit } from 'express-rate-limit'
@@ -45,12 +45,9 @@ app.use("/test", TestRouter);
 app.use("/oauth", OAuthRouter);
 app.use("/api", ApiRouter);
 
-const PORT = parseInt(process.env.PORT ?? "8000");
-const IP = process.env.IP ?? "localhost";
-
 const startServer = async () => {
-  app.listen(PORT, IP, () => {
-    console.log(`Server is running on port http://${IP}:${PORT}`);
+  app.listen(PORT, IP_ADDRESS, () => {
+    console.log(`Server is running on port http://${IP_ADDRESS}:${PORT}`);
   });
 
   await connectToMongo();
