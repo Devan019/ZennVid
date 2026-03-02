@@ -21,10 +21,6 @@ export const loginWithGoogle = expressAsyncHandler((req: Request, res: Response)
 export const oauthCallback = expressAsyncHandler(async (req: Request, res: Response) => {
   try {
 
-    if (req.cookies.token) {
-      return res.redirect("/auth/user");
-    }
-
     const { code } = req.query;
     const { idToken } = await getTokens(code as string);
     const { data } = await getOAuthUser(idToken);
@@ -64,19 +60,3 @@ export const oauthCallback = expressAsyncHandler(async (req: Request, res: Respo
     return formatResponse(res, 500, "Failed to retrieve user data from Google", false, "Error");
   }
 });
-
-// "payload": {
-//       "iss": "https://accounts.google.com",
-//       "azp": "349832524304-sj0k60nu0jd67peeujhbr6jmk9fm55gv.apps.googleusercontent.com",
-//       "aud": "349832524304-sj0k60nu0jd67peeujhbr6jmk9fm55gv.apps.googleusercontent.com",
-//       "sub": "103451832644510589179",
-//       "hd": "ddu.ac.in",
-//       "email": "23ceubs023@ddu.ac.in",
-//       "email_verified": true,
-//       "at_hash": "q51tqI1CknadtSDKWq-rRA",
-//       "name": "A4_CE068_Devan Chauhan",
-//       "picture": "https://lh3.googleusercontent.com/a/ACg8ocJYkUUAbAkMWHtD_2V8uA3i1mGD3UnlljuFfzbLWYsdwYQwqA=s96-c",
-//       "given_name": "A4_CE068_Devan Chauhan",
-//       "iat": 1753954615,
-//       "exp": 1753958215
-//     }
