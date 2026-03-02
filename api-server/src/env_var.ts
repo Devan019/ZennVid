@@ -7,6 +7,7 @@ export const IS_PROD = NODE_ENV === "production";
 export const IP_ADDRESS = process.env.IP || "localhost";
 export const PORT = parseInt(process.env.PORT ?? "8000");
 export const MONGO_URI = process.env.MINGODB_PROD || "mongodb://localhost:27017/zennvid";
+export const DOMAIN = process.env.DOMAIN || "localhost";
 export const AUTH_SECRET = process.env.AUTH_SECRET
 export const AUTH_GOOGLE_ID = process.env.AUTH_GOOGLE_ID
 export const AUTH_GOOGLE_SECRET = process.env.AUTH_GOOGLE_SECRET
