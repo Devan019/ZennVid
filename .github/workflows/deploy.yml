@@ -9,21 +9,26 @@ jobs:
 
   frontend:
     runs-on: ubuntu-latest
-
+    
     steps:
       - uses: actions/checkout@v3
-
+    
       - name: Install frontend deps
         run: |
           cd web-client
           npm install
-
+    
+      - name: Create .env file
+        run: |
+          cd web-client
+          echo "NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}" >> .env
+    
       - name: Build frontend
         run: |
           cd web-client
           npm run build
           npm run export
-
+    
       - name: Deploy to S3
         uses: jakejarvis/s3-sync-action@master
         with:
