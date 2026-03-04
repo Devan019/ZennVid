@@ -2,13 +2,13 @@ import { User } from "./model/User";
 import { TmpUser } from "./model/tmpUser";
 import { getOtp } from "../utils/OptGenerater";
 import { Provider, UserRole } from "../constants/provider";
-import bcrypt from "bcrypt"
 import { passwordCompare } from "../utils/passwordCompare";
 import { AUTH_SECRET } from "../env_var";
 import jwt from "jsonwebtoken"
 import { sendMail } from "../utils/SendMail";
 import { generateJWTtoken } from "../utils/jwtAssign";
 import { IUser } from "../constants/interfaces";
+import { comparePassword, hashPassword } from "../utils/hash_password";
 
 
 export const createTmpUserService = async (
@@ -33,7 +33,7 @@ export const createTmpUserService = async (
     if (tmpExitsUser) {
       await TmpUser.deleteOne({ _id: tmpExitsUser._id })
     }
-    const encodePassword = await bcrypt.hash(password, 10);
+    const encodePassword = await hashPassword(password); ;
     const newUser = new TmpUser({
       email,
       password: encodePassword,
@@ -124,7 +124,7 @@ export const signInUserService = async ({ email, password, provider }: { email: 
       };
     }
 
-    const passwordMatch = await passwordCompare(password, user.password);
+    const passwordMatch = await comparePassword(password, user.password);
 
     if (!user || !(passwordMatch)) {
       return {
@@ -226,7 +226,7 @@ export const CreateAdminService = async ({ email, password, username }: { email:
         data: null
       }
     }
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await hashPassword(password);
     const newAdmin = new User({
       email,
       password: hashedPassword,
