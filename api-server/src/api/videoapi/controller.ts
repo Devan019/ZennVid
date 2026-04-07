@@ -18,6 +18,7 @@ export const getVideos = expressAsyncHandler(async (req: Request, res: Response)
     //   return formatResponse(res, 200, "Videos fetched successfully", true,JSON.parse(rclient));
     // }
     const videos = await VideoGenerater.find({ user: req.user.id });
+    console.log("Videos fetched from DB:", videos);
     // await redisClient.set(`zennvid:videos:${id}`, JSON.stringify(videos), 'EX', 60*60);
     return formatResponse(res, 200, "Videos fetched successfully", true, videos);
   } catch (error) {

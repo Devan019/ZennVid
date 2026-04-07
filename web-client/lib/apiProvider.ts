@@ -1,9 +1,10 @@
 import { ADMIN_USER, ANIME_MATCHING, AUTH_CREDENTIALS_URI, CREATEAPP, CSV_USERS, DAILY_DEVELOPER, DAILY_USER, DAILY_VIDEO, DEVELOPER_STATS, FEED, generateVideo, GETAPPS, getVideos, OPENAPI_STATS, SEND_KEY_URI, SYNCSTUDIO_API, TRANSACTION_CSV, TX_CHARTCHANGE, TX_HISTORY, TX_STATS, UPDATE_CREDITS, USER_STATS, userProfileRoute, VIDEO_STATS } from "@/constants/backend_routes";
 import axios from "axios";
+import { getCloudinaryUrl } from "./getPublicUrl";
 
-interface Error{
-  code ?: string;
-  response?:{
+interface Error {
+  code?: string;
+  response?: {
     data: object
   }
 }
@@ -107,7 +108,18 @@ export const getUserVideos = async () => {
     const api = await axios.get(`${getVideos}`, {
       withCredentials: true,
     });
-    return api.data;
+    const data = api.data;
+    if (!data?.DATA || !Array.isArray(data.DATA)) {
+      return data;
+    }
+
+    return {
+      ...data,
+      DATA: data.DATA.map((video: any) => ({
+        ...video,
+        videoUrl: getCloudinaryUrl(video.videoMetadata),
+      })),
+    };
   } catch (error) {
     const err = error as Error;
     return err.response?.data;
@@ -436,7 +448,21 @@ export const feedCreate = async ({ userId, videoId }: { userId: string, videoId:
 export const getFeedPosts = async () => {
   try {
     const api = await axios.get(`${FEED}`, { withCredentials: true });
-    return api.data;
+    const data = api.data;
+    if (!data?.DATA || !Array.isArray(data.DATA)) {
+      return data;
+    }
+
+    return {
+      ...data,
+      DATA: data.DATA.map((feed: any) => ({
+        ...feed,
+        video: {
+          ...feed.video,
+          videoUrl: feed?.video?.videoUrl || getCloudinaryUrl(feed?.video?.videoMetadata),
+        },
+      })),
+    };
   } catch (error) {
     const err = error as Error;
     return err.response?.data;

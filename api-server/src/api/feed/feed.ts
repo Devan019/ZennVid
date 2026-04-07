@@ -23,7 +23,7 @@ const CommentSchema = new Schema({
 const FeedSchema = new Schema({
   video : {
     type: Schema.Types.ObjectId,
-    ref: "VideoGenerater",
+    ref: "Video",
     required: true
   },
   user : {

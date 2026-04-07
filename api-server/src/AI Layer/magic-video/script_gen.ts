@@ -1,28 +1,45 @@
 import { groq } from "../helpers/groq_client";
 
-const scriptGen = async(title: string, style: string, seconds: number, language: string) => {
+const scriptGen = async (title: string, style: string, seconds: number, language: string) => {
   try {
 
     //calculate words
-    let words = 25;
-    if (language.toLowerCase() === "english") {
-      words = 30;
-    }
+    let words = 30;
 
     //design prompt
-    const prompt = `Generate a short story video script titled '${title}' in '${style}' style.
-        Break it into exactly 1 visual scenes. Each scene must be a JSON object with:\n
-        - 'prompt': a detailed image generation prompt (string)\n
-        - 'description': a vivid short narration (string)\n
-        Assume ${words} words per second.\n
+    const prompt = `
+Generate a short cinematic video script.
 
-        Make consice descriptions that fit the total video length of ${seconds} seconds. The total speaking time for all descriptions must be close to ${seconds} seconds without exceeding it.\n\n
+Title: ${title}
+Style: ${style}
+Language: English
+Duration: ${seconds} seconds
 
-        story must be engaging and suitable for a short video format. The visual scene should be rich in detail to inspire compelling image generation.
+Instructions:
+- Divide the story into EXACTLY 5 scenes
+- Each scene must contain:
+  - "prompt": a highly detailed cinematic image generation prompt
+  - "description": short narration (1-2 sentences)
 
-        Make short and sweet descriptions that fit the total video length of ${seconds} seconds. The total speaking time for all descriptions must be close to ${seconds} seconds without exceeding it.\n\n
+- Keep total narration length suitable for ${seconds} seconds
+- Make the story engaging, emotional, and visually rich
 
-         **IMPORTANT: Return ONLY a valid JSON array of exactly 1 objects. No explanation, no markdown.**\n\n`
+Output format:
+{
+  "scenes": [
+    { "prompt": "...", "description": "..." },
+    { "prompt": "...", "description": "..." },
+    { "prompt": "...", "description": "..." },
+    { "prompt": "...", "description": "..." },
+    { "prompt": "...", "description": "..." }
+  ]
+}
+
+Rules:
+- Return ONLY valid JSON
+- No markdown
+- No extra text
+`;
 
     //call llm
     const response = await groq.chat.completions.create({
@@ -32,13 +49,14 @@ const scriptGen = async(title: string, style: string, seconds: number, language:
           content: prompt,
         },
       ],
-      model: "openai/gpt-oss-20b",
+      model: "openai/gpt-oss-20b"
     });
 
-    response.choices[0].message.content = response.choices[0].message.content?.replace(/\\n/g, "\n") ?? "";
+
+    const res = response.choices[0].message?.content?.replace(/\\n/g, "\n") ?? "";
 
     //parse response
-    const script = JSON.parse(response.choices[0].message.content);
+    const script = JSON.parse(res);
     return script;
 
   } catch (error) {

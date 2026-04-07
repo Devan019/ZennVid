@@ -60,7 +60,7 @@ const VideoCreator = () => {
         toast.error(data.MESSAGE);
         return;
       }
-      setVideoUrl(data.DATA.url);
+      setVideoUrl(data.DATA.videoUrl);
       toast.success(data.MESSAGE);
       setDialogState(true);
     },

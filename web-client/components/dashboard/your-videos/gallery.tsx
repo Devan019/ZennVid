@@ -9,17 +9,32 @@ import { toast } from "sonner"
 import { Input } from "@/components/ui/input"
 import { FaSignsPost } from "react-icons/fa6"
 import Modal from "@/components/common/Modal"
+import { getCloudinaryUrl } from "@/lib/getPublicUrl"
 
-interface vd {
-  content: {
-    title: string,
-    type: string,
-    id?: string | number
-  },
-  id: string | number;
-  _id?: string|number;
-  title? :string;
-  thumbnail?: string;
+interface ApiVideo {
+  _id: string
+  user: string
+  type: string
+  title: string
+  style?: string
+  language?: string
+  voiceCharacter?: string
+  createdAt?: string
+  created_at?: string
+  thumbnail?: string
+  videoUrl?: string
+  videoMetadata?: {
+    publicId: string
+    resourceType: string
+    format: string
+  }
+}
+
+interface VideoResponse {
+  MESSAGE?: string
+  SUCCESS?: boolean
+  ERROR?: unknown
+  DATA?: ApiVideo[]
 }
 
 
@@ -55,12 +70,12 @@ const VideoGallery = () => {
   useEffect(() => {
 
     const filtered = allVideos.filter((vid) => {
-      const video = vid as vd;
+      const video = vid.content
 
-      const matchesSearch = video.content.title
+      const matchesSearch = video.title
         .toLowerCase()
         .includes(debouncedQuery.toLowerCase())
-      const matchesType = filterType === "all" ? true : video.content.type === filterType
+      const matchesType = filterType === "all" ? true : video.type === filterType
       return matchesSearch && matchesType
     })
     setVideoCards(filtered)
@@ -91,17 +106,30 @@ const VideoGallery = () => {
   });
 
   async function main() {
-    let data: any = videoQuery.data
+    let data: VideoResponse | undefined = videoQuery.data as VideoResponse | undefined
     if (!data) {
-      data = (await videoQuery.refetch()).data
+      data = (await videoQuery.refetch()).data as VideoResponse | undefined
     }
-    if (data && !data.SUCCESS) {
+    if (!data) {
+      toast.error("Unable to fetch videos");
+      return;
+    }
+    if (data.SUCCESS === false) {
       toast.error(data.MESSAGE);
       return;
     }
     data && data.MESSAGE && toast.success(data.MESSAGE);
+    const normalizedVideos: VideoData[] = (data.DATA || []).map((video) => ({
+      ...video,
+      videoUrl: video.videoUrl || (video.videoMetadata ? getCloudinaryUrl(video.videoMetadata) : ""),
+      created_at: video.created_at || video.createdAt || new Date().toISOString(),
+      style: video.style || "default",
+      language: video.language || "unknown",
+      voiceCharacter: video.voiceCharacter || "unknown",
+    }))
+
     setVideoCards(() => {
-      return data?.DATA.map((video: any, index: number) => {
+      return normalizedVideos.map((video, index: number) => {
         return {
           id: String(video._id),
           content: video,
@@ -111,7 +139,7 @@ const VideoGallery = () => {
       })
     })
     setAllVideos(() => {
-      return data?.DATA.map((video: vd, index: number) => {
+      return normalizedVideos.map((video, index: number) => {
         return {
           id: String(video._id),
           content: video,
@@ -226,7 +254,7 @@ const VideoGallery = () => {
           >
             <option value="all">All Types</option>
             <option value="magic_video">Magic Video</option>
-            <option value="SadTalker">Sadtalker</option>
+            <option value="sync_studio_video">Sync Studio</option>
             {/* Add more types if your data has them */}
           </select>
         </div>
@@ -262,7 +290,7 @@ const VideoGallery = () => {
           >
             <option value="all">All Types</option>
             <option value="magic_video">Magic Video</option>
-            <option value="SadTalker">Sadtalker</option>
+            <option value="sync_studio_video">Sync Studio</option>
             {/* Add more types if your data has them */}
           </select>
         </div>

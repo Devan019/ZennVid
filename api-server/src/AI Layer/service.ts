@@ -33,7 +33,7 @@ const createMagicVideo = async (
     console.log("Let's go with magic video creation!");
     //1. get script
     //max tries
-    const MAX_RETRIES = 3;
+    const MAX_RETRIES = 14;
     let script = null;
     let attempts = 0;
     while (!script && attempts < MAX_RETRIES) {
@@ -50,13 +50,15 @@ const createMagicVideo = async (
       console.log("Script generation failed, exiting.");
       return null;
     }
+
     //2. generate images 
-    const prompts = script.map((scene: any) => scene.prompt);
+    const scenes = script.scenes ?? [];
+    const prompts = scenes.map((scene: any) => scene.prompt);
     const imagePaths = await Promise.all(prompts.map(async (prompt: string) => await imageGen(prompt)));
     console.log("\n\n\n\n\nStage 2: cleared",imagePaths);
 
     //3. generate audio
-    let audioData = script.map((scene: any) => scene.description).join("\n");
+    let audioData = scenes.map((scene: any) => scene.description).join("\n");
     if (language.toLowerCase() !== "english") {
       //translate it
       audioData = await translateService({

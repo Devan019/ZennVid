@@ -38,9 +38,10 @@ const getFeedsService = async() => {
       .populate('user', 'username profilePicture')
       .populate({
         path: 'video',
-        select: 'videoUrl type title style language voiceCharacter',
+        select: 'type title style language voiceCharacter videoMetadata',
       })
       .populate('comments.user', 'username profilePicture')
+      // .populate('video.videoMetadata', 'publicId formate resourceType')
       .sort({ createdAt: -1 });
     return {
       status: 200,

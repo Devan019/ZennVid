@@ -1,6 +1,6 @@
 "use client"
 
-import {  useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { motion } from "framer-motion"
 import { Heart, MessageCircle, Share2, Play, Pause } from "lucide-react"
 import { CommentPanel } from "./comment"
@@ -16,6 +16,11 @@ export interface IFeed {
   video: {
     _id: string;
     videoUrl: string;
+    videoMetadata?: {
+      publicId: string;
+      resourceType: string;
+      format: string;
+    };
     type: string;
     title?: string;
     style?: string;
@@ -24,8 +29,9 @@ export interface IFeed {
   };
   user: {
     _id: string;
-    email: string;
+    email?: string;
     username: string;
+    profilePicture?: string;
   };
   likes: {
     _id: string;
@@ -37,7 +43,7 @@ export interface IFeed {
     _id: string;
     user: {
       username: string;
-      _id : string;
+      _id: string;
       profilePicture?: string;
     }
     content: string;
@@ -58,39 +64,39 @@ export function VideoCard({ feed }: VideoCardProps) {
   const [isPlaying, setIsPlaying] = useState(true)
   const [showComments, setShowComments] = useState(false)
   const [duration, setDuration] = useState("0:00")
-  const {user} = useUser();
+  const { user } = useUser();
   const [isLiked, setIsLiked] = useState(
-     feed?.likes?.some((like) => like?.user === user?._id) || false
+    feed?.likes?.some((like) => like?.user === user?._id) || false
   )
   const [likeCount, setLikeCount] = useState(feed?.likes?.length)
   const [timeSincePosted, setTimeSincePosted] = useState("");
 
   useEffect(() => {
     setTimeSincePosted(getTimeSince(new Date(feed.createdAt)));
-  },[]);
+  }, []);
 
 
   const likeMutation = useMutation({
-    mutationKey : ["likeVideo"],
+    mutationKey: ["likeVideo"],
     mutationFn: async () => {
       return await feedLikeCountUpdate({
-        feedId : feed._id,
-        userId : user?._id || ""
+        feedId: feed._id,
+        userId: user?._id || ""
       })
     },
-    onSuccess : (data:ResponseData) => {
-      if(data.SUCCESS){
+    onSuccess: (data: ResponseData) => {
+      if (data.SUCCESS) {
         setLikeCount(data.DATA.likeCount);
         setIsLiked(data.DATA.isLiked);
         toast.success(data.MESSAGE);
-      }else{
+      } else {
         toast.error(data.MESSAGE);
       }
     },
-    onError : () => {
+    onError: () => {
       toast.error("An error occurred while updating like status.");
     }
-    
+
   })
 
 
@@ -99,7 +105,7 @@ export function VideoCard({ feed }: VideoCardProps) {
     likeMutation.mutate();
   }
 
-  
+
 
 
   const videoRef = useRef<HTMLVideoElement | null>(null)
@@ -117,7 +123,7 @@ export function VideoCard({ feed }: VideoCardProps) {
   }
 
   const onLoadVideo = () => {
-    if(videoRef.current) {
+    if (videoRef.current) {
       const totalSeconds = Math.floor(videoRef.current.duration);
       const minutes = Math.floor(totalSeconds / 60);
       const seconds = totalSeconds % 60;
@@ -170,13 +176,13 @@ export function VideoCard({ feed }: VideoCardProps) {
         >
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-zinc-500 flex items-center justify-center text-white font-bold text-sm border-2 border-white/30 dark:border-white/40">
-              {feed?.user?.username.charAt(0).toUpperCase()}
+              {feed?.user?.username?.charAt(0)?.toUpperCase() || "U"}
             </div>
             <div className="flex-1 min-w-0">
               <h3 className="dark:text-white text-black font-semibold text-sm truncate">{feed?.user?.username}</h3>
               <p className="text-black dark:text-white/80 text-xs">{duration}</p>
             </div>
-            
+
           </div>
         </motion.div>
 
@@ -266,14 +272,14 @@ export function VideoCard({ feed }: VideoCardProps) {
               navigator.clipboard.writeText(shareText)
               navigator.share
                 ? navigator
-                    .share({
-                      title: feed?.video?.title || "Check out this video",
-                      text: shareText,
-                      url: window.location.href,
-                    })
-                    .catch(() => {
-                      toast.success("Share link copied to clipboard!")
-                    })
+                  .share({
+                    title: feed?.video?.title || "Check out this video",
+                    text: shareText,
+                    url: window.location.href,
+                  })
+                  .catch(() => {
+                    toast.success("Share link copied to clipboard!")
+                  })
                 : toast.success("Share link copied to clipboard!")
             }}
             className="flex flex-col items-center gap-1 group"
