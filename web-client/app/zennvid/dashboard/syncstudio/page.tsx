@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { syncStudio } from "@/lib/apiProvider";
+import { syncStudio } from "./api";
 import { delay } from "@/lib/delay";
 import TerminalLoader from "@/components/dashboard/magic-video/progressLoader";
 import VideoPreviewDialog from "@/components/dashboard/magic-video/downloadVideo";
@@ -61,7 +61,6 @@ const VideoCreator = () => {
         return;
       }
       setVideoUrl(data.DATA.videoUrl);
-      toast.success(data.MESSAGE);
       setDialogState(true);
     },
     onError: (error) => {

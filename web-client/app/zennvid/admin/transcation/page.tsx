@@ -6,7 +6,7 @@ import { PaginationTable } from '@/components/common/pagination-table';
 import { Button } from '@/components/ui/button';
 import { Transaction, TransactionStat } from '@/constants/admin_analisys';
 import { ResponseData } from '@/constants/response';
-import { changeDailyRevenue, getTransactionCSV, getTransactionHistory, txStats } from '@/lib/apiProvider';
+import { changeDailyRevenue, getTransactionCSV, getTransactionHistory, txStats } from './api';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { ColumnDef } from '@tanstack/react-table';
 import { ChartBarIcon, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -45,14 +45,12 @@ const Page = () => {
         createdAt: new Date(item.createdAt).toLocaleDateString(),
       })) ?? []);
       setTotal(data?.total ?? 0);
-      toast.success(response.MESSAGE);
     }
   })
 
   const changeDailyRevenueMutation = useMutation({
     mutationFn: async ({ date, state }: { date: Date; state: 'Prev' | 'Next' }) => {
       const response: ResponseData = await changeDailyRevenue({ date, state });
-      toast.success(response.MESSAGE);
       setChartData(response.DATA);
       return response;
     }
@@ -107,7 +105,6 @@ const Page = () => {
       createdAt: new Date(item.createdAt).toLocaleDateString(),
     })) ?? []);
     setTotal(data.transactionHistory.total ?? 0);
-    toast.success(message);
   }
 
   async function main() {

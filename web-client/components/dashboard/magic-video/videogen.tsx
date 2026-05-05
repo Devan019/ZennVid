@@ -78,8 +78,7 @@ const VideoConfigUI = () => {
         return;
       }
       if (data) {
-        toast.success(data.MESSAGE);
-        setvideoUrl(data.DATA.url);
+        setvideoUrl(data.DATA.videoUrl);
         setDialogState(true);
       }
     },

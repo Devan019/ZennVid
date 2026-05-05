@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ResponseData } from '@/constants/response';
 import { User } from '@/context/UserProvider';
-import { createUser, deleteUser, getAllUser, getCSVUsers } from '@/lib/apiProvider';
+import { createUser, deleteUser, getAllUser, getCSVUsers } from './api';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import React, { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner';
@@ -50,7 +50,6 @@ const Page = () => {
     },
     onSuccess: (data: ResponseData) => {
       if(data.SUCCESS){
-        toast.success(data.MESSAGE);
         setIsCreateOpen(false);
       }else{
         toast.error(data.MESSAGE);
@@ -72,7 +71,6 @@ const Page = () => {
         search: search,
         createdAt: createdAt
       });
-      toast.success(response.MESSAGE);
       return response
     },
     onSuccess: (data: any) => {

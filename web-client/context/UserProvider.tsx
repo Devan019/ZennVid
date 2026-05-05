@@ -1,6 +1,6 @@
 "use client"
 
-import { getUser, logoutUser } from "@/lib/apiProvider";
+import { getUser, logoutUser } from "./api";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -54,7 +54,6 @@ export const UserProvider = ({ children }: {
       toast.error(data.MESSAGE);
       return;
     }
-    toast.success(data.MESSAGE);
     if (data?.DATA) { 
       setUser(data.DATA.user);
       setIsAuthenticated(true);
@@ -84,7 +83,6 @@ export const UserProvider = ({ children }: {
         toast.error(data.MESSAGE);
         return;
       }
-      toast.success(data.MESSAGE);
       setUser(null);
       setIsAuthenticated(false);
     },

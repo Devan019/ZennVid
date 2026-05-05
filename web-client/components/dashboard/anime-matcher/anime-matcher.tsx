@@ -44,7 +44,6 @@ const AnimeMatcher = () => {
       if (data && data.DATA) {
         console.log("Match result:", data.DATA);
         setResult(data.DATA);
-        toast.success("Character matched successfully!");
       }
     },
     onError: (error) => {

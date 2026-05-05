@@ -4,7 +4,7 @@ import MonthlyChart from '@/components/admin/monthlyChart';
 import { StatsCard } from '@/components/admin/StatCard';
 import { VideoStats } from '@/constants/admin_analisys';
 import { ResponseData } from '@/constants/response';
-import { changeDailyVideo, videostats, } from '@/lib/apiProvider';
+import { changeDailyVideo, videostats } from './api';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { ChevronLeft, ChevronRight, Videotape } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
@@ -25,7 +25,6 @@ const Page = () => {
     mutationFn: async ({ date, state }: { date: Date; state: 'Prev' | 'Next' }) => {
       const response: ResponseData = await changeDailyVideo({ date, state });
       setChartData(response.DATA);
-      toast.success(response.MESSAGE);
       return response;
     }
   })
@@ -41,7 +40,6 @@ const Page = () => {
   })
 
   const setDataViaMain = (data: any, message: string) => {
-    toast.success(message);
     setVideoStatsData(data)
     setChartData(data.dailyVideo ?? []);
     setVideoChartData(data.allStyles ?? []);

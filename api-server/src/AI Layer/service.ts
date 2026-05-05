@@ -5,7 +5,8 @@ import { deleteFromCloudinary } from "../utils/cloudinary";
 import { generateTranscript } from "./helpers/transcript";
 import { audioGen } from "./magic-video/audio_gen";
 import { createVideo } from "./magic-video/ffmpeg";
-import { imageGen } from "./magic-video/image_gen";
+// import { imageGen } from "./magic-video/image_gen";
+import { HFImageGen } from "./magic-video/hf_image";
 import { scriptGen } from "./magic-video/script_gen";
 import { translateService } from "./magic-video/translate";
 import { addSubtitles } from "./sync-studio/add_subtitle";
@@ -20,33 +21,35 @@ const createMagicVideo = async (
     style,
     seconds,
     language,
-    voice
+    voice,
+    code
   }: {
     title: string;
     style: string;
     seconds: number;
     language: string;
     voice: string;
+    code: string;
   }
 ) => {
   try {
     console.log("Let's go with magic video creation!");
     //1. get script
     //max tries
-    const MAX_RETRIES = 14;
+    const MAX_RETRIES = 5;
     let script = null;
     let attempts = 0;
     while (!script && attempts < MAX_RETRIES) {
       script = await scriptGen(title, style, seconds, language);
       attempts++;
-      if(!script){
+      if (!script) {
         console.log("Script generation failed, retrying attempt", attempts);
-      }else{
-        console.log("\n\n\n\n\nStage 1: cleared",script);
+      } else {
+        console.log("\n\n\n\n\nStage 1: cleared - script gen");
         break;
       }
     }
-    if(!script){
+    if (!script) {
       console.log("Script generation failed, exiting.");
       return null;
     }
@@ -54,8 +57,8 @@ const createMagicVideo = async (
     //2. generate images 
     const scenes = script.scenes ?? [];
     const prompts = scenes.map((scene: any) => scene.prompt);
-    const imagePaths = await Promise.all(prompts.map(async (prompt: string) => await imageGen(prompt)));
-    console.log("\n\n\n\n\nStage 2: cleared",imagePaths);
+    const imagePaths = await Promise.all(prompts.map(async (prompt: string) => await HFImageGen(prompt)));
+    console.log("\n\n\n\n\nStage 2: cleared - image gen", imagePaths);
 
     //3. generate audio
     let audioData = scenes.map((scene: any) => scene.description).join("\n");
@@ -65,21 +68,22 @@ const createMagicVideo = async (
         text: audioData,
         dest: language
       });
-      console.log("\n\n\n\n\nStage 2.5: cleared",audioData);
-      if(!audioData){
+      console.log("\n\n\n\n\nStage 2.5: cleared - translate");
+
+      if (!audioData) {
         console.log("Translation failed, exiting.");
         return null;
       }
     }
-    console.log("\n\n\n\n\nStage 3 prep: cleared",audioData);
+    console.log("\n\n\n\n\nStage 3 prep: cleared - audioGen");
 
     const audio = await audioGen({
       text: audioData,
       voice
     })
 
-    console.log("\n\n\n\n\nStage 3: cleared",audio);
-    if(!audio){
+    console.log("\n\n\n\n\nStage 3: cleared - audioGen");
+    if (!audio) {
       console.log("Audio generation failed, exiting.");
       return null;
     }
@@ -87,16 +91,16 @@ const createMagicVideo = async (
     //4. caption generation
     const captions = await generateTranscript({
       audio: audio?.url,
-      language: "en"
+      language: code
     })
 
-    console.log("\n\n\n\n\nStage 4: cleared",captions);
-    if(!captions || !captions.segments || captions.segments.length === 0){
+    console.log("\n\n\n\n\nStage 4: cleared - caption gen");
+    if (!captions || !captions.segments || captions.segments.length === 0) {
       console.log("Caption generation failed, exiting.");
       return null;
     }
-    //5. video generation
 
+    //5. video generation
     const finalCaptions = captions.segments.map((segment: any) => ({
       start: segment.start,
       end: segment.end,
@@ -104,36 +108,50 @@ const createMagicVideo = async (
       id: segment.id
     }))
 
-    
+
     const videoData = await createVideo({
       captionsJson: JSON.stringify(finalCaptions),
-      images:  imagePaths.map(img => img.url),
+      images: imagePaths.map(img => img.url),
       audio: audio.url
     })
 
-    console.log("\n\n\n\n\nStage 5: cleared",videoData);
-    if(!videoData){
+    console.log("\n\n\n\n\nStage 5: cleared - video gen");
+    if (!videoData) {
       console.log("Video creation failed, exiting.");
       return null;
     }
-    //6. delete temp files (images, audio)
+    // 6. delete temp files (images, audio)
+    console.log("Starting cleanup...");
 
-    //images delete
-    imagePaths.forEach(async (imagePath) => {
-      await deleteFromCloudinary({
-        publicId: imagePath.publicId,
-        resource_type: "image"
-      });
-    });
-    console.log("\n\n\n\n\nStage 6: cleared - images deleted");
+    // Delete Images using Promise.all to wait for all deletions
+    if (imagePaths.length > 0) {
+      try {
+        await Promise.all(
+          imagePaths.map((imagePath) =>
+            deleteFromCloudinary({
+              publicId: imagePath.publicId,
+              resource_type: "image",
+            }).catch(err => console.error(`Failed to delete image ${imagePath.publicId}:`, err))
+          )
+        );
+        console.log("Stage 6: cleared - images deleted");
+      } catch (err) {
+        console.error("Non-critical error during image cleanup:", err);
+      }
+    }
 
-    //audio delete
-    await deleteFromCloudinary({
-      publicId: audio.publicId,
-      resource_type: "raw"
-    })
-
-    console.log("\n\n\n\n\nStage 6: cleared - audio deleted");
+    // Delete Audio
+    if (audio && audio.publicId) {
+      try {
+        await deleteFromCloudinary({
+          publicId: audio.publicId,
+          resource_type: "raw",
+        });
+        console.log("Stage 6: cleared - audio deleted");
+      } catch (err) {
+        console.error("Non-critical error during audio cleanup:", err);
+      }
+    }
 
     //7. return data
     return videoData;
@@ -163,24 +181,24 @@ const syncStudioVideo = async ({
 
     //1. do voice clone
     const voiceCloneResult = await voiceClone(audioPath, text);
-    if(!voiceCloneResult){
+    if (!voiceCloneResult) {
       console.log("Voice cloning failed, exiting.");
       return null;
     }
-    console.log("\n\n\n\n\nStage 1: cleared",voiceCloneResult);
+    console.log("\n\n\n\n\nStage 1: cleared - voice clone");
 
     //2. create captions
     const captions = await generateTranscript({
       audio: voiceCloneResult?.url ?? "",
-      language : "en"
+      language: "en"
     })
-    if(!captions){
+    if (!captions) {
       console.log("Caption generation failed, exiting.");
       return null;
     }
-    console.log("\n\n\n\n\nStage 2: cleared",captions);
+    console.log("\n\n\n\n\nStage 2: cleared - caption gen");
 
-    if(!captions || !captions.segments || captions.segments.length === 0) {
+    if (!captions || !captions.segments || captions.segments.length === 0) {
       console.log("No captions generated, exiting.");
       return null;
     }
@@ -196,29 +214,33 @@ const syncStudioVideo = async ({
       imagePath,
       audioPath: voiceCloneResult?.url ?? ""
     });
-    if(!videoData){
+    if (!videoData) {
       console.log("Lip sync video creation failed, exiting.");
       return null;
     }
-    console.log("\n\n\n\n\nStage 3: cleared",videoData);
-  
+    console.log("\n\n\n\n\nStage 3: cleared - lip sync");
+
     //4. add subtitles to video 
     const finalVideo = await addSubtitles({
       videoPath: videoData?.url ?? "",
-      captions: finalCaptions 
+      captions: finalCaptions
     });
-    if(!finalVideo){
+    if (!finalVideo) {
       console.log("Adding subtitles failed, exiting.");
       return null;
     }
-    console.log("\n\n\n\n\nStage 4: cleared",finalVideo);
+    console.log("\n\n\n\n\nStage 4: cleared - subtitles added");
 
     //5. remove temp data
-    //remove audio
-    deleteFromCloudinary({
-      publicId: voiceCloneResult?.publicId ?? "",
-      resource_type: "raw"
-    })
+    try {
+      await deleteFromCloudinary({
+        publicId: voiceCloneResult?.publicId ?? "",
+        resource_type: "raw"
+      });
+      console.log("Stage 5: cleared - audio deleted");
+    } catch (err) {
+      console.error("Non-critical error during cleanup:", err);
+    }
 
     //6. return final video data
     return finalVideo;
@@ -230,11 +252,7 @@ const syncStudioVideo = async ({
   }
 }
 
-// syncStudioVideo({
-//     imagePath: "https://res.cloudinary.com/dpnae0bod/image/upload/v1772036760/zennvid/sync-studio/bcehd3westadihxvhi8j.png",
-//     audioPath: "https://res.cloudinary.com/dpnae0bod/raw/upload/v1772036374/zennvid/g129piaz29ee4qqbnyob.wav",
-//     text: "Patience is bitter, but its fruit is sweet."
-// })
+
 
 
 export { createMagicVideo, syncStudioVideo };

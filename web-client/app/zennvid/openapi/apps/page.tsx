@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import ApiKeyGenerator from '@/components/openapi/apps/api-key-gen';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { createNewApp, getApps, sendKey } from '@/lib/apiProvider';
+import { createNewApp, getApps, sendKey } from './api';
 import { useUser } from '@/context/UserProvider';
 import { Dialog, DialogContent, DialogHeader } from '@/components/ui/dialog';
 import { DialogTitle } from '@radix-ui/react-dialog';
@@ -39,7 +39,6 @@ export default function CreateApp() {
       if (data != null) {
         return data.DATA
       }
-      toast.success(data.MESSAGE);
       return null
     },
     onError(error) {
@@ -63,7 +62,6 @@ export default function CreateApp() {
         toast.error(data.MESSAGE);
         return;
       }
-      toast.success(data.MESSAGE);
       if (data != null) {
         // alert("API key has been sent to your email!")
         return data.apiKey
@@ -85,7 +83,6 @@ export default function CreateApp() {
         toast.error(data.MESSAGE);
         return;
       }
-      toast.success(data.MESSAGE);
 
       const apis = data.DATA.apis ?? data.DATA[0];
       let tmp:{

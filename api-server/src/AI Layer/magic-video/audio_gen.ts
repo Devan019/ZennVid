@@ -26,8 +26,6 @@ const audioGen = async ({
       rate: 0,
       pitch: 0,
     });
-    console.log("text", text, "voice", voice);
-    console.log("Audio generation result:", result.data);
     //upload to cloudinary
     const url = await uploadToCloudinary({
       filePath: (result.data as Array<any>)[0].url,

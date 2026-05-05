@@ -5,7 +5,7 @@ import path from "path";
 
 const getImageEmbedding = async (imagePath: string, mode: string) => {
   try {
-    console.log("Getting image embedding for:", imagePath, "mode:", mode);
+    console.log("Getting image embedding ");
     //get image blob
     const response = await fetch(imagePath);
     const image = await response.blob();
@@ -15,7 +15,7 @@ const getImageEmbedding = async (imagePath: string, mode: string) => {
       console.log("Image pipeline repository or API endpoint or HF token not defined");
       return null;
     }
-    console.log("Connecting to image pipeline repository:", IMAGE_PIPELINE_REPO, IMAGE_PIPELINE_REPO_API);
+    console.log("Connecting to image pipeline repository");
 
     const client = await Client.connect(IMAGE_PIPELINE_REPO, {
       token: `hf_${HF_TOKEN}`
@@ -38,7 +38,7 @@ const getImageEmbedding = async (imagePath: string, mode: string) => {
 const getLocalImageEmbedding = async (localPath: string, mode: string) => {
   try {
     const DATASET_ROOT = path.join(process.cwd(), "public");
-    console.log("Getting local image embedding for:", localPath, "mode:", mode);
+    console.log("Getting local image embedding ");
     //get image blob
    const imagePath = path.join(DATASET_ROOT, localPath);
     const imageBuffer = fs.readFileSync(imagePath);
@@ -49,7 +49,7 @@ const getLocalImageEmbedding = async (localPath: string, mode: string) => {
       console.log("Image pipeline repository or API endpoint or HF token not defined");
       return null;
     }
-    console.log("Connecting to image pipeline repository:", IMAGE_PIPELINE_REPO, IMAGE_PIPELINE_REPO_API);
+    console.log("Connecting to image pipeline repository");
 
     const client = await Client.connect(IMAGE_PIPELINE_REPO, {
       token: `hf_${HF_TOKEN}`

@@ -1,4 +1,4 @@
-import { v2 as cloudinary } from "cloudinary";
+import { v2 as cloudinary, UploadApiErrorResponse, UploadApiResponse } from "cloudinary";
 import { CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET, CLOUDINARY_CLOUD_NAME } from "../env_var";
 
 cloudinary.config({
@@ -67,4 +67,41 @@ export const deleteFromCloudinary = async ({
     resource_type: resource_type,
   });
   return res;
+};
+
+
+export const uploadToCloudinaryWithBuffer = async ({
+  buffer,
+  resource_type,
+  folder = "zennvid",
+  format
+}: {
+  buffer: Buffer;
+  resource_type: "video" | "image" | "raw" | "auto"; // Use literal types for better DX
+  folder?: string;
+  format?: string;
+}): Promise<UploadApiResponse> => {
+  
+  return new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        resource_type,
+        folder,
+        format,
+      },
+      (error: UploadApiErrorResponse | undefined, result: UploadApiResponse | undefined) => {
+        if (error) {
+          console.error("Cloudinary upload error:", error);
+          return reject(error);
+        }
+        if (!result) {
+          return reject(new Error("Cloudinary upload failed: No result returned"));
+        }
+        resolve(result);
+      }
+    );
+
+    // Pass the buffer to the stream
+    uploadStream.end(buffer);
+  });
 };

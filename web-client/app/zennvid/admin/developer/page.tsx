@@ -4,7 +4,7 @@ import MonthlyChart from '@/components/admin/monthlyChart';
 import { StatsCard } from '@/components/admin/StatCard';
 import {  DeveloperStats } from '@/constants/admin_analisys';
 import { ResponseData } from '@/constants/response';
-import { changeDailyDeveloper, developerstats, } from '@/lib/apiProvider';
+import { changeDailyDeveloper, developerstats, } from './api';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import {  ChevronLeft, ChevronRight,  CodeIcon } from 'lucide-react';
 import React, {  useEffect, useState } from 'react'
@@ -22,7 +22,6 @@ const Page = () => {
   const changeDailyDeveloperMutation = useMutation({
     mutationFn: async ({ date, state }: { date: Date; state: 'Prev' | 'Next' }) => {
       const response: ResponseData = await changeDailyDeveloper({ date, state });
-      toast.success(response.MESSAGE);
       setChartData(response.DATA);
       return response;
     }
@@ -41,7 +40,6 @@ const Page = () => {
   const setDataViaMain = (data:DeveloperStats, message:string) => {
     setDeveloperStatsData(data)
     setChartData(data.dailyUsers ?? []);
-    toast.success(message);
   }
 
   async function main() {

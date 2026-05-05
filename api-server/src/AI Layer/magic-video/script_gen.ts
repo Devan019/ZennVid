@@ -16,7 +16,7 @@ Language: English
 Duration: ${seconds} seconds
 
 Instructions:
-- Divide the story into EXACTLY 5 scenes
+- Divide the story into EXACTLY 2 scenes
 - Each scene must contain:
   - "prompt": a highly detailed cinematic image generation prompt
   - "description": short narration (1-2 sentences)
@@ -27,9 +27,6 @@ Instructions:
 Output format:
 {
   "scenes": [
-    { "prompt": "...", "description": "..." },
-    { "prompt": "...", "description": "..." },
-    { "prompt": "...", "description": "..." },
     { "prompt": "...", "description": "..." },
     { "prompt": "...", "description": "..." }
   ]

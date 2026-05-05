@@ -2,15 +2,15 @@
 import Chart from '@/components/admin/Chart';
 import MonthlyChart from '@/components/admin/monthlyChart';
 import { StatsCard } from '@/components/admin/StatCard';
-import {  DeveloperStats, UserStats } from '@/constants/admin_analisys';
+import {  UserStats } from '@/constants/admin_analisys';
 import { ResponseData } from '@/constants/response';
-import { changeDailyDeveloper, changeDailyRevenue, changeDailyUser, developerstats, userStats, } from '@/lib/apiProvider';
+import {  changeDailyUser,  userStats, } from './api';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import {  ChevronLeft, ChevronRight,  CodeIcon, UserCheck, UserCircle, UserIcon } from 'lucide-react';
+import {  ChevronLeft, ChevronRight} from 'lucide-react';
 import React, {  useEffect, useState } from 'react'
-import { FaCode, FaGoogle } from 'react-icons/fa';
+import { FaGoogle } from 'react-icons/fa';
 import { FaMoneyBillTransfer } from 'react-icons/fa6';
-import {  TbApiApp, TbAppWindow, TbPassword } from 'react-icons/tb';
+import {  TbPassword } from 'react-icons/tb';
 import { toast } from 'sonner';
 
 
@@ -24,7 +24,6 @@ const Page = () => {
   const changeDailyUserMutation = useMutation({
     mutationFn: async ({ date, state }: { date: Date; state: 'Prev' | 'Next' }) => {
       const response: ResponseData = await changeDailyUser({ date, state });
-      toast.success(response.MESSAGE);
       setChartData(response.DATA);
       return response;
     }
@@ -41,7 +40,6 @@ const Page = () => {
   })
 
   const setDataViaMain = (data: any, message: string) => {
-    toast.success(message);
     setUserStatsData(data)
     setChartData(data.dailyUsers ?? []);
   }

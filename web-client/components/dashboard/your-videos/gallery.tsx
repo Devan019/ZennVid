@@ -118,7 +118,6 @@ const VideoGallery = () => {
       toast.error(data.MESSAGE);
       return;
     }
-    data && data.MESSAGE && toast.success(data.MESSAGE);
     const normalizedVideos: VideoData[] = (data.DATA || []).map((video) => ({
       ...video,
       videoUrl: video.videoUrl || (video.videoMetadata ? getCloudinaryUrl(video.videoMetadata) : ""),
@@ -163,7 +162,6 @@ const VideoGallery = () => {
           toast.error(data.MESSAGE);
           return;
         }
-        toast.success(data.MESSAGE);
       }
     });
     setAllVideos((prevVideos) => prevVideos.filter((video) => video?.id !== id));
@@ -211,7 +209,6 @@ const VideoGallery = () => {
                     toast.error(data.MESSAGE)
                     return
                   }
-                  toast.success(data.MESSAGE)
 
                 },
                 onError: () => {

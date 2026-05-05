@@ -63,7 +63,6 @@ export default function Dashboard() {
         toast.error(data.MESSAGE);
         return;
       }
-      toast.success(data.MESSAGE);
       return data
     }
   })

@@ -35,5 +35,7 @@ export const EDGE_TTS_REPO = process.env.EDGE_TTS_REPO;
 export const EDGE_TTS_REPO_API = process.env.EDGE_TTS_REPO_API;
 export const IMAGE_PIPELINE_REPO = process.env.IMAGE_PIPELINE_REPO;
 export const IMAGE_PIPELINE_REPO_API = process.env.IMAGE_PIPELINE_REPO_API;
+export const HF_IMAGE_GEN_REPO = process.env.IMAGE_GEN_REPO;
+export const HF_IMAGE_GEN_REPO_API = process.env.IMAGE_GEN_REPO_API;
 export const PINECONE_API_KEY = process.env.PINECONE_API_KEY;
 export const PINECONE_INDEX_NAME = process.env.PINECONE_INDEX_NAME;

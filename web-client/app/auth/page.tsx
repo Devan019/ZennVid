@@ -7,7 +7,7 @@ import {  useState } from "react"
 import { z } from "zod";
 import {  FaGoogle } from "react-icons/fa"
 import { useMutation } from "@tanstack/react-query";
-import { checkUserWithOtp, loginWithCredentials, signUpWithCredentials } from "@/lib/apiProvider";
+import { checkUserWithOtp, loginWithCredentials, signUpWithCredentials } from "./api";
 import { toast } from "sonner";
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogOverlay, DialogTitle } from "@/components/ui/dialog";
 import { OtpInput } from "@/components/common/OtpInput";
@@ -81,7 +81,6 @@ const AuthPages: React.FC = () => {
         toast.error(data.MESSAGE);
         return;
       } else {
-        toast.success(`${data.MESSAGE}`);
         if (!isSignUp) {
           setTimeout(() => {
             window.location.href = FRONTEND_ROUTES.HOME
@@ -109,7 +108,6 @@ const AuthPages: React.FC = () => {
       return await checkUserWithOtp(email, otp);
     },
     onSuccess: () => {
-      toast.success("OTP verified successfully! redirecting to home page...");
       setTimeout(() => {
         window.location.href = FRONTEND_ROUTES.HOME;
       }, 1000);

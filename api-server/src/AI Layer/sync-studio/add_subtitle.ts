@@ -68,7 +68,7 @@ export const addSubtitles = async ({
         .on("error", reject);
     });
 
-    console.log("Subtitles burned successfully:", outputPath);
+ 
 
     //upload to Cloudinary
     const videoData = await uploadToCloudinary({

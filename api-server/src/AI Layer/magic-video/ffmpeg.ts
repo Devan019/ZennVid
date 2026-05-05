@@ -162,7 +162,7 @@ export const createVideo = async ({
         .on("error", reject);
     });
 
-    console.log("Video created at:", outputPath);
+    // console.log("Video created at:", outputPath);
 
     
     //upload to Cloudinary 
