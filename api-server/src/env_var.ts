@@ -39,3 +39,5 @@ export const HF_IMAGE_GEN_REPO = process.env.IMAGE_GEN_REPO;
 export const HF_IMAGE_GEN_REPO_API = process.env.IMAGE_GEN_REPO_API;
 export const PINECONE_API_KEY = process.env.PINECONE_API_KEY;
 export const PINECONE_INDEX_NAME = process.env.PINECONE_INDEX_NAME;
+
+export const REDIS_URL = process.env.REDIS_URL;

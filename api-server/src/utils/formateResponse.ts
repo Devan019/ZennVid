@@ -12,6 +12,7 @@ export const formatResponse = <T>(
         MESSAGE: message,
         SUCCESS: success,
         ERROR: error ?? null,
-        DATA: data ?? null
+        DATA: data ?? null,
+        STATUS_CODE : statusCode
     });
 };

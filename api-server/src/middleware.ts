@@ -27,6 +27,8 @@ export const isAuthenticated = expressAsyncHandler((req: Request, res: Response,
   }
   const decoded = jwt.decode(token)
   if (!decoded || typeof decoded === 'string') {
+    //delete the token cookie
+      res.clearCookie('token', { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'strict' });
     return formatResponse(res, 401, "Unauthorized", false, null, "Invalid token");
   }
   

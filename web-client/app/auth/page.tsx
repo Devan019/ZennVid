@@ -659,7 +659,9 @@ const AuthPages: React.FC = () => {
               <div className="mt-4 text-gray-600 dark:text-gray-300">
                 <p className="mb-3">
                   We sent a 6-digit code to <span className="font-medium text-gray-900 dark:text-white">{formData.email}</span>
+
                 </p>
+                <p className="mb-3  text-red-500"> It is valid for 10 minutes. </p>
                 <p className="mb-6">Please enter it below to continue.</p>
 
                 <div className="flex justify-center gap-3 mb-6">

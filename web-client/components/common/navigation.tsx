@@ -38,15 +38,15 @@ export function Navigation() {
     /** add more */
   ]
 
-  useEffect(()=>{
-    if(isAuthenticated){
-      if(user?.role === 'admin'){
-        seturls([ { url: FRONTEND_ROUTES.ADMIN, label: "Admin" }]);
-      }else{
+  useEffect(() => {
+    if (isAuthenticated) {
+      if (user?.role === 'admin') {
+        seturls([{ url: FRONTEND_ROUTES.ADMIN, label: "Admin" }]);
+      } else {
         seturls(authUrls);
       }
     }
-  },[isAuthenticated])
+  }, [isAuthenticated])
 
 
   useEffect(() => {
@@ -133,13 +133,14 @@ export function Navigation() {
                     Sign In
                   </Button>
                   <Button
+                    onClick={() => router.push('/auth')}
                     className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
                   >
                     Get Started
                   </Button>
                 </>
               )}
-              {user  && isAuthenticated &&
+              {user && isAuthenticated &&
                 (
                   <>
                     <motion.div
@@ -188,7 +189,7 @@ export function Navigation() {
                           </div>
 
                           <motion.button
-                          
+
                             className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                             onClick={handleViewProfile}
                           >
@@ -196,7 +197,7 @@ export function Navigation() {
                           </motion.button>
 
                           <motion.button
-                            
+
                             className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
                             onClick={handleLogout}
                           >
@@ -266,6 +267,7 @@ export function Navigation() {
                       Sign In
                     </Button>
                     <Button
+                      onClick={() => router.push('/auth')}
                       className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
                     >
                       Get Started

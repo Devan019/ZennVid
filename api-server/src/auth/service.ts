@@ -1,5 +1,4 @@
 import { User } from "./model/User";
-import { TmpUser } from "./model/tmpUser";
 import { getOtp } from "../utils/OptGenerater";
 import { Provider, UserRole } from "../constants/provider";
 import { passwordCompare } from "../utils/passwordCompare";
@@ -9,6 +8,7 @@ import { sendMail } from "../utils/SendMail";
 import { generateJWTtoken } from "../utils/jwtAssign";
 import { IUser } from "../constants/interfaces";
 import { comparePassword, hashPassword } from "../utils/hash_password";
+import { redisClient } from "../utils/redisClient";
 
 
 export const createTmpUserService = async (
@@ -16,9 +16,8 @@ export const createTmpUserService = async (
 ) => {
   try {
 
-
+    //check user
     const exitsUser = await User.findOne({ email });
-    const tmpExitsUser = await TmpUser.findOne({ email });
     if (exitsUser) {
       return {
         status: 409,
@@ -29,31 +28,47 @@ export const createTmpUserService = async (
     }
 
 
+    //gen otp
     const otp = getOtp();
-    if (tmpExitsUser) {
-      await TmpUser.deleteOne({ _id: tmpExitsUser._id })
-    }
-    const encodePassword = await hashPassword(password); ;
-    const newUser = new TmpUser({
+
+    //hash password
+    const hashedPassword = await hashPassword(password);
+
+    //save user in redis with otp
+    await redisClient.set(`tmp_user_${email}`, JSON.stringify({
       email,
-      password: encodePassword,
-      otp,
+      password: hashedPassword,
+      provider : Provider.CREDENTIALS,
       username,
-    });
+      otp
+    }), "EX", 10 * 60) //expire in 10 min
 
-    await newUser.save();
 
-    await sendMail({
-      from: "devanchauhan012@gmail.com",
-      to: email,
-      subject: "ZennVid - Verify your email",
-      html: `<p>Hi, ${username} </p>
+    try {
+      await sendMail({
+        from: "devanchauhan012@gmail.com",
+        to: email,
+        subject: "ZennVid - Verify your email",
+        html: `<p>Hi, ${username} </p>
              <p>Thank you for signing up on ZennVid. Please verify your email by entering the following OTP:</p>
              <h2>${otp}</h2>
+             <p>This OTP is valid for 10 minutes.</p>
              <p>If you did not request this, please ignore this email.</p>
              <p>Best regards,</p>
              <p>ZennVid Team</p>`
-    })
+      })
+    } catch (error) {
+      console.log("Failed to send OTP email", error);
+      //delete tmp user from redis
+      await redisClient.del(`tmp_user_${email}`);
+
+      return {
+        status: 500,
+        message: "Failed to send OTP email",
+        success: false,
+        data: error
+      }
+    }
 
     return {
       status: 200,
@@ -62,9 +77,8 @@ export const createTmpUserService = async (
       data: {
         user: {
           email: email,
-          _id: newUser._id,
-          provider: newUser.provider,
-          username: newUser.username
+          provider: provider,
+          username: username
         }
       }
     };
@@ -90,7 +104,6 @@ export const createUserService = async (user: IUser) => {
       role: UserRole.USER
     });
     await newUser.save();
-
 
     return {
       status: 201,
@@ -144,22 +157,11 @@ export const signInUserService = async ({ email, password, provider }: { email: 
       };
     }
 
-    // Here you would typically create a session or JWT token
-
-    const token = generateJWTtoken({
-      id: user._id.toString(),
-      email: user.email,
-      provider: user.provider,
-      username: user.username,
-      credits: user.credits,
-      role: user.role,
-    });
-
     return {
       status: 200,
       message: "User signed in successfully",
       success: true,
-      data: { user, token }
+      data: { user }
     };
 
   } catch (error) {
@@ -187,6 +189,8 @@ export const GetUserByTokenService = async (token: string) => {
     }
 
     const decoded = jwt.verify(token, AUTH_SECRET ?? "");
+
+    //check user
     const user = await User.findById((decoded as any).id).select("-password");
 
     if (!user) {

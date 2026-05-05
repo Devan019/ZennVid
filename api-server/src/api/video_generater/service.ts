@@ -17,93 +17,75 @@ interface videoData {
   url: string;
 }
 
-// export const magicVideoCreationService = async (req: Request, res: Response, next: NextFunction) => {
-
-//   try {
-
-
-//     const { title, style, voiceGender, voiceLanguage, seconds, language } = videogeneraterZodValidation.parse(req.body);
-
-//     const forShortName = `${voiceLanguage}${voiceGender}`;
-
-//     const shortName = getShortVoiceName(forShortName);
-
-//     if (!shortName) {
-//       return formatResponse(res, 400, "Invalid voice name", false, null);
-//     }
-
-//     const code = languageToCodeDataset[language.toLowerCase() as keyof typeof languageToCodeDataset];
-
-//     if(!code) {
-//       return formatResponse(res, 400, "Invalid language", false, null);
-//     }
-
-
-//     //genrate video
-//     const data = await createMagicVideo({
-//       title,
-//       style,
-//       seconds,
-//       language,
-//       voice: shortName,
-//       code
-//     });
-
-
-//     if (!data) {
-//       return formatResponse(res, 500, "Video generation failed", false, null);
-//     }
-
-//     // const genapi = await axios.get(`${process.env.AI_URI}/video-gen-test`);
-//     if (!data?.publicId || !data?.resourceType || !data?.format) {
-//       return formatResponse(res, 500, "Backend problem", false, null);
-//     }
-
-//     const newVideo = new Video({
-//       videoMetadata: {
-//         publicId: data.publicId,
-//         resourceType: data.resourceType,
-//         format: data.format,
-//       },
-//       user: req.user.id,
-//       type: VideoType.MAGIC_VIDEO,
-//       title: title,
-//       style: style,
-//       language: language,
-//       voiceCharacter: shortName
-//     })
-
-
-//     // console.log("video", newVideo, " api ", data)
-
-//     await newVideo.save();
-
-//     await User.findByIdAndUpdate(req.user.id, {
-//       $inc: {
-//         credits: -20
-//       }
-//     })
-//     req.user.credits -= 20;
-
-//     // await redisClient.del(`zennvid:videos:${req.user.id}`)
-
-//     return formatResponse(res, 200, "Video generated successfully", true, {
-//       videoUrl: data.url
-//     });
-//   } catch (error) {
-//     return error
-//   }
-// }
-
 export const magicVideoCreationService = async (req: Request, res: Response, next: NextFunction) => {
 
   try {
-    const data = {
-      url: 'https://res.cloudinary.com/dpnae0bod/video/upload/v1777959425/zennvid/vv2qyzzve1zv8rtzaglk.mp4',
-      publicId: 'zennvid/vv2qyzzve1zv8rtzaglk',
-      format: 'mp4',
-      resourceType: 'video'
+
+
+    const { title, style, voiceGender, voiceLanguage, seconds, language } = videogeneraterZodValidation.parse(req.body);
+
+    const forShortName = `${voiceLanguage}${voiceGender}`;
+
+    const shortName = getShortVoiceName(forShortName);
+
+    if (!shortName) {
+      return formatResponse(res, 400, "Invalid voice name", false, null);
     }
+
+    const code = languageToCodeDataset[language.toLowerCase() as keyof typeof languageToCodeDataset];
+
+    if(!code) {
+      return formatResponse(res, 400, "Invalid language", false, null);
+    }
+
+
+    //genrate video
+    const data = await createMagicVideo({
+      title,
+      style,
+      seconds,
+      language,
+      voice: shortName,
+      code
+    });
+
+
+    if (!data) {
+      return formatResponse(res, 500, "Video generation failed", false, null);
+    }
+
+    // const genapi = await axios.get(`${process.env.AI_URI}/video-gen-test`);
+    if (!data?.publicId || !data?.resourceType || !data?.format) {
+      return formatResponse(res, 500, "Backend problem", false, null);
+    }
+
+    const newVideo = new Video({
+      videoMetadata: {
+        publicId: data.publicId,
+        resourceType: data.resourceType,
+        format: data.format,
+      },
+      user: req.user.id,
+      type: VideoType.MAGIC_VIDEO,
+      title: title,
+      style: style,
+      language: language,
+      voiceCharacter: shortName
+    })
+
+
+    // console.log("video", newVideo, " api ", data)
+
+    await newVideo.save();
+
+    await User.findByIdAndUpdate(req.user.id, {
+      $inc: {
+        credits: -20
+      }
+    })
+    req.user.credits -= 20;
+
+    // await redisClient.del(`zennvid:videos:${req.user.id}`)
 
     return formatResponse(res, 200, "Video generated successfully", true, {
       videoUrl: data.url

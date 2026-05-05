@@ -51,6 +51,17 @@ export const UserProvider = ({ children }: {
     setError(null);
     const { data } = await UserQuery.refetch();
     if (!data.SUCCESS) {
+      //if 404
+      if(data.STATUS_CODE === 404){
+        setIsAuthenticated(false);
+        setUser(null);
+        setIsLoading(false);
+        
+        //go to auth page if user not found
+        window.location.href = '/auth';
+        return;
+      }
+
       toast.error(data.MESSAGE);
       return;
     }
