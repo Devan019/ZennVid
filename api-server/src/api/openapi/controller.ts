@@ -29,7 +29,7 @@ export const CreateNewApp = expressAsyncHandler(async (req: Request, res: Respon
     if (!secret) {
       return formatResponse(res, 500, "Encryption secret not set", false, {});
     }
-    const apiKey = await generateApiKey();
+    const apiKey =  generateApiKey();
     const hashedKey = await sha256Hex(apiKey);
     const encryptKey = await encrypt(apiKey, secret);
 

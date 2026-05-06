@@ -1,5 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 import { Provider, UserRole } from "../../constants/provider";
+import { RefreshToken } from "./RefreshToken";
 
 const UserSchema = new Schema({
   email: {
@@ -33,5 +34,11 @@ const UserSchema = new Schema({
   },
 }, {timestamps : true})
 
+UserSchema.post("findOneAndDelete", async function(doc) {
+  if (doc) {
+    // Delete associated refresh token
+    await RefreshToken.deleteOne({ user: doc._id });
+  }
+})
 
 export const User = mongoose.models.User ?? mongoose.model("User", UserSchema);

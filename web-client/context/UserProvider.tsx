@@ -50,6 +50,7 @@ export const UserProvider = ({ children }: {
     setIsLoading(true);
     setError(null);
     const { data } = await UserQuery.refetch();
+    console.log("User data:", data);
     if (!data.SUCCESS) {
       //if 404
       if(data.STATUS_CODE === 404){
@@ -77,7 +78,7 @@ export const UserProvider = ({ children }: {
     if (!user && !isAuthenticated) {
       fetchUser();
     }
-  }, [user, isLoading]);
+  }, [user]);
 
   const doLogout = useMutation({
     mutationFn: async () => {

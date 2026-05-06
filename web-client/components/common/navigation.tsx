@@ -67,8 +67,6 @@ export function Navigation() {
   };
 
 
-
-
   return (
     <motion.nav
       initial={{ y: -100 }}

@@ -1,12 +1,17 @@
 import { NextFunction, Request, Response } from "express";
 import expressAsyncHandler from "../utils/expressAsync";
 import { formatResponse } from "../utils/formateResponse";
-import { CreateAdminService, createTmpUserService, createUserService, getAllUsersAsCSVService, GetUserByIdService, GetUserByTokenService, signInUserService } from "./service";
+import { CreateAdminService, createTmpUserService, createUserService, GetUserByTokenService, signInUserService } from "./service";
 import { CheckUserValidation, SignInValidation, UserValidation } from "./schema/zodschema";
 import { ISendResponse } from "../constants/interfaces";
 import { SetCookie } from "../utils/setCookie";
 import { redisClient } from "../utils/redisClient";
 import { generateJWTtoken } from "../utils/jwtAssign";
+import { ACCESS_KEY, FRONTEND_URL, REFRESH_KEY, REFRESH_SECRET } from "../env_var";
+import { UserRole } from "../constants/provider";
+import { RefreshToken } from "./model/RefreshToken";
+import { sha256Hex } from "../utils/cyrpto";
+import jwt from "jsonwebtoken";
 
 interface CacheUser {
   email: string,
@@ -16,38 +21,48 @@ interface CacheUser {
   otp: string
 }
 
-const autoSignInUserService = (req: Request, res: Response, user: any) => {
+export const autoSignInUserService = async (req: Request, res: Response, user: any, isOauth?: boolean) => {
   try {
-    //gen token
-    const token = generateJWTtoken({
+    if (!ACCESS_KEY || !REFRESH_KEY || !REFRESH_SECRET) {
+      throw new Error("Authentication keys are not defined");
+    }
+    //payload
+    const payload = {
       id: user._id.toString(),
       email: user.email,
       provider: user.provider,
       username: user.username,
       credits: user.credits,
-      role: user.role,
-    });
-
-    SetCookie(res, "token", token, 60 * 60 * 24 * 7); // 7 days
-
-    const sendUser = {
-      _id: user._id,
-      email: user.email,
-      provider: user.provider,
-      username: user.username,
-      role: user.role
+      role: user.role as UserRole,
     }
 
-    req.user = {
-      id: user._id,
-      email: user.email,
-      provider: user.provider,
-      username: user.username,
-      credits: user.credits,
-      profilePicture: user.profilePicture,
-      role: user.role
+    //gen access token and setcookie
+    const access_token = generateJWTtoken(payload, ACCESS_KEY, "5m");
+    SetCookie(res, "access_token", access_token, 5 * 60 * 1000); // 5 minutes - in miliseconds
+
+    //gen refresh token and cookie
+    const refresh_token = generateJWTtoken({
+      id: user._id.toString(),
+    }, REFRESH_KEY, "7d");
+    SetCookie(res, "refresh_token", refresh_token, 7 * 24 * 60 * 60 * 1000); // 7 days - in miliseconds
+
+    //set in db
+    //hashed the refresh token before saving to db for security
+    const hashedRefreshToken = await sha256Hex(refresh_token);
+
+    await RefreshToken.create({
+      user: user._id,
+      token: hashedRefreshToken,
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days
+    })
+
+
+    //if ouath then redirect to frontend with token in cookie, if credentials then send response with token in cookie
+    if (isOauth) {
+      return res.redirect(`${FRONTEND_URL}`);
     }
-    return formatResponse(res, 200, "User signed in successfully", true, { user: sendUser });
+
+    return formatResponse(res, 200, "User signed in successfully", true, { user: payload });
   } catch (error) {
     return formatResponse(res, 500, "Internal server error", false, error);
   }
@@ -115,13 +130,13 @@ export const signInUser = expressAsyncHandler(async (req: Request, res: Response
 
 export const getUserFromSession = expressAsyncHandler(async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const token = req.cookies.token;
+    const token = req.cookies.access_token;
     const response: ISendResponse = await GetUserByTokenService(token);
 
     //check if 404
     if (response.status === 404) {
       //delete cookie (fallback)
-      res.clearCookie("token", {
+      res.clearCookie("access_token", {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "strict"
@@ -136,7 +151,25 @@ export const getUserFromSession = expressAsyncHandler(async (req: Request, res: 
 
 export const logout = expressAsyncHandler(async (req: Request, res: Response, next: NextFunction) => {
   try {
-    res.clearCookie("token", {
+    //get user id from refresh token
+    const refresh_token = req.cookies.refresh_token;
+
+    //decode
+    const decoed = jwt.verify(refresh_token, REFRESH_KEY ?? "");
+
+    //id
+    const userId = (decoed as any).id;
+
+    //delete refresh token from db
+    await RefreshToken.deleteMany({ user: userId });
+
+    res.clearCookie("access_token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict"
+    });
+
+    res.clearCookie("refresh_token", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict"

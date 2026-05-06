@@ -12,7 +12,7 @@ export const SetCookie = (
     secure: IS_PROD,
     sameSite:
       IS_PROD ? "none" : "lax",
-    maxAge: time * 1000,
+    maxAge: time,
     domain: DOMAIN
   });
 };

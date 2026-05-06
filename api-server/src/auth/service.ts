@@ -1,11 +1,9 @@
 import { User } from "./model/User";
 import { getOtp } from "../utils/OptGenerater";
 import { Provider, UserRole } from "../constants/provider";
-import { passwordCompare } from "../utils/passwordCompare";
-import { AUTH_SECRET } from "../env_var";
+import { ACCESS_KEY } from "../env_var";
 import jwt from "jsonwebtoken"
 import { sendMail } from "../utils/SendMail";
-import { generateJWTtoken } from "../utils/jwtAssign";
 import { IUser } from "../constants/interfaces";
 import { comparePassword, hashPassword } from "../utils/hash_password";
 import { redisClient } from "../utils/redisClient";
@@ -188,10 +186,18 @@ export const GetUserByTokenService = async (token: string) => {
       };
     }
 
-    const decoded = jwt.verify(token, AUTH_SECRET ?? "");
+    const decoded = jwt.verify(token, ACCESS_KEY ?? "");
 
-    //check user
-    const user = await User.findById((decoded as any).id).select("-password");
+    const user = {
+      _id : (decoded as any).id,
+      email : (decoded as any).email,
+      provider : (decoded as any).provider,
+      username : (decoded as any).username,
+      credits : (decoded as any).credits,
+      profilePicture : (decoded as any).profilePicture,
+      role : (decoded as any).role,
+    }
+
 
     if (!user) {
       return {
