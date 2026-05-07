@@ -1,6 +1,6 @@
 import { DAILY_VIDEO, VIDEO_STATS } from "@/constants/backend_routes";
-import { Error } from "@/lib/apiProvider";
-import axios from "axios";
+import { Error } from "@/lib/apiProvider"
+import axios_api from "@/lib/axiosHelper";
 
 /** change daily video */
 export const changeDailyVideo = async (
@@ -13,7 +13,7 @@ export const changeDailyVideo = async (
   }
 ) => {
   try {
-    const api = await axios.post(`${DAILY_VIDEO}`, { date, state }, { withCredentials: true });
+    const api = await axios_api.post(`${DAILY_VIDEO}`, { date, state }, { withCredentials: true });
     return api.data;
   } catch (error) {
     const err = error as Error;
@@ -24,7 +24,7 @@ export const changeDailyVideo = async (
 /** Video Stats */
 export const videostats = async () => {
   try {
-    const api = await axios.get(`${VIDEO_STATS}`, { withCredentials: true })
+    const api = await axios_api.get(`${VIDEO_STATS}`, { withCredentials: true })
     return api.data;
   } catch (error) {
     const err = error as Error;

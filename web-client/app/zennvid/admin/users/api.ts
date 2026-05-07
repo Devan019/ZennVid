@@ -1,6 +1,6 @@
 import { DAILY_USER, USER_STATS } from "@/constants/backend_routes";
 import { Error } from "@/lib/apiProvider";
-import axios from "axios";
+import axios_api from "@/lib/axiosHelper";
 
 
 
@@ -15,7 +15,7 @@ export const changeDailyUser = async (
   }
 ) => {
   try {
-    const api = await axios.post(`${DAILY_USER}`, { date, state }, { withCredentials: true });
+    const api = await axios_api.post(`${DAILY_USER}`, { date, state }, { withCredentials: true });
     return api.data;
   } catch (error) {
     const err = error as Error;
@@ -27,7 +27,7 @@ export const changeDailyUser = async (
 /** User stats */
 export const userStats = async () => {
   try { 
-    const api = await axios.get(`${USER_STATS}`, { withCredentials: true })
+    const api = await axios_api.get(`${USER_STATS}`, { withCredentials: true })
     return api.data;
   } catch (error) {
     const err = error as Error;

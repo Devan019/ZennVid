@@ -1,15 +1,12 @@
-
-//user-context apis
-
-import { AUTH_CREDENTIALS_URI, userProfileRoute } from "@/constants/backend_routes";
+import {logoutRoute, userProfileRoute } from "@/constants/backend_routes";
 import { Error } from "@/lib/apiProvider";
-import axios from "axios";
+import axios_api from "@/lib/axiosHelper";
 
 
 //logout user
 export const logoutUser = async () => {
   try {
-    const api = await axios.get(`${AUTH_CREDENTIALS_URI}/logout`, {
+    const api = await axios_api.get(`${logoutRoute}`, {
       withCredentials: true,
     });
     return api.data;
@@ -22,7 +19,7 @@ export const logoutUser = async () => {
 //get user
 export const getUser = async () => {
   try {
-    const api = await axios.get(`${userProfileRoute}`, {
+    const api = await axios_api.get(`${userProfileRoute}`, {
       withCredentials: true,
     });
     return api.data;

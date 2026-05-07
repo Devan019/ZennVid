@@ -1,11 +1,10 @@
 import { DAILY_DEVELOPER, DEVELOPER_STATS } from "@/constants/backend_routes";
 import { Error } from "@/lib/apiProvider";
-import axios from "axios";
-
+import axios_api from "@/lib/axiosHelper";
 /** Developer stats */
 export const developerstats = async () => {
   try {
-    const api = await axios.get(`${DEVELOPER_STATS}`, { withCredentials: true })
+    const api = await axios_api.get(`${DEVELOPER_STATS}`, { withCredentials: true })
     return api.data;
   } catch (error) {
     const err = error as Error;
@@ -24,7 +23,7 @@ export const changeDailyDeveloper = async (
   }
 ) => {
   try {
-    const api = await axios.post(`${DAILY_DEVELOPER}`, { date, state }, { withCredentials: true });
+    const api = await axios_api.post(`${DAILY_DEVELOPER}`, { date, state }, { withCredentials: true });
     return api.data;
   } catch (error) {
     const err = error as Error;

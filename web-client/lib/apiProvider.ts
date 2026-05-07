@@ -1,6 +1,6 @@
 import { ADMIN_USER, ANIME_MATCHING, FEED, generateVideo, getVideos, OPENAPI_STATS, UPDATE_CREDITS } from "@/constants/backend_routes";
-import axios from "axios";
 import { getCloudinaryUrl } from "./getPublicUrl";
+import axios_api from "./axiosHelper";
 
 export interface Error {
   code?: string;
@@ -19,7 +19,7 @@ export const magicVideo = async ({ title, style, voiceGender, voiceLanguage, sec
   language?: string
 }) => {
   try {
-    const api = await axios.post(`${generateVideo}`, {
+    const api = await axios_api.post(`${generateVideo}`, {
       title, style, voiceGender, voiceLanguage, seconds, language
     }, {
       withCredentials: true
@@ -35,7 +35,7 @@ export const magicVideo = async ({ title, style, voiceGender, voiceLanguage, sec
 //get videos
 export const getUserVideos = async () => {
   try {
-    const api = await axios.get(`${getVideos}`, {
+    const api = await axios_api.get(`${getVideos}`, {
       withCredentials: true,
     });
     const data = api.data;
@@ -61,7 +61,7 @@ export const getUserVideos = async () => {
 /**delete a video */
 export const deleteVideo = async ({ id }: { id: string }) => {
   try {
-    const api = await axios.delete(`${getVideos}/${id}`, { withCredentials: true });
+    const api = await axios_api.delete(`${getVideos}/${id}`, { withCredentials: true });
     return api.data;
   } catch (error) {
     const err = error as Error;
@@ -74,7 +74,7 @@ export const deleteVideo = async ({ id }: { id: string }) => {
 
 export const Stats = async () => {
   try {
-    const api = await axios.get(`${OPENAPI_STATS}`, { withCredentials: true })
+    const api = await axios_api.get(`${OPENAPI_STATS}`, { withCredentials: true })
     return api.data;
   } catch (error) {
     const err = error as Error;
@@ -89,7 +89,7 @@ export const updateCredits = async ({ credits, paymentId, amount }: {
   amount: number
 }) => {
   try {
-    const api = await axios.post(`${UPDATE_CREDITS}`, { credits, paymentId, amount }, { withCredentials: true })
+    const api = await axios_api.post(`${UPDATE_CREDITS}`, { credits, paymentId, amount }, { withCredentials: true })
     return api.data;
   } catch (error) {
     const err = error as Error;
@@ -107,7 +107,7 @@ export const updateUser = async (
   }
 ) => {
   try {
-    const api = await axios.put(`${ADMIN_USER}/${userId}`, { username, credits }, { withCredentials: true });
+    const api = await axios_api.put(`${ADMIN_USER}/${userId}`, { username, credits }, { withCredentials: true });
     return api.data;
   } catch (error) {
     const err = error as Error;
@@ -118,7 +118,7 @@ export const updateUser = async (
 /** create feed post */
 export const feedCreate = async ({ userId, videoId }: { userId: string, videoId: string }) => {
   try {
-    const api = await axios.post(`${FEED}`, { userId, videoId }, { withCredentials: true });
+    const api = await axios_api.post(`${FEED}`, { userId, videoId }, { withCredentials: true });
     return api.data;
   } catch (error) {
     const err = error as Error;
@@ -129,7 +129,7 @@ export const feedCreate = async ({ userId, videoId }: { userId: string, videoId:
 /** get feed posts */
 export const getFeedPosts = async () => {
   try {
-    const api = await axios.get(`${FEED}`, { withCredentials: true });
+    const api = await axios_api.get(`${FEED}`, { withCredentials: true });
     const data = api.data;
     if (!data?.DATA || !Array.isArray(data.DATA)) {
       return data;
@@ -154,7 +154,7 @@ export const getFeedPosts = async () => {
 /* delete feed post */
 export const deleteFeedPost = async ({ feedId }: { feedId: string }) => {
   try {
-    const api = await axios.delete(`${FEED}/${feedId}`, { withCredentials: true });
+    const api = await axios_api.delete(`${FEED}/${feedId}`, { withCredentials: true });
     return api.data;
   } catch (error) {
     const err = error as Error;
@@ -165,7 +165,7 @@ export const deleteFeedPost = async ({ feedId }: { feedId: string }) => {
 /** like count update */
 export const feedLikeCountUpdate = async ({ feedId, userId }: { feedId: string, userId: string }) => {
   try {
-    const api = await axios.put(`${FEED}/${feedId}/like`, { feedId, userId }, { withCredentials: true });
+    const api = await axios_api.put(`${FEED}/${feedId}/like`, { feedId, userId }, { withCredentials: true });
     return api.data;
   } catch (error) {
     const err = error as Error;
@@ -175,7 +175,7 @@ export const feedLikeCountUpdate = async ({ feedId, userId }: { feedId: string, 
 /** feed comment */
 export const feedComment = async ({ feedId, userId, content }: { feedId: string, userId: string, content: string }) => {
   try {
-    const api = await axios.post(`${FEED}/${feedId}/comment`, { userId, content }, { withCredentials: true });
+    const api = await axios_api.post(`${FEED}/${feedId}/comment`, { userId, content }, { withCredentials: true });
     return api.data;
   } catch (error) {
     const err = error as Error;
@@ -186,7 +186,7 @@ export const feedComment = async ({ feedId, userId, content }: { feedId: string,
 /** feed comment delete */
 export const feedCommentDelete = async ({ commentId }: { commentId: string }) => {
   try {
-    const api = await axios.delete(`${FEED}/comment/${commentId}`, { withCredentials: true });
+    const api = await axios_api.delete(`${FEED}/comment/${commentId}`, { withCredentials: true });
     return api.data;
   } catch (error) {
     const err = error as Error;
@@ -199,7 +199,7 @@ export const feedCommentDelete = async ({ commentId }: { commentId: string }) =>
 /**anime matching */
 export const animeMatching = async ({ formData }: { formData: FormData }) => {
   try {
-    const api = await axios.post(`${ANIME_MATCHING}`, formData, { withCredentials: true });
+    const api = await axios_api.post(`${ANIME_MATCHING}`, formData, { withCredentials: true });
     return api.data;
   } catch (error) {
     const err = error as Error;

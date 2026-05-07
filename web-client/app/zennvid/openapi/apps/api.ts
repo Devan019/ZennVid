@@ -1,11 +1,11 @@
 import { CREATEAPP, GETAPPS, SEND_KEY_URI } from "@/constants/backend_routes";
 import { Error } from "@/lib/apiProvider";
-import axios from "axios";
+import axios_api from "@/lib/axiosHelper";
 
 /**make app */
 export const createNewApp = async (name: string) => {
   try {
-    const api = await axios.post(CREATEAPP, { name }, { withCredentials: true });
+    const api = await axios_api.post(CREATEAPP, { name }, { withCredentials: true });
     return api.data;
   } catch (error) {
     const err = error as Error;
@@ -16,7 +16,7 @@ export const createNewApp = async (name: string) => {
 /**get apis */
 export const getApps = async () => {
   try {
-    const api = await axios.get(GETAPPS, { withCredentials: true });
+    const api = await axios_api.get(GETAPPS, { withCredentials: true });
     return api.data;
   } catch (error) {
     const err = error as Error;
@@ -28,7 +28,7 @@ export const getApps = async () => {
 /**send key to email */
 export const sendKey = async ({ appId }: { appId: string }) => {
   try {
-    const api = await axios.post(`${SEND_KEY_URI}`, { appId }, { withCredentials: true });
+    const api = await axios_api.post(`${SEND_KEY_URI}`, { appId }, { withCredentials: true });
     return api.data;
   } catch (error) {
     const err = error as Error;

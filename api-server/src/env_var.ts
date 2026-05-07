@@ -1,48 +1,149 @@
 import { configDotenv } from "dotenv";
 configDotenv();
 
+//defined node env 
+const NODE_ENV = process.env.NODE_ENV || "development";
+const IS_PROD = NODE_ENV === "production";
 
-export const NODE_ENV = process.env.NODE_ENV || "development";
-export const IS_PROD = NODE_ENV === "production";
-export const IP_ADDRESS = process.env.IP || "localhost";
-export const PORT = parseInt(process.env.PORT ?? "8000");
-export const MONGO_URI = process.env.MINGODB_PROD || "mongodb://localhost:27017/zennvid";
-export const DOMAIN = process.env.DOMAIN || "localhost";
-export const AUTH_SECRET = process.env.AUTH_SECRET
-export const AUTH_GOOGLE_ID = process.env.AUTH_GOOGLE_ID
-export const AUTH_GOOGLE_SECRET = process.env.AUTH_GOOGLE_SECRET
-export const AUTH_GOOGLE_REDIRECT_URI = process.env.AUTH_GOOGLE_REDIRECT_URI
-export const RESEND_KEY = process.env.RESEND_KEY
-export const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:3000";
-export const CLOUDINARY_CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME;
-export const CLOUDINARY_API_KEY = process.env.CLOUDINARY_API_KEY;
-export const CLOUDINARY_API_SECRET = process.env.CLOUDINARY_API_SECRET;
-export const OPENAPI_SECERT=process.env.ENCRYPTION_SECRET;
-export const SMTP_USER = process.env.SMTP_USER;
-export const SMTP_PASS = process.env.SMTP_PASS;
-export const GROQ_API_KEY = process.env.GROQ_API_KEY;
-export const HF_TOKEN = process.env.HF_TOKEN;
-export const NEBIUS_API_KEY = process.env.NEBIUS_API_KEY;
-export const NEBIUS_API_URL = process.env.NEBIUS_API_URL;
-export const VOICE_CLONE_REPO = process.env.VOICE_CLONE_REPO;
-export const VOICE_CLONE_REPO_API = process.env.VOICE_CLONE_REPO_API;
-export const LIP_SYNC_REPO = process.env.LIP_SYNC_REPO;
-export const LIP_SYNC_REPO_API = process.env.LIP_SYNC_REPO_API;
-export const DURATION = process.env.LIP_SYNC_AUDIO_API;
-export const TRANSLATE_REPO = process.env.TRANSLATE_REPO;
-export const TRANSLATE_REPO_API = process.env.TRANSLATE_REPO_API;
-export const EDGE_TTS_REPO = process.env.EDGE_TTS_REPO;
-export const EDGE_TTS_REPO_API = process.env.EDGE_TTS_REPO_API;
-export const IMAGE_PIPELINE_REPO = process.env.IMAGE_PIPELINE_REPO;
-export const IMAGE_PIPELINE_REPO_API = process.env.IMAGE_PIPELINE_REPO_API;
-export const HF_IMAGE_GEN_REPO = process.env.IMAGE_GEN_REPO;
-export const HF_IMAGE_GEN_REPO_API = process.env.IMAGE_GEN_REPO_API;
-export const PINECONE_API_KEY = process.env.PINECONE_API_KEY;
-export const PINECONE_INDEX_NAME = process.env.PINECONE_INDEX_NAME;
+//ip and port of server
+const IP_ADDRESS = process.env.IP || "localhost";
+const PORT = parseInt(process.env.PORT ?? "8000");
 
-export const REDIS_URL = process.env.REDIS_URL;
+//mongodb uri
+const MONGO_URI = process.env.MINGODB_PROD || "mongodb://localhost:27017/zennvid";
+
+
+//domain
+const DOMAIN = process.env.DOMAIN || "localhost";
+
+//auth secret for hash the password
+const AUTH_SECRET = process.env.AUTH_SECRET
+
+//google auth
+const AUTH_GOOGLE_ID = process.env.AUTH_GOOGLE_ID
+const AUTH_GOOGLE_SECRET = process.env.AUTH_GOOGLE_SECRET
+const AUTH_GOOGLE_REDIRECT_URI = process.env.AUTH_GOOGLE_REDIRECT_URI
+
+
+//resend key
+const RESEND_KEY = process.env.RESEND_KEY
+
+//frontend url
+const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:3000";
+
+
+//cloudinary
+const CLOUDINARY_CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME;
+const CLOUDINARY_API_KEY = process.env.CLOUDINARY_API_KEY;
+const CLOUDINARY_API_SECRET = process.env.CLOUDINARY_API_SECRET;
+
+//encryption secret for openapi 
+const OPENAPI_SECERT=process.env.ENCRYPTION_SECRET;
+
+//nodemailer for email
+const SMTP_USER = process.env.SMTP_USER;
+const SMTP_PASS = process.env.SMTP_PASS;
+
+
+//groq api key
+const GROQ_API_KEY = process.env.GROQ_API_KEY;
+
+
+//hugging face token
+const HF_TOKEN = process.env.HF_TOKEN;
+
+//nebius api
+const NEBIUS_API_KEY = process.env.NEBIUS_API_KEY;
+const NEBIUS_API_URL = process.env.NEBIUS_API_URL;
+
+//hugging face repo for voice clone, lip sync, translate, edge tts, image pipeline and image gen
+const VOICE_CLONE_REPO = process.env.VOICE_CLONE_REPO;
+const VOICE_CLONE_REPO_API = process.env.VOICE_CLONE_REPO_API;
+
+const LIP_SYNC_REPO = process.env.LIP_SYNC_REPO;
+const LIP_SYNC_REPO_API = process.env.LIP_SYNC_REPO_API;
+
+const DURATION = process.env.LIP_SYNC_AUDIO_API;
+
+const TRANSLATE_REPO = process.env.TRANSLATE_REPO;
+const TRANSLATE_REPO_API = process.env.TRANSLATE_REPO_API;
+
+const EDGE_TTS_REPO = process.env.EDGE_TTS_REPO;
+const EDGE_TTS_REPO_API = process.env.EDGE_TTS_REPO_API;
+
+const IMAGE_PIPELINE_REPO = process.env.IMAGE_PIPELINE_REPO;
+const IMAGE_PIPELINE_REPO_API = process.env.IMAGE_PIPELINE_REPO_API;
+
+const HF_IMAGE_GEN_REPO = process.env.IMAGE_GEN_REPO;
+const HF_IMAGE_GEN_REPO_API = process.env.IMAGE_GEN_REPO_API;
+
+//pinecone
+const PINECONE_API_KEY = process.env.PINECONE_API_KEY;
+const PINECONE_INDEX_NAME = process.env.PINECONE_INDEX_NAME;
+
+//redis url
+const REDIS_URL = process.env.REDIS_URL;
 
 //keys
-export const ACCESS_KEY = process.env.ACCESS_KEY;
-export const REFRESH_KEY = process.env.REFRESH_KEY;
-export const REFRESH_SECRET = process.env.REFRESH_SECRET;
+const ACCESS_KEY = process.env.ACCESS_KEY;
+const REFRESH_KEY = process.env.REFRESH_KEY;
+const REFRESH_SECRET = process.env.REFRESH_SECRET;
+
+
+//times
+const accessPeroid = 5 * 60 * 1000; // 5 minute
+const refreshPeroid = 7 * 24 * 60 * 60 * 1000; // 7 days
+
+const accessPeroidJwt = "5m"; // 5 minute
+const refreshPeroidJwt = "7d"; // 7 days
+
+
+//export all
+export {
+  NODE_ENV,
+  IS_PROD,
+  IP_ADDRESS,
+  PORT,
+  MONGO_URI,
+  DOMAIN,
+  AUTH_SECRET,
+  AUTH_GOOGLE_ID,
+  AUTH_GOOGLE_SECRET,
+  AUTH_GOOGLE_REDIRECT_URI,
+  RESEND_KEY,
+  FRONTEND_URL,
+  CLOUDINARY_CLOUD_NAME,
+  CLOUDINARY_API_KEY,
+  CLOUDINARY_API_SECRET,
+  OPENAPI_SECERT,
+  SMTP_USER,
+  SMTP_PASS,
+  GROQ_API_KEY,
+  HF_TOKEN,
+  NEBIUS_API_KEY,
+  NEBIUS_API_URL,
+  VOICE_CLONE_REPO,
+  VOICE_CLONE_REPO_API,
+  LIP_SYNC_REPO,
+  LIP_SYNC_REPO_API,
+  DURATION,
+  TRANSLATE_REPO,
+  TRANSLATE_REPO_API,
+  EDGE_TTS_REPO,  
+  EDGE_TTS_REPO_API,
+  IMAGE_PIPELINE_REPO,
+  IMAGE_PIPELINE_REPO_API,
+  HF_IMAGE_GEN_REPO,
+  HF_IMAGE_GEN_REPO_API,
+  PINECONE_API_KEY,
+  PINECONE_INDEX_NAME,
+  REDIS_URL,
+  ACCESS_KEY,
+  REFRESH_KEY,
+  REFRESH_SECRET,
+  accessPeroid,
+  refreshPeroid,
+  accessPeroidJwt,
+  refreshPeroidJwt
+}
+

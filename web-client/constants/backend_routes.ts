@@ -11,6 +11,8 @@ export const BASE_URL = baseUrl;
 
 export const AUTH_CREDENTIALS_URI = `${auth}`;
 export const userProfileRoute = `${auth}/user`;
+export const refreshTokenRoute = `${auth}/refresh`;
+export const logoutRoute = `${auth}/logout`;
 
 export const UPDATE_CREDITS = `${api}/update-credit`;
 

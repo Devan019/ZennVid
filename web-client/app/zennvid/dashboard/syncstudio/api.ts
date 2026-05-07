@@ -1,11 +1,11 @@
 import { SYNCSTUDIO_API } from "@/constants/backend_routes";
 import { Error } from "@/lib/apiProvider";
-import axios from "axios";
+import axios_api from "@/lib/axiosHelper";
 
 //sync
 export const syncStudio = async ({ formData }: { formData: FormData }) => {
   try {
-    const api = await axios.post(`${SYNCSTUDIO_API}`, formData, {
+    const api = await axios_api.post(`${SYNCSTUDIO_API}`, formData, {
       withCredentials: true,
       headers: {
         'Content-Type': 'multipart/form-data',

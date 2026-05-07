@@ -14,8 +14,6 @@ import multer from "multer";
 import path from "path";
 import { animeMatching } from "./anime/controller";
 
-// import { getVideos } from "./getVideo/controller";
-// ===
 export const ApiRouter = Router();
 
 // Storage config

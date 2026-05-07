@@ -1,6 +1,6 @@
 import { TRANSACTION_CSV, TX_CHARTCHANGE, TX_HISTORY, TX_STATS } from "@/constants/backend_routes";
 import { Error } from "@/lib/apiProvider";
-import axios from "axios";
+import axios_api from "@/lib/axiosHelper";
 
 /**  change-daily-revenue  */
 export const changeDailyRevenue = async (
@@ -13,7 +13,7 @@ export const changeDailyRevenue = async (
   }
 ) => {
   try {
-    const api = await axios.post(`${TX_CHARTCHANGE}`, { date, state }, { withCredentials: true });
+    const api = await axios_api.post(`${TX_CHARTCHANGE}`, { date, state }, { withCredentials: true });
     return api.data;
   } catch (error) {
     const err = error as Error;
@@ -25,7 +25,7 @@ export const changeDailyRevenue = async (
 /** Transcation Stats  */
 export const txStats = async () => {
   try {
-    const api = await axios.get(`${TX_STATS}`, { withCredentials: true })
+    const api = await axios_api.get(`${TX_STATS}`, { withCredentials: true })
     return api.data;
   } catch (error) {
     const err = error as Error;
@@ -38,7 +38,7 @@ export const txStats = async () => {
 /** get transaction csv */
 export const getTransactionCSV = async () => {
   try {
-    const api = await axios.get(`${TRANSACTION_CSV}`, { withCredentials: true });
+    const api = await axios_api.get(`${TRANSACTION_CSV}`, { withCredentials: true });
     return api.data;
   } catch (error) { 
     const err = error as Error;
@@ -56,7 +56,7 @@ export const getTransactionHistory = async (
   }
 ) => {
   try {
-    const api = await axios.post(`${TX_HISTORY}`, { page, limit, search, createdAt }, { withCredentials: true });
+    const api = await axios_api.post(`${TX_HISTORY}`, { page, limit, search, createdAt }, { withCredentials: true });
     return api.data;
   } catch (error) {
     return null;

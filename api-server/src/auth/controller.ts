@@ -7,11 +7,12 @@ import { ISendResponse } from "../constants/interfaces";
 import { SetCookie } from "../utils/setCookie";
 import { redisClient } from "../utils/redisClient";
 import { generateJWTtoken } from "../utils/jwtAssign";
-import { ACCESS_KEY, FRONTEND_URL, REFRESH_KEY, REFRESH_SECRET } from "../env_var";
+import { ACCESS_KEY, accessPeroid, accessPeroidJwt, FRONTEND_URL, REFRESH_KEY, REFRESH_SECRET, refreshPeroid, refreshPeroidJwt } from "../env_var";
 import { UserRole } from "../constants/provider";
 import { RefreshToken } from "./model/RefreshToken";
 import { sha256Hex } from "../utils/cyrpto";
 import jwt from "jsonwebtoken";
+import { User } from "./model/User";
 
 interface CacheUser {
   email: string,
@@ -37,14 +38,14 @@ export const autoSignInUserService = async (req: Request, res: Response, user: a
     }
 
     //gen access token and setcookie
-    const access_token = generateJWTtoken(payload, ACCESS_KEY, "5m");
-    SetCookie(res, "access_token", access_token, 5 * 60 * 1000); // 5 minutes - in miliseconds
+    const access_token = generateJWTtoken(payload, ACCESS_KEY, accessPeroidJwt);
+    SetCookie(res, "access_token", access_token, accessPeroid); // 5 minutes - in miliseconds
 
     //gen refresh token and cookie
     const refresh_token = generateJWTtoken({
       id: user._id.toString(),
-    }, REFRESH_KEY, "7d");
-    SetCookie(res, "refresh_token", refresh_token, 7 * 24 * 60 * 60 * 1000); // 7 days - in miliseconds
+    }, REFRESH_KEY, refreshPeroidJwt);
+    SetCookie(res, "refresh_token", refresh_token, refreshPeroid); // 7 days - in miliseconds
 
     //set in db
     //hashed the refresh token before saving to db for security
@@ -53,7 +54,7 @@ export const autoSignInUserService = async (req: Request, res: Response, user: a
     await RefreshToken.create({
       user: user._id,
       token: hashedRefreshToken,
-      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days
+      expiresAt: new Date(Date.now() + refreshPeroid) // 7 days
     })
 
 
@@ -188,5 +189,74 @@ export const CreateAdmin = expressAsyncHandler(async (req: Request, res: Respons
     return formatResponse(res, response.status, response.message, response.success, response.data);
   } catch (error) {
     return formatResponse(res, 500, "Internal server error", false, error);
+  }
+})
+
+export const revokeToken = expressAsyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+
+  try {
+
+    //1.get refresh token from cookie
+    const { refresh_token } = req.cookies;
+
+    //2. if no refresh token then unauthorized
+    if (!refresh_token) {
+      return formatResponse(res, 401, "Unauthorized", false, null);
+    }
+
+    // 3. Verify Refresh Token math
+    const decodedRefresh = jwt.verify(refresh_token, REFRESH_KEY ?? "") as any;
+    const { id } = decodedRefresh;
+
+    if (!id) return formatResponse(res, 401, "Unauthorized", false, null);
+
+    // 4. Check DB (Note: Make sure your schema uses 'user' depending on what you named it earlier!)
+    const tokenRecord = await RefreshToken.findOne({ user: id });
+
+    if (!tokenRecord) {
+      return formatResponse(res, 401, "Unauthorized", false, null);
+    }
+
+    // 5. Hash & Compare
+    const hashedIncoming = await sha256Hex(refresh_token);
+    if (tokenRecord.token !== hashedIncoming) {
+      return formatResponse(res, 401, "Unauthorized", false, null);
+    }
+
+
+    // 6. user details
+    const userDetails = await User.findById(id).select("-password").lean();
+    const userDoc = Array.isArray(userDetails) ? userDetails[0] : userDetails;
+
+    if (!userDoc) {
+      return formatResponse(res, 404, "User not found", false, null);
+    }
+
+    // 7. Create the clean payload (matching your TS Interface)
+    const payload = {
+      id: String(userDoc._id),
+      email: userDoc.email,
+      provider: userDoc.provider,
+      username: userDoc.username,
+      credits: userDoc.credits,
+      role: userDoc.role,
+      profilePicture: userDoc.profilePicture
+    };
+
+    // 8. Generate NEW Access Token
+    const newAccessToken = jwt.sign(payload, ACCESS_KEY ?? "", { expiresIn: accessPeroidJwt });
+    SetCookie(res, "access_token", newAccessToken, accessPeroid); // 5 minutes - in miliseconds
+
+    //set cookie
+    req.cookies.access_token = newAccessToken;
+
+    // 9. Attach to request
+    req.user = payload;
+
+    return formatResponse(res, 200, "Token refreshed successfully", true, null);
+
+  } catch (refreshError) {
+    // Catch if the refresh token itself is expired or tampered with
+    return formatResponse(res, 401, "Session expired. Please log in again.", false, null);
   }
 })
