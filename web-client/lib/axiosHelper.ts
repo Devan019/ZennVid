@@ -58,7 +58,6 @@ axios_api.interceptors.response.use(
       } catch (refreshError) {
         // Refresh token is completely dead. Boot them out.
         processQueue(refreshError, null);
-        window.location.href = '/auth';
         return Promise.reject(refreshError);
         
       } finally {

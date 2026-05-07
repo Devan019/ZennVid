@@ -91,10 +91,10 @@ const REFRESH_SECRET = process.env.REFRESH_SECRET;
 
 
 //times
-const accessPeroid = 5 * 60 * 1000; // 5 minute
+const accessPeroid = 2 * 30 * 1000; // 2 min
 const refreshPeroid = 7 * 24 * 60 * 60 * 1000; // 7 days
 
-const accessPeroidJwt = "5m"; // 5 minute
+const accessPeroidJwt = "2m"; // 2 minutes
 const refreshPeroidJwt = "7d"; // 7 days
 
 

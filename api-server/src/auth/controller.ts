@@ -51,12 +51,24 @@ export const autoSignInUserService = async (req: Request, res: Response, user: a
     //hashed the refresh token before saving to db for security
     const hashedRefreshToken = await sha256Hex(refresh_token);
 
-    await RefreshToken.create({
-      user: user._id,
-      token: hashedRefreshToken,
-      expiresAt: new Date(Date.now() + refreshPeroid) // 7 days
-    })
+    //if there is already a token for the user then update it, else create new
+    let existingToken = await RefreshToken.findOne({ user: user._id });
 
+    if (existingToken) {
+      //update token and exp
+      existingToken.token = hashedRefreshToken;
+      existingToken.expiresAt = new Date(Date.now() + refreshPeroid);
+      await existingToken.save();
+    } else {
+
+      //create new token
+      await RefreshToken.create({
+        user: user._id,
+        token: hashedRefreshToken,
+        expiresAt: new Date(Date.now() + refreshPeroid) // 7 days
+      })
+      
+    }
 
     //if ouath then redirect to frontend with token in cookie, if credentials then send response with token in cookie
     if (isOauth) {
@@ -214,12 +226,41 @@ export const revokeToken = expressAsyncHandler(async (req: Request, res: Respons
     const tokenRecord = await RefreshToken.findOne({ user: id });
 
     if (!tokenRecord) {
+      //delete cookies just in case
+      res.clearCookie("access_token", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict"
+      });
+      res.clearCookie("refresh_token", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict"
+      });
       return formatResponse(res, 401, "Unauthorized", false, null);
     }
 
     // 5. Hash & Compare
     const hashedIncoming = await sha256Hex(refresh_token);
+
+    //hacker req
     if (tokenRecord.token !== hashedIncoming) {
+      //clear all thing and do logout
+      await RefreshToken.deleteMany({ user: id });
+
+      //clear cookies
+      res.clearCookie("access_token", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict"
+      });
+
+      res.clearCookie("refresh_token", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict"
+      });
+
       return formatResponse(res, 401, "Unauthorized", false, null);
     }
 
@@ -232,7 +273,7 @@ export const revokeToken = expressAsyncHandler(async (req: Request, res: Respons
       return formatResponse(res, 404, "User not found", false, null);
     }
 
-    // 7. Create the clean payload (matching your TS Interface)
+    // 7. Create the clean payload 
     const payload = {
       id: String(userDoc._id),
       email: userDoc.email,
@@ -247,8 +288,21 @@ export const revokeToken = expressAsyncHandler(async (req: Request, res: Respons
     const newAccessToken = jwt.sign(payload, ACCESS_KEY ?? "", { expiresIn: accessPeroidJwt });
     SetCookie(res, "access_token", newAccessToken, accessPeroid); // 5 minutes - in miliseconds
 
+    //create new refresh token with same exp as old one
+    //calculte remaing time for refresh token
+    const remainingTime = tokenRecord.expiresAt.getTime() - Date.now();
+
+    const newRefreshToken = jwt.sign({ id }, REFRESH_KEY ?? "", { expiresIn: `${remainingTime}ms` });
+    SetCookie(res, "refresh_token", newRefreshToken, remainingTime); // in miliseconds
+
+    //update in db
+    const hashedNewRefreshToken = await sha256Hex(newRefreshToken);
+    tokenRecord.token = hashedNewRefreshToken;
+    await tokenRecord.save();
+
     //set cookie
     req.cookies.access_token = newAccessToken;
+    req.cookies.refresh_token = newRefreshToken;
 
     // 9. Attach to request
     req.user = payload;
