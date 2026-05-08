@@ -17,10 +17,7 @@ export function DatePicker({date , setDate}: {
   setDate:(date: Date | undefined) => void
 }) {
   const [open, setOpen] = useState(false)
-  
-  React.useEffect(() => {
-    console.log("Selected date:", date);
-  }, [date])
+
 
   return (
     <div className="flex gap-4">

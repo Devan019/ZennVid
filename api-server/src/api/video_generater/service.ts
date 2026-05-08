@@ -2,25 +2,16 @@ import { NextFunction, Request, Response } from "express";
 import { lipSyncZodValidation, videogeneraterZodValidation } from "./schema";
 import { getShortVoiceName } from "../../utils/Voicemappping";
 import { formatResponse } from "../../utils/formateResponse";
-
-import Video, { VideoType } from "./models/VideoSave";
-import { User } from "../../auth/model/User";
-// import redisClient from "../../utils/redisClient";
-import { deleteFromCloudinary, getCloudinaryUrl, uploadToCloudinary } from "../../utils/cloudinary";
-import { createMagicVideo, syncStudioVideo } from "../../AI Layer/service";
+import { uploadToCloudinary } from "../../utils/cloudinary";
 import fs from "fs";
 import { languageToCodeDataset } from "../../constants/provider";
-interface videoData {
-  format: string;
-  resource_type: string;
-  publicId: string;
-  url: string;
-}
+import { videoQueue } from "../../utils/bullmq-queue";
+import { magicVideoJobName, syncStudioJobName } from "../../env_var";
+
 
 export const magicVideoCreationService = async (req: Request, res: Response, next: NextFunction) => {
 
   try {
-
 
     const { title, style, voiceGender, voiceLanguage, seconds, language } = videogeneraterZodValidation.parse(req.body);
 
@@ -34,64 +25,26 @@ export const magicVideoCreationService = async (req: Request, res: Response, nex
 
     const code = languageToCodeDataset[language.toLowerCase() as keyof typeof languageToCodeDataset];
 
-    if(!code) {
+    if (!code) {
       return formatResponse(res, 400, "Invalid language", false, null);
     }
 
+    const task = {
+      title, code, style, seconds, language, voice: shortName, userId: req.user.id
+    }
 
-    //genrate video
-    const data = await createMagicVideo({
-      title,
-      style,
-      seconds,
-      language,
-      voice: shortName,
-      code
+    //add task into queue
+    const job = await videoQueue.add(magicVideoJobName, {
+      ...task
     });
 
 
-    if (!data) {
-      return formatResponse(res, 500, "Video generation failed", false, null);
-    }
-
-    // const genapi = await axios.get(`${process.env.AI_URI}/video-gen-test`);
-    if (!data?.publicId || !data?.resourceType || !data?.format) {
-      return formatResponse(res, 500, "Backend problem", false, null);
-    }
-
-    const newVideo = new Video({
-      videoMetadata: {
-        publicId: data.publicId,
-        resourceType: data.resourceType,
-        format: data.format,
-      },
-      user: req.user.id,
-      type: VideoType.MAGIC_VIDEO,
-      title: title,
-      style: style,
-      language: language,
-      voiceCharacter: shortName
-    })
-
-
-    // console.log("video", newVideo, " api ", data)
-
-    await newVideo.save();
-
-    await User.findByIdAndUpdate(req.user.id, {
-      $inc: {
-        credits: -20
-      }
-    })
-    req.user.credits -= 20;
-
-    // await redisClient.del(`zennvid:videos:${req.user.id}`)
-
-    return formatResponse(res, 200, "Video generated successfully", true, {
-      videoUrl: data.url
+    return formatResponse(res, 200, "Video generation started", true, {
+      jobId: job.id
     });
+
   } catch (error) {
-    return error
+    return formatResponse(res, 500, "Internal Server Error", false, null);
   }
 }
 
@@ -100,7 +53,6 @@ export const syncStudioCreationVideo = async (req: Request, res: Response, next:
   let audioPath: string = "";
   try {
     if (req.user.credits < 20) {
-      console.log("Not enough credits");
       return formatResponse(res, 400, "Not enough credits", false, null);
     }
 
@@ -135,60 +87,19 @@ export const syncStudioCreationVideo = async (req: Request, res: Response, next:
 
     const { description, character, title, style, language } = lipSyncZodValidation.parse(req.body);
 
-    const videoData = await syncStudioVideo({
-      imagePath: uploadResult.url,
+
+    //add to queue
+    const job = await videoQueue.add(syncStudioJobName, {
+      imageUrl: uploadResult.url,
+      audioUrl: uploadAudioResult.url,
       text: description,
-      audioPath: uploadAudioResult.url
+      userId: req.user.id,
+      character, title, style, language
     });
 
-    if (videoData == null) {
-      return formatResponse(res, 500, "Video generation failed", false, null);
-    }
-
-    //delete uploaded image and audio from cloudinary
-    //image
-    await deleteFromCloudinary({
-      publicId: uploadResult.publicId,
-      resource_type: "image"
-    })
-
-    //audio
-    await deleteFromCloudinary({
-      publicId: uploadAudioResult.publicId,
-      resource_type: "raw"
-    })
-
-    const newVideo = new Video({
-      videoMetadata: {
-        publicId: videoData.publicId,
-        resourceType: videoData.resourceType,
-        format: videoData.format
-      },
-      user: req.user.id,
-      type: VideoType.SYNC_STUDIO_VIDEO,
-      title: title,
-      style: style,
-      language: language,
-      voiceCharacter: character
-    })
-
-    await newVideo.save();
-
-    await User.findByIdAndUpdate(req.user.id, {
-      $inc: {
-        credits: -20
-      }
+    return formatResponse(res, 200, "Video generation started", true, {
+      jobId: job.id
     });
-
-    req.user.credits -= 20;
-
-    // await redisClient.del(`zennvid:videos:${req.user.id}`)
-
-    return formatResponse(res, 200, "Video generated successfully", true, {
-      videoUrl: getCloudinaryUrl(videoData.publicId, videoData.resourceType, videoData.format),
-    });
-
-    // return  formatResponse(res, 200, "Video generated successfully", true, null);
 
   } catch (error) {
     return formatResponse(res, 500, "Internal Server Error", false, null);

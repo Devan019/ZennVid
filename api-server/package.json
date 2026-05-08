@@ -33,6 +33,7 @@
     "@pinecone-database/pinecone": "^7.1.0",
     "axios": "^1.10.0",
     "bcrypt": "^6.0.0",
+    "bullmq": "^5.76.6",
     "cloudinary": "^2.7.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",

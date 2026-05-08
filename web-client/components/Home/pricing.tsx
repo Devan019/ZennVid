@@ -60,7 +60,6 @@ export default function PricingComponent() {
     mutationKey: ['update-credits'],
     mutationFn: updateCredits,
     onSuccess(data) {
-      console.log("Credits updated successfully:", data);
       if (!data.SUCCESS) {
         toast.error(data.MESSAGE);
         return;

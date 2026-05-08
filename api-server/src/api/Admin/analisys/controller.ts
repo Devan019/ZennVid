@@ -42,7 +42,6 @@ export const getTranscationStats = expressAsyncHandler(async (req: Request, res:
 
 export const getTransactionHistory = expressAsyncHandler(async (req: Request, res: Response) => {
   try {
-    console.log(req.body);  
     const {page, limit, search, createdAt} = paginationSchema.parse(req.body);
     const response:ISendResponse = await transcationHistroyService({ page, limit, search, createdAt });
     return formatResponse(res, response.status, response.message, response.success, response.data)

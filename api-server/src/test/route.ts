@@ -26,7 +26,6 @@ TestRouter.get("/sendmail", expressAsyncHandler(async (req: Request, res: Respon
 
 TestRouter.get("/languages", expressAsyncHandler(async (req: Request, res: Response) => {
   try {
-    console.log("Fetching languages...");
     const filePath = path.join("src/test/audio.json");
     const fileContent = await fs.readFile(filePath, "utf-8");
     const data = JSON.parse(fileContent);

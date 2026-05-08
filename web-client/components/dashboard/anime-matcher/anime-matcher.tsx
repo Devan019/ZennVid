@@ -42,7 +42,6 @@ const AnimeMatcher = () => {
         return;
       }
       if (data && data.DATA) {
-        console.log("Match result:", data.DATA);
         setResult(data.DATA);
       }
     },

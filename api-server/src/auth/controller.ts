@@ -207,7 +207,6 @@ export const CreateAdmin = expressAsyncHandler(async (req: Request, res: Respons
 export const revokeToken = expressAsyncHandler(async (req: Request, res: Response, next: NextFunction) => {
 
   try {
-
     //1.get refresh token from cookie
     const { refresh_token } = req.cookies;
 

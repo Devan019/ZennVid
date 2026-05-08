@@ -6,6 +6,7 @@ if(!baseUrl) {
 const auth = baseUrl + "/auth";
 const oauth = baseUrl + "/oauth";
 const api = baseUrl + "/api";
+const job = baseUrl + "/jobstatus";
 
 export const BASE_URL = baseUrl;
 
@@ -67,3 +68,6 @@ export const TRANSACTION_CSV = `${api}/admin/stats/transaction-csv`
 export const FEED = `${api}/feed`
 
 export const ANIME_MATCHING = `${api}/anime/anime-matching`
+
+//job status route
+export const jobStatus = `${job}`

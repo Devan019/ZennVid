@@ -1,6 +1,7 @@
 
 //get service functions for AI layer here, such as lip sync, video editing, etc.
 
+import { Job } from "bullmq";
 import { deleteFromCloudinary } from "../utils/cloudinary";
 import { generateTranscript } from "./helpers/transcript";
 import { audioGen } from "./magic-video/audio_gen";
@@ -22,7 +23,9 @@ const createMagicVideo = async (
     seconds,
     language,
     voice,
-    code
+    code,
+    job,
+    userId
   }: {
     title: string;
     style: string;
@@ -30,6 +33,8 @@ const createMagicVideo = async (
     language: string;
     voice: string;
     code: string;
+    job: Job;
+    userId: string;
   }
 ) => {
   try {
@@ -45,6 +50,14 @@ const createMagicVideo = async (
       if (!script) {
         console.log("Script generation failed, retrying attempt", attempts);
       } else {
+        //sent sse to frontend
+
+        await job.updateProgress({
+          stage: "script_generated",
+          percent: 10,
+          status: "processing",
+          userId
+        });
         console.log("\n\n\n\n\nStage 1: cleared - script gen");
         break;
       }
@@ -57,8 +70,17 @@ const createMagicVideo = async (
     //2. generate images 
     const scenes = script.scenes ?? [];
     const prompts = scenes.map((scene: any) => scene.prompt);
-    const imagePaths = await Promise.all(prompts.map(async (prompt: string) => await HFImageGen(prompt)));
-    console.log("\n\n\n\n\nStage 2: cleared - image gen", imagePaths);
+    let completedImages = 0;
+
+    const imagePaths = await Promise.all(
+      prompts.map(async (prompt: string) => {
+        const img = await HFImageGen(prompt);
+        completedImages++;
+        return img;
+      })
+    );
+    await job.updateProgress({ stage: "generating_images", percent: 30, status: "processing", userId });
+
 
     //3. generate audio
     let audioData = scenes.map((scene: any) => scene.description).join("\n");
@@ -69,11 +91,18 @@ const createMagicVideo = async (
         dest: language
       });
       console.log("\n\n\n\n\nStage 2.5: cleared - translate");
+      //sent sse to frontend
 
       if (!audioData) {
         console.log("Translation failed, exiting.");
         return null;
       }
+      await job.updateProgress({
+        stage: "translate_generated",
+        percent: 50,
+        status: "processing",
+        userId
+      });
     }
     console.log("\n\n\n\n\nStage 3 prep: cleared - audioGen");
 
@@ -87,6 +116,13 @@ const createMagicVideo = async (
       console.log("Audio generation failed, exiting.");
       return null;
     }
+    //sent sse to frontend
+    await job.updateProgress({
+      stage: "audio_generated",
+      percent: 70,
+      status: "processing",
+      userId
+    });
 
     //4. caption generation
     const captions = await generateTranscript({
@@ -99,6 +135,13 @@ const createMagicVideo = async (
       console.log("Caption generation failed, exiting.");
       return null;
     }
+
+    await job.updateProgress({
+      stage: "caption_generated",
+      percent: 80,
+      status: "processing",
+      userId
+    });
 
     //5. video generation
     const finalCaptions = captions.segments.map((segment: any) => ({
@@ -120,6 +163,12 @@ const createMagicVideo = async (
       console.log("Video creation failed, exiting.");
       return null;
     }
+    await job.updateProgress({
+      stage: "video_stitched",
+      percent: 90,
+      status: "processing",
+      userId
+    });
     // 6. delete temp files (images, audio)
     console.log("Starting cleanup...");
 
@@ -156,9 +205,13 @@ const createMagicVideo = async (
     //7. return data
     return videoData;
 
-  } catch (error) {
+  } catch (error: any) {
     console.log("Error in createMagicVideo:", error);
-    return null;
+    await job.updateProgress({
+      status: "failed",
+      error: error.message || "Unknown error during video generation",
+    });
+    throw error;
   }
 }
 
@@ -169,11 +222,15 @@ const createMagicVideo = async (
 const syncStudioVideo = async ({
   imagePath,
   audioPath,
-  text
+  text,
+  job,
+  userId
 }: {
   imagePath: string;
   audioPath: string;
   text: string;
+  job: any;
+  userId: string;
 }) => {
   try {
 
@@ -186,6 +243,12 @@ const syncStudioVideo = async ({
       return null;
     }
     console.log("\n\n\n\n\nStage 1: cleared - voice clone");
+    await job.updateProgress({
+      stage: "voice_cloned",
+      percent: 20,
+      status: "processing",
+      userId
+    });
 
     //2. create captions
     const captions = await generateTranscript({
@@ -197,6 +260,12 @@ const syncStudioVideo = async ({
       return null;
     }
     console.log("\n\n\n\n\nStage 2: cleared - caption gen");
+    await job.updateProgress({
+      stage: "caption_generated",
+      percent: 40,
+      status: "processing",
+      userId
+    });
 
     if (!captions || !captions.segments || captions.segments.length === 0) {
       console.log("No captions generated, exiting.");
@@ -219,6 +288,13 @@ const syncStudioVideo = async ({
       return null;
     }
     console.log("\n\n\n\n\nStage 3: cleared - lip sync");
+    await job.updateProgress({
+      stage: "lip_sync_completed",
+      percent: 70,
+      status: "processing",
+      userId
+    });
+
 
     //4. add subtitles to video 
     const finalVideo = await addSubtitles({
@@ -230,6 +306,12 @@ const syncStudioVideo = async ({
       return null;
     }
     console.log("\n\n\n\n\nStage 4: cleared - subtitles added");
+    await job.updateProgress({
+      stage: "subtitles_added",
+      percent: 90,
+      status: "processing",
+      userId
+    });
 
     //5. remove temp data
     try {

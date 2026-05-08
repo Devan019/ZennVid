@@ -1,6 +1,7 @@
-import {logoutRoute, userProfileRoute } from "@/constants/backend_routes";
+import {logoutRoute, refreshTokenRoute, userProfileRoute } from "@/constants/backend_routes";
 import { Error } from "@/lib/apiProvider";
 import axios_api from "@/lib/axiosHelper";
+import axios from "axios";
 
 
 //logout user
@@ -32,3 +33,14 @@ export const getUser = async () => {
     return err.response?.data;
   }
 };
+
+//reset user
+export const resetUserApi = async () => {
+  try {
+    const API = await axios.post(`${refreshTokenRoute}`, {}, {withCredentials: true});
+    return API.data;
+  } catch (error) {
+    const err = error as Error;
+    return err.response?.data;
+  }
+}

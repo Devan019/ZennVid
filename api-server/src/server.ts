@@ -7,6 +7,8 @@ import { OAuthRouter } from "./oauth/route";
 import { ApiRouter } from "./api/route";
 import connectToMongo from "./utils/mongoConnection";
 import { FRONTEND_URL, IP_ADDRESS, PORT } from "./env_var";
+import JobRouter from "./events/videogen_event";
+import worker from "./workers/videogen_worker";
 
 
 // import { rateLimit } from 'express-rate-limit'
@@ -44,6 +46,7 @@ app.use("/auth", AuthRouter);
 app.use("/test", TestRouter);
 app.use("/oauth", OAuthRouter);
 app.use("/api", ApiRouter);
+app.use("/jobstatus", JobRouter);
 
 const startServer = async () => {
   app.listen(PORT, IP_ADDRESS, () => {
@@ -51,6 +54,15 @@ const startServer = async () => {
   });
 
   await connectToMongo();
+
+  //run worker
+  worker.run()
+    .catch((err) => {
+      console.log("Error starting worker:", err);
+    })
+    .then(() => {
+      console.log("Worker started successfully");
+    })
 }
 
 startServer()

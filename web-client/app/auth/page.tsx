@@ -76,7 +76,6 @@ const AuthPages: React.FC = () => {
       }
     },
     onSuccess: (data) => {
-      console.log(data)
       if (data.SUCCESS === false) {
         toast.error(data.MESSAGE);
         return;

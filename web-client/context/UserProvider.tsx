@@ -1,7 +1,7 @@
 "use client"
 
-import { getUser, logoutUser } from "./api";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { getUser, logoutUser, resetUserApi } from "./api";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -25,6 +25,7 @@ interface UserContextType {
   error: string | null;
   setError: (error: string | null) => void;
   logout: () => void;
+  resetUser: () => void;
 }
 
 export const userContext = createContext<UserContextType | null>(null);
@@ -38,6 +39,7 @@ export const UserProvider = ({ children }: {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
 
   const UserQuery = useQuery({
@@ -51,18 +53,8 @@ export const UserProvider = ({ children }: {
     setError(null);
     const { data } = await UserQuery.refetch();
     if (!data.SUCCESS) {
-      //if 404
-      if(data.STATUS_CODE === 404){
-        setIsAuthenticated(false);
-        setUser(null);
-        setIsLoading(false);
-        
-        //go to auth page if user not found
-        window.location.href = '/auth';
-        return;
-      }
-
       toast.error(data.MESSAGE);
+      setIsLoading(false);
       return;
     }
     if (data?.DATA) { 
@@ -71,6 +63,7 @@ export const UserProvider = ({ children }: {
     } else {
       setIsAuthenticated(false);
     }
+    setIsLoading(false);
   }
 
   useEffect(() => {
@@ -78,6 +71,21 @@ export const UserProvider = ({ children }: {
       fetchUser();
     }
   }, [user]);
+
+  const resetUser = async() => {
+    setUser(null);
+    setIsAuthenticated(false);
+
+    //reset user
+    await resetUserApi();
+    
+    //remove cache
+    queryClient.removeQueries({ queryKey: ['getUser'] })
+
+    //call fetch user to update state
+    await fetchUser();
+
+  }
 
   const doLogout = useMutation({
     mutationFn: async () => {
@@ -109,7 +117,7 @@ export const UserProvider = ({ children }: {
   }, [doLogout]);
 
   return (
-    <userContext.Provider value={{ user, setUser, isAuthenticated, setIsAuthenticated, isLoading, setIsLoading, error, setError, logout }}>
+    <userContext.Provider value={{ user, setUser, isAuthenticated, setIsAuthenticated, isLoading, setIsLoading, error, setError, logout, resetUser }}>
       {children}
     </userContext.Provider>
   );

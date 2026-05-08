@@ -97,6 +97,11 @@ const refreshPeroid = 7 * 24 * 60 * 60 * 1000; // 7 days
 const accessPeroidJwt = "2m"; // 2 minutes
 const refreshPeroidJwt = "7d"; // 7 days
 
+//bull-mq
+const queueName = "video-generation";
+const syncStudioJobName = "sync-studio-video-gen";
+const magicVideoJobName = "magic-video-gen";
+
 
 //export all
 export {
@@ -144,6 +149,9 @@ export {
   accessPeroid,
   refreshPeroid,
   accessPeroidJwt,
-  refreshPeroidJwt
+  refreshPeroidJwt,
+  queueName,
+  syncStudioJobName,
+  magicVideoJobName
 }
 

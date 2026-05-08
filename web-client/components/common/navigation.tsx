@@ -22,7 +22,7 @@ export function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const router = useRouter()
-  const { user, isAuthenticated, logout } = useUser()
+  const { user, isAuthenticated, logout, isLoading } = useUser()
   const [urls, seturls] = useState<URLS[]>([]);
 
   const defaultUrls: URLS[] = [
@@ -66,6 +66,48 @@ export function Navigation() {
     setIsMenuOpen(false);
   };
 
+
+  // Loader component
+  if (isLoading) {
+    return (
+      <motion.nav
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        className="fixed top-0 w-full z-50 bg-white/90 dark:bg-black/90 backdrop-blur-md border-b border-gray-200 dark:border-gray-800"
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            {/* Logo */}
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              className="flex items-center space-x-2"
+            >
+              <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                <Zap className="w-5 h-5 text-white" />
+              </div>
+              <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                ZennVid
+              </span>
+            </motion.div>
+
+            {/* Loading Skeleton */}
+            <div className="flex items-center gap-4">
+              <motion.div
+                className="h-10 w-32 bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 rounded-lg"
+                animate={{ opacity: [0.5, 1, 0.5] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+              />
+              <motion.div
+                className="h-10 w-10 bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 rounded-full"
+                animate={{ opacity: [0.5, 1, 0.5] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+              />
+            </div>
+          </div>
+        </div>
+      </motion.nav>
+    )
+  }
 
   return (
     <motion.nav

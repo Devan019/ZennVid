@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "next-themes";
 
 
-const TerminalLoader = ({ completed, setCompleted, isVideoLoading, steps, progress, setProgress }: {
+const TerminalLoader = ({ completed, setCompleted, isVideoLoading, steps, progress, setProgress, progressPercent, currentStage }: {
   completed: boolean;
   setCompleted: (completed: boolean) => void;
   isVideoLoading: boolean;
@@ -16,112 +16,34 @@ const TerminalLoader = ({ completed, setCompleted, isVideoLoading, steps, progre
   }[];
   progress: any;
   setProgress: (progress: any) => void;
+  progressPercent: number;
+  currentStage: string;
 }) => {
   const { resolvedTheme } = useTheme();
 
   const [terminalLines, setTerminalLines] = useState<string[]>([]);
-  const [finalTime, setFinalTime] = useState<string | null>(null);
-  const startTimeRef = useRef<number>(Date.now());
-  const [fastSimulation, setFastSimulation] = useState(false);
-
-  // Colors for both modes
-  const colors = {
-    dark: {
-      background: "#1e1e1e",
-      text: "#f8f8f8",
-      accent: "#64ffda",
-      success: "#50fa7b",
-      error: "#ff5555",
-      prompt: "#bd93f9",
-      cursor: "#f8f8f0",
-    },
-    light: {
-      background: "#f8f8f8",
-      text: "#333333",
-      accent: "#007acc",
-      success: "#28a745",
-      error: "#dc3545",
-      prompt: "#6f42c1",
-      cursor: "#333333",
-    },
-  };
-
-  const currentColors = resolvedTheme === "dark" ? colors.dark : colors.light;
-
-
-  const simulateFastProcess = async () => {
-      const fastDurations = [500, 1000, 1500, 2000, 2500]; // Staggered durations
-
-      for (let i = 0; i < steps.length; i++) {
-        const step = steps[i];
-        addTerminalLine(`$ ${step.label}...`);
-
-        await new Promise(resolve => setTimeout(resolve, fastDurations[i]));
-
-        setProgress((prev:any) => ({ ...prev, [step.id]: true }));
-        addTerminalLine(`✓ ${step.label} completed`);
-      }
-
-      const endTime = Date.now();
-      const totalSeconds = Math.floor((endTime - startTimeRef.current) / 1000);
-      const minutes = Math.floor(totalSeconds / 60);
-      const seconds = totalSeconds % 60;
-      setFinalTime(`${minutes}m ${seconds}s`);
-
-      setCompleted(true);
-      addTerminalLine("✔ All tasks completed successfully!");
-    };
+  const lastStageRef = useRef<string>('');
+  const completionLoggedRef = useRef(false);
 
   useEffect(() => {
-    if (completed) {
-      if (!fastSimulation) {
-        setTimeout(async() => {
-          await simulateFastProcess();
-        }, 2000);
-      }
+    if (!currentStage) {
+      return;
     }
-  }, [completed])
 
+    const statusLine = `$ ${currentStage} (${progressPercent}%)`;
+    if (lastStageRef.current !== statusLine) {
+      lastStageRef.current = statusLine;
+      addTerminalLine(statusLine);
+    }
+  }, [currentStage, progressPercent]);
 
   useEffect(() => {
-    const simulateProcess = async () => {
-      for (const step of steps) {
-        addTerminalLine(`$ ${step.label}...`);
-
-        // Simulate the process duration
-        if (!fastSimulation) {
-          await new Promise(resolve => setTimeout(resolve, step.duration * 1000));
-        }
-
-        // Mark step as complete
-        setProgress((prev:any) => ({ ...prev, [step.id]: true }));
-        addTerminalLine(`✓ ${step.label} completed`);
-      }
-
-      console.log("after over")
-
-      // All steps completed
-      if (!fastSimulation) {
-        console.log("All steps completed", fastSimulation);
-        const endTime = Date.now();
-        const totalSeconds = Math.floor((endTime - startTimeRef.current) / 1000);
-        const minutes = Math.floor(totalSeconds / 60);
-        const seconds = totalSeconds % 60;
-        setFinalTime(`${minutes}m ${seconds}s`);
-
-        setCompleted(true);
-        addTerminalLine("✔ All tasks completed successfully!");
-
-        // Start fast simulation after 2 seconds
-        setTimeout(() => {
-          setFastSimulation(true);
-          simulateFastProcess();
-        }, 2000);
-      }
-    }; 
-
-    simulateProcess();
-  }, [fastSimulation]);
+    if (completed && !completionLoggedRef.current) {
+      completionLoggedRef.current = true;
+      addTerminalLine("✔ All tasks completed successfully!");
+      setCompleted(true);
+    }
+  }, [completed, setCompleted]);
 
   const addTerminalLine = (text: string) => {
     setTerminalLines(prev => [...prev, text]);
@@ -133,12 +55,10 @@ const TerminalLoader = ({ completed, setCompleted, isVideoLoading, steps, progre
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className={`rounded-lg overflow-hidden shadow-xl border ${resolvedTheme === "dark" ? "border-gray-700" : "border-gray-200"
+        className={`rounded-lg overflow-hidden shadow-xl border ${resolvedTheme === "dark"
+          ? "border-gray-700 bg-zinc-900 text-zinc-100"
+          : "border-gray-200 bg-white text-zinc-900"
           }`}
-        style={{
-          backgroundColor: currentColors.background,
-          color: currentColors.text,
-        }}
       >
         {/* Terminal header */}
         <div
@@ -159,8 +79,22 @@ const TerminalLoader = ({ completed, setCompleted, isVideoLoading, steps, progre
         <div className="p-4 font-mono text-sm">
           <div className="mb-4">
             <div className="flex items-center">
-              <span style={{ color: currentColors.prompt }}>$</span>
+              <span className={resolvedTheme === "dark" ? "text-fuchsia-300" : "text-violet-600"}>$</span>
               <span className="ml-2">Starting video generation pipeline...</span>
+            </div>
+            <div className={`mt-3 rounded-md border border-dashed px-3 py-2 text-xs opacity-90 ${resolvedTheme === "dark" ? "border-cyan-400" : "border-sky-500"}`}>
+              <div className="flex items-center justify-between gap-3">
+                <span>{currentStage || "Waiting for the first update..."}</span>
+                <span>{progressPercent}%</span>
+              </div>
+              <div className="mt-2 h-2 overflow-hidden rounded-full bg-black/10 dark:bg-white/10">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${Math.min(Math.max(progressPercent, 0), 100)}%` }}
+                  transition={{ duration: 0.3, ease: "easeOut" }}
+                  className={`h-full rounded-full ${resolvedTheme === "dark" ? "bg-cyan-300" : "bg-sky-500"}`}
+                />
+              </div>
             </div>
           </div>
 
@@ -180,7 +114,8 @@ const TerminalLoader = ({ completed, setCompleted, isVideoLoading, steps, progre
                         height="16"
                         viewBox="0 0 24 24"
                         fill="none"
-                        stroke={currentColors.success}
+                        stroke="currentColor"
+                        className="text-emerald-400"
                         strokeWidth="3"
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -198,10 +133,7 @@ const TerminalLoader = ({ completed, setCompleted, isVideoLoading, steps, progre
                         repeat: Infinity,
                         ease: "easeInOut",
                       }}
-                      className="w-4 h-4 rounded-full"
-                      style={{
-                        backgroundColor: currentColors.accent,
-                      }}
+                      className={`w-4 h-4 rounded-full ${resolvedTheme === "dark" ? "bg-cyan-300" : "bg-sky-500"}`}
                     />
                   )}
                 </div>
@@ -210,23 +142,12 @@ const TerminalLoader = ({ completed, setCompleted, isVideoLoading, steps, progre
                     <span>{step.label}</span>
                     {!progress[step.id as keyof typeof progress] && (
                       <span className="text-xs opacity-70">
-                        {fastSimulation ? "..." : `${step.duration}s`}
+                        {`${step.duration}s`}
                       </span>
                     )}
                   </div>
                   {!progress[step.id as keyof typeof progress] && (
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: "100%" }}
-                      transition={{
-                        duration: fastSimulation ? 0.5 : step.duration,
-                        ease: "linear",
-                      }}
-                      className="h-1 mt-2 rounded-full"
-                      style={{
-                        backgroundColor: currentColors.accent,
-                      }}
-                    />
+                    <div className={`h-1 mt-2 rounded-full ${resolvedTheme === "dark" ? "bg-cyan-300/40" : "bg-sky-500/40"}`} />
                   )}
                 </div>
               </div>
@@ -235,20 +156,19 @@ const TerminalLoader = ({ completed, setCompleted, isVideoLoading, steps, progre
 
           {/* Terminal output */}
           <div
-            className={`mt-6 p-3 rounded ${resolvedTheme === "dark" ? "bg-gray-900" : "bg-gray-50"
+            className={`mt-6 min-h-[150px] p-3 rounded ${resolvedTheme === "dark" ? "bg-gray-900" : "bg-gray-50"
               }`}
-            style={{ minHeight: "150px" }}
           >
             {terminalLines.map((line, index) => (
               <div key={index} className="mb-1">
                 {line.startsWith("$") ? (
                   <>
-                    <span style={{ color: currentColors.prompt }}>$</span>
+                    <span className={resolvedTheme === "dark" ? "text-fuchsia-300" : "text-violet-600"}>$</span>
                     <span className="ml-2">{line.substring(2)}</span>
                   </>
                 ) : line.startsWith("✓") ? (
                   <>
-                    <span style={{ color: currentColors.success }}>✓</span>
+                    <span className="text-emerald-400">✓</span>
                     <span className="ml-2">{line.substring(2)}</span>
                   </>
                 ) : (
@@ -256,9 +176,9 @@ const TerminalLoader = ({ completed, setCompleted, isVideoLoading, steps, progre
                 )}
               </div>
             ))}
-            {!completed && (
+            {!completed && isVideoLoading && (
               <div className="flex items-center">
-                <span style={{ color: currentColors.prompt }}>$</span>
+                <span className={resolvedTheme === "dark" ? "text-fuchsia-300" : "text-violet-600"}>$</span>
                 <motion.span
                   animate={{ opacity: [0, 1, 0] }}
                   transition={{
@@ -266,13 +186,7 @@ const TerminalLoader = ({ completed, setCompleted, isVideoLoading, steps, progre
                     repeat: Infinity,
                     ease: "easeInOut",
                   }}
-                  className="ml-2"
-                  style={{
-                    backgroundColor: currentColors.cursor,
-                    width: "8px",
-                    height: "16px",
-                    display: "inline-block",
-                  }}
+                  className={`ml-2 inline-block h-4 w-2 ${resolvedTheme === "dark" ? "bg-zinc-100" : "bg-zinc-800"}`}
                 />
               </div>
             )}
@@ -285,11 +199,7 @@ const TerminalLoader = ({ completed, setCompleted, isVideoLoading, steps, progre
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
-                className="mt-6 p-4 rounded-lg text-center"
-                style={{
-                  backgroundColor: currentColors.success,
-                  color: resolvedTheme === "dark" ? "#000" : "#fff",
-                }}
+                className={`mt-6 p-4 rounded-lg text-center ${resolvedTheme === "dark" ? "bg-emerald-400 text-black" : "bg-emerald-500 text-white"}`}
               >
                 <div className="flex flex-col items-center justify-center">
                   <div className="flex items-center">
@@ -309,16 +219,6 @@ const TerminalLoader = ({ completed, setCompleted, isVideoLoading, steps, progre
                     </svg>
                     <span className="font-bold">Video generation complete!</span>
                   </div>
-                  {finalTime && (
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: 1 }}
-                      className="mt-2 text-sm"
-                    >
-                      Total processing time: {finalTime}
-                    </motion.div>
-                  )}
                 </div>
               </motion.div>
             )}

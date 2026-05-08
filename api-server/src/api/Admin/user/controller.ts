@@ -34,7 +34,6 @@ export const getAllUsers = expressAsyncHandler(async(req: Request, res: Response
 
 export const updateUser = expressAsyncHandler(async(req: Request, res: Response) => {
   try {
-    console.log("Request body:", req.body, " id " + req.params.id);
     const { username, credits } = UserUpdateValidation.parse(req.body);
     const userId = req.params.id;
     const response:ISendResponse = await UpdateUserService(userId as string, username, credits);

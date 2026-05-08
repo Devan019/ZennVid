@@ -43,7 +43,6 @@ const feedLikeCountUpdate = expressAsyncHandler(async (req: Request, res: Respon
       return formatResponse(res, 400, "Feed ID is required", false, null);
     }
     const { userId } = LikeSchema.parse(req.body);
-    console.log("feedId:", feedId, "userId:", userId);
     const response:ISendResponse = await LikeCountUpdateService({ feedId: feedId as string, userId });
     return formatResponse(res, response.status, response.message, response.success, response.data); 
   } catch (error) {
