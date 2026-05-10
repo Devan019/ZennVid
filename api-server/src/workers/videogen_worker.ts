@@ -10,76 +10,86 @@ import { deleteFromCloudinary, extractPublicId } from '../utils/cloudinary';
 
 //helper function to perfoem job of magic video gen
 const performMagicVideoGen = async (job: Job) => {
-  console.log('Performing magic video generation for job:', job.id, 'with data:', job.data);
+  try {
+    console.log('Performing magic video generation for job:', job.id, 'with data:', job.data);
 
-  const {
-    title, code, style, seconds, language, voice, userId
-  } = job.data;
+    const {
+      title, code, style, seconds, language, voice, userId
+    } = job.data;
 
-  if (!title || !code || !style || !seconds || !language || !voice || !userId) {
-    console.error('Missing required data for magic video generation in job:', job.id);
-    throw new Error('Missing required data for magic video generation');
-  }
-
-  //check userid exists
-  const user = await User.findById(userId);
-  if (!user) {
-    console.error('User not found for sync studio video generation in job:', job.id, 'with userId:', userId);
-    throw new Error('User not found for sync studio video generation');
-  }
-
-  //call magic video gen api
-  const data = await createMagicVideo({
-    title,
-    style,
-    seconds,
-    language,
-    voice,
-    code,
-    job,
-    userId
-  })
-
-
-  if (!data) {
-    //sent sse to frontend to notify video gen failed
-    throw new Error('Video generation failed');
-  }
-
-  //save video info to db
-  const newVideo = new Video({
-    videoMetadata: {
-      publicId: data.publicId,
-      resourceType: data.resourceType,
-      format: data.format,
-    },
-    user: userId,
-    type: VideoType.MAGIC_VIDEO,
-    title: title,
-    style: style,
-    language: language,
-    voiceCharacter: voice
-  })
-
-  await newVideo.save();
-
-  // //reduce user credits by 20
-  await user.updateOne({
-    $inc: {
-      credits: -20
+    if (!title || !code || !style || !seconds || !language || !voice || !userId) {
+      console.error('Missing required data for magic video generation in job:', job.id);
+      throw new Error('Missing required data for magic video generation');
     }
-  })
 
-  console.log('Magic video generation completed for job:', job.id, 'with result:', data);
-  await job.updateProgress({
-    stage: "video_generated",
-    percent: 100,
-    status: "completed",
-    userId,
-    videoUrl: data.url
-  });
+    //check userid exists
+    const user = await User.findById(userId);
+    if (!user) {
+      console.error('User not found for sync studio video generation in job:', job.id, 'with userId:', userId);
+      throw new Error('User not found for sync studio video generation');
+    }
 
-  //sse sent to frontend to notify video gen success with video url
+    //call magic video gen api
+    const data = await createMagicVideo({
+      job,
+      userId,
+      title,
+      code,
+      style,
+      seconds,
+      language,
+      voice
+    })
+
+
+    if (!data) {
+      //sent sse to frontend to notify video gen failed
+      throw new Error('Video generation failed');
+    }
+
+    //save video info to db
+    const newVideo = new Video({
+      videoMetadata: {
+        publicId: data.publicId,
+        resourceType: data.resourceType,
+        format: data.format,
+      },
+      user: userId,
+      type: VideoType.MAGIC_VIDEO,
+      title: title,
+      style: style,
+      language: language,
+      voiceCharacter: voice
+    })
+
+    await newVideo.save();
+
+    // //reduce user credits by 20
+    await user.updateOne({
+      $inc: {
+        credits: -20
+      }
+    })
+
+    console.log('Magic video generation completed for job:', job.id, 'with result:', data);
+    return {
+      stage: "video_generated",
+      percent: 100,
+      status: "completed",
+      userId,
+      videoUrl: data.url
+    };
+
+    //sse sent to frontend to notify video gen success with video url
+  } catch (error) {
+    return {
+      stage: "video_generated",
+      percent: 100,
+      status: "failed",
+      userId: job.data.userId,
+      error: (error as Error).message || 'Video generation failed'
+    }
+  }
 }
 
 //helper function to perfoem job of sync studio video gen
@@ -107,21 +117,27 @@ const performSyncStudioVideoGen = async (job: Job) => {
 
   //call sync studio video gen api with image, audio and text
   const data = await syncStudioVideo({
-    imagePath: imageUrl,
-    text: text,
-    audioPath: audioUrl,
     job,
-    userId
+    userId,
+    imagePath: imageUrl,
+    audioPath: audioUrl,
+    text
   });
 
   if (!data) {
     //sent sse to frontend to notify video gen failed
-    throw new Error('Video generation failed');
+    return {
+      stage: "video_generated",
+      percent: 100,
+      status: "failed",
+      userId,
+      error: 'Video generation failed'
+    }
   }
 
 
   // //delete uploaded image and audio from cloudinary
-  // //image
+  //image
   await deleteFromCloudinary({
     publicId: extractPublicId(imageUrl),
     resource_type: "image"
@@ -137,9 +153,9 @@ const performSyncStudioVideoGen = async (job: Job) => {
   //save video info to db
   const newVideo = new Video({
     videoMetadata: {
-      publicId: data.publicId,
-      resourceType: data.resourceType,
-      format: data.format
+      publicId: data?.publicId,
+      resourceType: data?.resourceType,
+      format: data?.format
     },
     user: userId,
     type: VideoType.SYNC_STUDIO_VIDEO,
@@ -150,21 +166,21 @@ const performSyncStudioVideoGen = async (job: Job) => {
   })
   await newVideo.save();
 
-  //reduce user credits by 20
+  // //reduce user credits by 20
   await user.updateOne({
     $inc: {
       credits: -20
     }
   })
 
-  //send sse to frontend to notify video gen success with video url
-  await job.updateProgress({
+  // //send sse to frontend to notify video gen success with video url
+  return {
     stage: "video_generated",
     percent: 100,
     status: "completed",
     userId,
     videoUrl: data.url
-  });
+  };
 
 }
 
@@ -179,13 +195,10 @@ const worker = new Worker(
     switch (job.name) {
       case magicVideoJobName:
         //call video gen api
-        await performMagicVideoGen(job);
-        break;
+        return await performMagicVideoGen(job);
       case syncStudioJobName:
         //call sync studio api
-        console.log('Start processing sync studio video generation for job:', job.id);
-        await performSyncStudioVideoGen(job);
-        break;
+        return await performSyncStudioVideoGen(job);
       default:
         throw new Error(`Unhandled job type: ${job.name}`);
     }

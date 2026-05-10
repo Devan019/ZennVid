@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -15,52 +15,14 @@ import { VoiceBaseLanguage, VoiceLanguage } from '@/constants/languages';
 import { magicVideo } from '@/lib/apiProvider';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import TerminalLoader from '@/components/dashboard/magic-video/progressLoader';
-import VideoPreviewDialog from '@/components/dashboard/magic-video/downloadVideo';
-import { jobStatus } from '@/constants/backend_routes';
-import { useUser } from '@/context/UserProvider';
-import { Skeleton } from '@/components/ui/skeleton';
+import Loader from '@/components/common/Loader';
 
-type ProgressState = {
-  script: boolean;
-  images: boolean;
-  audio: boolean;
-  captions: boolean;
-  video: boolean;
-};
-
-const STAGE_RANK: Record<string, number> = {
-  script_generated: 1,
-  generating_images: 2,
-  translate_generated: 2,
-  audio_generated: 3,
-  caption_generated: 4,
-  video_stitched: 5,
-  completed: 6,
-};
-
-const getProgressFromStage = (stage?: string): ProgressState | null => {
-  if (!stage) {
-    return null;
-  }
-
-  const rank = STAGE_RANK[stage.toLowerCase()];
-  if (!rank) {
-    return null;
-  }
-
-  return {
-    script: rank >= 1,
-    images: rank >= 2,
-    audio: rank >= 3,
-    captions: rank >= 4,
-    video: rank >= 5,
-  };
+type MagicVideoProps = {
+  onGenerate?: (jobId: string) => void;
 };
 
 
-const page = () => {
-  const { resetUser, isAuthenticated, user } = useUser();
+const MagicVideo = ({ onGenerate }: MagicVideoProps) => {
   const [videoTitle, setVideoTitle] = useState('');
   const [videoLength, setVideoLength] = useState('');
   const [selectedStyle, setSelectedStyle] = useState('');
@@ -68,61 +30,12 @@ const page = () => {
   const [voiceGender, setVoiceGender] = useState('');
   const [language, setLanguage] = useState<VoiceBaseLanguage>(VoiceBaseLanguage.EnglishIndia);
   const [videoloading, setvideoloading] = useState(false);
-  const [dialogState, setDialogState] = useState(false)
-  const [isGeneratered, setisGeneratered] = useState(false)
-  const [videoUrl, setvideoUrl] = useState("");
-  const [progressMeta, setProgressMeta] = useState({
-    percent: 0,
-    stage: '',
-  });
-  const [progress, setProgress] = useState<ProgressState>({
-    script: false,
-    images: false,
-    audio: false,
-    captions: false,
-    video: false,
-  });
-  const steps = [
-    { id: "script", label: "Crafting your epic storyline", duration: 30 },
-    { id: "images", label: "Painting vivid scenes in pixels", duration: 100 },
-    { id: "audio", label: "Giving voices to your story", duration: 70 },
-    { id: "captions", label: "Writing words on the screen", duration: 60 },
-    { id: "video", label: "Stitching it all into a masterpiece", duration: 500 },
-  ];
-
-  const [jobId, setjobId] = useState<string | null>(null);
-  const eventSourceRef = useRef<EventSource | null>(null);
-  const [sseConnecting, setSseConnecting] = useState(true);
-
-  const resetGenerationState = () => {
-    setProgress({
-      script: false,
-      images: false,
-      audio: false,
-      captions: false,
-      video: false,
-    });
-    setProgressMeta({ percent: 0, stage: '' });
-    setisGeneratered(false);
-    setDialogState(false);
-    setvideoUrl('');
-  };
-
-  const closeEventSource = () => {
-    if (eventSourceRef.current) {
-      eventSourceRef.current.close();
-      eventSourceRef.current = null;
-    }
-  };
-
-
 
   const videoGenMutation = useMutation({
     mutationFn: async () => {
       if (!videoTitle || !videoLength || !selectedStyle || !voiceLanguage || !voiceGender) {
         throw new Error('All fields are required');
       }
-      resetGenerationState();
       setvideoloading(true);
       const data = await magicVideo({
         title: videoTitle,
@@ -145,111 +58,24 @@ const page = () => {
         return;
       }
       if (data) {
-        setjobId(data.DATA.jobId);
+        const jobId = data?.DATA?.jobId;
+        if (!jobId) {
+          toast.error('Missing job id from video generation response');
+          setvideoloading(false);
+          return;
+        }
+
+        setvideoloading(false);
+        onGenerate?.(jobId);
       }
     },
     onError: (error) => {
-      // console.log(error);
       setvideoloading(false);
-      closeEventSource();
     },
     onSettled: () => {
 
     }
   })
-
-  function connectSseForUser(userId: string) {
-    try {
-      closeEventSource();
-
-      const eventSource = new EventSource(`${jobStatus}/${userId}`);
-      eventSourceRef.current = eventSource;
-
-      // still reuse the same message handling as job flow
-      eventSource.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-
-        if (data.status === "connected") {
-          setSseConnecting(false);
-          return;
-        }
-
-        if (data.status === "processing") {
-          setSseConnecting(false);
-          const percent = Number(data.percent ?? 0);
-          setProgressMeta({
-            percent,
-            stage: data.stage ?? '',
-          });
-
-          const stageProgress = getProgressFromStage(data.stage);
-          if (!stageProgress) return;
-
-          setProgress((prev) => ({
-            script: prev.script || stageProgress.script,
-            images: prev.images || stageProgress.images,
-            audio: prev.audio || stageProgress.audio,
-            captions: prev.captions || stageProgress.captions,
-            video: prev.video || stageProgress.video,
-          }));
-        }
-
-        if (data.status === "completed") {
-          const result = data.result ?? {};
-          const resolvedVideoUrl = result.videoUrl ?? result.url ?? data.videoUrl ?? data.url ?? '';
-
-          if (resolvedVideoUrl) {
-            setvideoUrl(resolvedVideoUrl);
-            setDialogState(true);
-            if (isAuthenticated) {
-              resetUser();
-            }
-          } else {
-            toast.error('Video generation finished, but no video URL was returned.');
-          }
-
-          setProgressMeta({ percent: 100, stage: 'Completed' });
-          setProgress({ script: true, images: true, audio: true, captions: true, video: true });
-          setisGeneratered(true);
-          setvideoloading(false);
-          eventSource.close();
-          if (eventSourceRef.current === eventSource) eventSourceRef.current = null;
-        }
-
-        if (data.status === "failed") {
-          // console.error("Video failed:", data);
-          toast.error(data.error ?? 'Video generation failed');
-          setvideoloading(false);
-          setisGeneratered(false);
-          eventSource.close();
-          if (eventSourceRef.current === eventSource) eventSourceRef.current = null;
-        }
-      };
-
-      eventSource.onerror = (err) => {
-        // console.error("SSE Connection lost. Browsers usually retry automatically.", err);
-        setvideoloading(false);
-        setSseConnecting(false);
-        closeEventSource();
-      };
-
-    } catch (error) {
-      // console.error("Initial user SSE request failed", error);
-      setvideoloading(false);
-      setSseConnecting(false);
-      closeEventSource();
-    }
-  }
-
-  // connect SSE for current user at page load / when user becomes available
-  useEffect(() => {
-    if (isAuthenticated && user && user._id) {
-      const uid = user._id as string;
-      connectSseForUser(uid);
-    }
-
-    return () => closeEventSource();
-  }, [isAuthenticated, user?._id]);
 
   const handleSubmit = () => {
     videoGenMutation.mutateAsync();
@@ -285,46 +111,11 @@ const page = () => {
     return videoTitle.trim() && videoLength && selectedStyle && voiceLanguage && voiceGender;
   };
 
-  const OnClose = () => {
-    setDialogState(false);
-  }
 
 
   useEffect(() => {
     setLanguage(VoiceBaseLanguage[voiceLanguage as keyof typeof VoiceBaseLanguage] || VoiceBaseLanguage.EnglishIndia);
   }, [voiceLanguage])
-
-  if (sseConnecting) {
-    // show skeleton while SSE connection is being established
-    return (
-      <div className="h-screen w-screen p-8">
-        <div className="max-w-5xl mx-auto">
-          <Skeleton className="h-12 w-1/3 mb-6" />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Skeleton className="h-56 rounded-lg" />
-            <Skeleton className="h-56 rounded-lg" />
-            <Skeleton className="h-12" />
-            <Skeleton className="h-12" />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (videoloading) {
-    return (
-      <TerminalLoader
-        completed={isGeneratered}
-        setCompleted={setisGeneratered}
-        isVideoLoading={videoloading}
-        steps={steps}
-        progress={progress}
-        setProgress={setProgress}
-        progressPercent={progressMeta.percent}
-        currentStage={progressMeta.stage}
-      />
-    );
-  }
 
   return (
     <div className='h-screen w-screen'>
@@ -347,13 +138,12 @@ const page = () => {
             <p className="text-slate-600 text-lg">Configure your perfect video with AI-powered customization</p>
           </motion.div>
 
-          <VideoPreviewDialog
+          {/* <VideoPreviewDialog
             open={dialogState}
             onClose={OnClose}
             videoUrl={videoUrl}
-          />
+          /> */}
           <div className="space-y-8">
-            {/* Video Title */}
             <motion.div variants={itemVariants}>
               <Card className="shadow-lg border-0 backdrop-blur-sm">
                 <CardHeader className="pb-4">
@@ -386,7 +176,6 @@ const page = () => {
 
 
 
-            {/* Video Length */}
             <motion.div variants={itemVariants}>
               <Card className="shadow-lg border-0 backdrop-blur-sm">
                 <CardHeader className="pb-4">
@@ -449,7 +238,6 @@ const page = () => {
               </Card>
             </motion.div>
 
-            {/* Visual Style */}
             <motion.div variants={itemVariants}>
               <Card className="shadow-lg border-0 backdrop-blur-sm">
                 <CardHeader className="pb-4">
@@ -488,7 +276,6 @@ const page = () => {
               </Card>
             </motion.div>
 
-            {/* Voice Language */}
             <motion.div variants={itemVariants}>
               <Card className="shadow-lg border-0 backdrop-blur-sm">
                 <CardHeader className="pb-4">
@@ -522,7 +309,6 @@ const page = () => {
               </Card>
             </motion.div>
 
-            {/* Voice Gender */}
             <motion.div variants={itemVariants}>
               <Card className="shadow-lg border-0 backdrop-blur-sm">
                 <CardHeader className="pb-4">
@@ -585,7 +371,6 @@ const page = () => {
               </Card>
             </motion.div>
 
-            {/* Submit Button */}
             <motion.div variants={itemVariants} className="pt-4">
               <Separator className="mb-6" />
               <div className="flex flex-col sm:flex-row gap-4 justify-between">
@@ -593,18 +378,28 @@ const page = () => {
                 <Button
                   size="lg"
                   className="h-12 px-8 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-                  disabled={!isFormValid()}
+                  disabled={!isFormValid() || videoloading}
                   onClick={handleSubmit}
                 >
-                  Create Video
+                  {videoloading ? 'Preparing video data...' : 'Create Video'}
                 </Button>
               </div>
             </motion.div>
           </div>
         </motion.div>
       </div>
+
+      {videoloading && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
+          <div className="w-full max-w-md rounded-2xl border border-white/10 bg-slate-950/90 p-8 text-center shadow-2xl">
+            <Loader size={52} className="mb-5" />
+            <h2 className="text-2xl font-semibold text-white">Preparing video data...</h2>
+            <p className="mt-2 text-sm text-slate-300">Please wait while we build your generation request.</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
-export default page;
+export default MagicVideo;

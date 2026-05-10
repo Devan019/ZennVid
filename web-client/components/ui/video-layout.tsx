@@ -46,9 +46,12 @@ interface VideoLayoutGridProps {
   onDelete?: (id: string) => void
   onShare?: (video: VideoData) => void
   onDownload?: (video: VideoData) => void
+  deletingIds?: string[]
 }
 
-export const VideoLayoutGrid = ({ cards, onDelete, onShare, onDownload }: VideoLayoutGridProps) => {
+import Loader from "@/components/common/Loader"
+
+export const VideoLayoutGrid = ({ cards, onDelete, onShare, onDownload, deletingIds }: VideoLayoutGridProps) => {
   const [selected, setSelected] = useState<VideoCard | null>(null)
   const [, setLastSelected] = useState<VideoCard | null>(null)
 
@@ -98,9 +101,10 @@ export const VideoLayoutGrid = ({ cards, onDelete, onShare, onDownload }: VideoL
                     onDelete={handleVideoDelete}
                     onShare={onShare}
                     onDownload={onDownload}
+                    deletingIds={deletingIds}
                   />
                 ) : (
-                  <VideoThumbnail card={card} onDelete={handleVideoDelete} onShare={onShare} onDownload={onDownload} />
+                  <VideoThumbnail card={card} onDelete={handleVideoDelete} onShare={onShare} onDownload={onDownload} deletingIds={deletingIds} />
                 )}
               </motion.div>
             </div>
@@ -127,9 +131,10 @@ interface VideoThumbnailProps {
   onDelete?: (id: string) => void
   onShare?: (video: VideoData) => void
   onDownload?: (video: VideoData) => void
+  deletingIds?: string[]
 }
 
-const VideoThumbnail = ({ card, onDelete, onShare, onDownload }: VideoThumbnailProps) => {
+const VideoThumbnail = ({ card, onDelete, onShare, onDownload, deletingIds }: VideoThumbnailProps) => {
   const [, setIsHovered] = useState(false)
   const [showMenu, setShowMenu] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -162,7 +167,7 @@ const VideoThumbnail = ({ card, onDelete, onShare, onDownload }: VideoThumbnailP
         onShare?.(card.content)
         break
       case "delete":
-        onDelete?.(card.content._id)
+        onDelete?.(card.id)
         break
     }
   }
@@ -210,13 +215,27 @@ const VideoThumbnail = ({ card, onDelete, onShare, onDownload }: VideoThumbnailP
                 <Share2 className="w-4 h-4" />
                 Share
               </button>
-              <button
-                onClick={(e) => handleMenuAction("delete", e)}
-                className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2"
-              >
-                <Trash2 className="w-4 h-4" />
-                Delete
-              </button>
+              {(() => {
+                const isDeleting = deletingIds?.includes(card.id) || deletingIds?.includes(card.content._id as unknown as string)
+                if (isDeleting) {
+                  return (
+                    <div className="w-full px-4 py-2 text-left text-sm text-gray-500 flex items-center gap-2">
+                      <Loader size={18} />
+                      Deleting...
+                    </div>
+                  )
+                }
+
+                return (
+                  <button
+                    onClick={(e) => handleMenuAction("delete", e)}
+                    className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    Delete
+                  </button>
+                )
+              })()}
             </motion.div>
           )}
         </div>
@@ -248,9 +267,10 @@ interface SelectedVideoCardProps {
   onDelete?: (id: string) => void
   onShare?: (video: VideoData) => void
   onDownload?: (video: VideoData) => void
+  deletingIds?: string[]
 }
 
-const SelectedVideoCard = ({ selected, onDelete, onShare, onDownload }: SelectedVideoCardProps) => {
+const SelectedVideoCard = ({ selected, onDelete, onShare, onDownload, deletingIds }: SelectedVideoCardProps) => {
   const [isPlaying, setIsPlaying] = useState(false)
   const [isMuted, setIsMuted] = useState(false)
   const [showControls, setShowControls] = useState(true)
@@ -303,13 +323,28 @@ const SelectedVideoCard = ({ selected, onDelete, onShare, onDownload }: Selected
         <source src={selected.content.videoUrl} type="video/mp4" />
       </video>
 
-      {/* Close button */}
-      <button
-        onClick={handleDelete}
-        className="absolute top-4 right-4 bg-black/50 backdrop-blur-sm rounded-full p-2 hover:bg-black/70 transition-colors z-20 hover:cursor-pointer"
-      >
-        <Trash className="w-5 h-5 text-red-500" />
-      </button>
+      {/* Close / Delete button */}
+      <div className="absolute top-4 right-4 z-20">
+        {(() => {
+          const isDeleting = deletingIds?.includes(selected.id) || deletingIds?.includes(selected.content._id as unknown as string)
+          if (isDeleting) {
+            return (
+              <div className="bg-black/50 backdrop-blur-sm rounded-full p-2">
+                <Loader size={20} />
+              </div>
+            )
+          }
+
+          return (
+            <button
+              onClick={handleDelete}
+              className="bg-black/50 backdrop-blur-sm rounded-full p-2 hover:bg-black/70 transition-colors z-20 hover:cursor-pointer"
+            >
+              <Trash className="w-5 h-5 text-red-500" />
+            </button>
+          )
+        })()}
+      </div>
 
       {/* Custom Controls */}
       <motion.div

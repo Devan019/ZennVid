@@ -24,6 +24,7 @@ export const magicVideo = async ({ title, style, voiceGender, voiceLanguage, sec
     }, {
       withCredentials: true
     })
+    console.log('Magic video generation API response:', api.data);
     return api.data;
   } catch (error) {
     const err = error as Error;

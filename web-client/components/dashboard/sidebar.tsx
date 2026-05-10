@@ -1,9 +1,8 @@
 "use client"
 
 import { Home, LogOut, Menu, VideoOff, Cog, Book, Languages, Speaker, UserPenIcon, UserCog, Videotape, Sparkles } from "lucide-react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useState } from "react";
 import {
   Sidebar,
   SidebarContent,
@@ -49,10 +48,22 @@ export function AppSidebar({ menuItems }: {
     tooltip: string
   }[]
 }) {
-  const pathname = usePathname();
   const { setOpenMobile, isMobile } = useSidebar();
   const { logout } = useUser();
   const { user } = useUser();
+  const [activeHash, setActiveHash] = useState<string>("magic-video");
+
+  useEffect(() => {
+    const syncActiveHash = () => {
+      const currentHash = window.location.hash.replace('#', '');
+      setActiveHash(currentHash || 'magic-video');
+    };
+
+    syncActiveHash();
+    window.addEventListener('hashchange', syncActiveHash);
+
+    return () => window.removeEventListener('hashchange', syncActiveHash);
+  }, []);
 
   const containerVariants = {
     hidden: { opacity: 0, x: -20 },
@@ -75,7 +86,7 @@ export function AppSidebar({ menuItems }: {
     }
   };
 
-  
+
 
   return (
     <Sidebar
@@ -112,7 +123,12 @@ export function AppSidebar({ menuItems }: {
             <SidebarMenu className="space-y-2">
               {menuItems.map((item, index) => {
                 const Icon = iconMap[item.icon]
-                const isActive = pathname === item.href;
+                const itemHash = item.href.split('#')[1] ?? '';
+                const isActive = activeHash === itemHash;
+
+                const handleNavigation = () => {
+                  window.location.hash = itemHash;
+                };
 
                 return (
                   <motion.div
@@ -122,55 +138,54 @@ export function AppSidebar({ menuItems }: {
                     whileTap={{ scale: 0.98 }}
                   >
                     <SidebarMenuItem>
-                      <Link href={item.href} passHref >
-                        <SidebarMenuButton
-                          isActive={isActive}
-                          tooltip={item.tooltip}
-                          className={`
-                            relative group w-full transition-all duration-200 ease-in-out
-                            hover:bg-gray-100 dark:hover:bg-gray-800
-                            ${isActive
-                              ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border-r-2 border-blue-600 dark:border-blue-400'
-                              : 'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100'
-                            }
-                            rounded-lg mx-1 px-3 py-2
-                          `}
+                      <SidebarMenuButton
+                        onClick={handleNavigation}
+                        isActive={isActive}
+                        tooltip={item.tooltip}
+                        className={`
+                          relative group w-full transition-all duration-200 ease-in-out
+                          hover:bg-gray-100 dark:hover:bg-gray-800
+                          ${isActive
+                            ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border-r-2 border-blue-600 dark:border-blue-400'
+                            : 'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100'
+                          }
+                          rounded-lg mx-1 px-3 py-2
+                        `}
+                      >
+                        <motion.div
+                          whileHover={{ rotate: isActive ? 0 : 5 }}
+                          transition={{ duration: 0.2 }}
                         >
-                          <motion.div
-                            whileHover={{ rotate: isActive ? 0 : 5 }}
-                            transition={{ duration: 0.2 }}
-                          >
-                            <Icon className={`
-                              size-4 transition-colors duration-200
-                              ${isActive
-                                ? 'text-blue-600 dark:text-blue-400'
-                                : 'text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-200'
-                              }
-                            `} />
-                          </motion.div>
-                          <span className={`
-                            font-medium transition-colors duration-200
+                          <Icon className={`
+                            size-4 transition-colors duration-200
                             ${isActive
                               ? 'text-blue-600 dark:text-blue-400'
-                              : 'text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-gray-100'
+                              : 'text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-200'
                             }
-                          `}>
-                            {item.label}
-                          </span>
+                          `} />
+                        </motion.div>
+                        <span className={`
+                          font-medium transition-colors duration-200
+                          ${isActive
+                            ? 'text-blue-600 dark:text-blue-400'
+                            : 'text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-gray-100'
+                          }
+                        `}>
+                          {item.label}
+                        </span>
 
-                          {/* Active indicator */}
-                          <AnimatePresence>
-                            {isActive && (
-                              <motion.div
-                                initial={{ scale: 0, opacity: 0 }}
-                                animate={{ scale: 1, opacity: 1 }}
-                                exit={{ scale: 0, opacity: 0 }}
-                                className="absolute right-2 w-2 h-2 bg-blue-600 dark:bg-blue-400 rounded-full"
-                              />
-                            )}
-                          </AnimatePresence>
-                        </SidebarMenuButton>
-                      </Link>
+                        {/* Active indicator */}
+                        <AnimatePresence>
+                          {isActive && (
+                            <motion.div
+                              initial={{ scale: 0, opacity: 0 }}
+                              animate={{ scale: 1, opacity: 1 }}
+                              exit={{ scale: 0, opacity: 0 }}
+                              className="absolute right-2 w-2 h-2 bg-blue-600 dark:bg-blue-400 rounded-full"
+                            />
+                          )}
+                        </AnimatePresence>
+                      </SidebarMenuButton>
                     </SidebarMenuItem>
                   </motion.div>
                 );

@@ -143,18 +143,19 @@ export const signInUser = expressAsyncHandler(async (req: Request, res: Response
 
 export const getUserFromSession = expressAsyncHandler(async (req: Request, res: Response, next: NextFunction) => {
   try {
+    console.log("Received request to fetch user profile.");
     const token = req.cookies.access_token;
     const response: ISendResponse = await GetUserByTokenService(token);
 
     //check if 404
-    if (response.status === 404) {
-      //delete cookie (fallback)
-      res.clearCookie("access_token", {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict"
-      });
-    }
+    // if (response.status === 404) {
+    //   //delete cookie (fallback)
+    //   res.clearCookie("access_token", {
+    //     httpOnly: true,
+    //     secure: process.env.NODE_ENV === "production",
+    //     sameSite: "strict"
+    //   });
+    // }
 
     return formatResponse(res, response.status, response.message, response.success, response.data);
   } catch (error) {

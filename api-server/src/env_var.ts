@@ -102,6 +102,10 @@ const queueName = "video-generation";
 const syncStudioJobName = "sync-studio-video-gen";
 const magicVideoJobName = "magic-video-gen";
 
+//job time and key
+const active_job_zset = "active_job_zset";
+const active_job_data = "active_job_data"
+const active_job_time = 24 * 60 * 60 ; //24 hr
 
 //export all
 export {
@@ -152,6 +156,9 @@ export {
   refreshPeroidJwt,
   queueName,
   syncStudioJobName,
-  magicVideoJobName
+  magicVideoJobName,
+  active_job_time,
+  active_job_data,
+  active_job_zset
 }
 

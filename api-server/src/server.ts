@@ -7,7 +7,7 @@ import { OAuthRouter } from "./oauth/route";
 import { ApiRouter } from "./api/route";
 import connectToMongo from "./utils/mongoConnection";
 import { FRONTEND_URL, IP_ADDRESS, PORT } from "./env_var";
-import JobRouter from "./events/videogen_event";
+import JobRouter from "./sse/videogen_event";
 import worker from "./workers/videogen_worker";
 
 

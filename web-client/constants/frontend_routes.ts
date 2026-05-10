@@ -3,12 +3,12 @@ export const FRONTEND_ROUTES = {
   AUTH: "/auth",
 
   /**dashboard */
-  DASHBOARD: "/zennvid/dashboard/magic-video",
-  MAGIC_VIDEO: "/zennvid/dashboard/magic-video",
-  SYNCSTUDIO: "/zennvid/dashboard/syncstudio",
-  YOURVIDEO: "/zennvid/dashboard/your-videos",
-  ANIME_MATCHER: "/zennvid/dashboard/anime-matcher",
-  ZENNVID: "/zennvid/dashboard/magic-video",
+  DASHBOARD: "/zennvid/dashboard#magic-video",
+  MAGIC_VIDEO: "/zennvid/dashboard#magic-video",
+  SYNCSTUDIO: "/zennvid/dashboard#syncstudio",
+  YOURVIDEO: "/zennvid/dashboard#your-videos",
+  ANIME_MATCHER: "/zennvid/dashboard#anime-matcher",
+  ZENNVID: "/zennvid/dashboard",
 
   /**openapi */
   OPENAPI: "/zennvid/openapi",

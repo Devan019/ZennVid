@@ -15,6 +15,72 @@ import { lipSync } from "./sync-studio/lip_sync";
 import { voiceClone } from "./sync-studio/voice_clone";
 
 
+const tmpCreateMagicVideo = async (
+  {
+    job,
+    userId
+  }: {
+    job: Job;
+    userId: string;
+  }
+) => {
+  try {
+    //simulate simple progress updates for testing sse flow without calling actual video gen functions, will uncomment above code when ready to test full flow
+    console.log("inside in tmp magic video")
+
+    //1.wait for 3 sec
+    await new Promise(resolve => setTimeout(resolve, 5000));
+    await job.updateProgress({
+      stage: "script_generated",
+      percent: 10,
+      status: "progress",
+      userId
+    });
+
+    //2. wait for 3 sec
+    await new Promise(resolve => setTimeout(resolve, 5000));
+    await job.updateProgress({
+      stage: "generating_images",
+      percent: 50,
+      status: "progress",
+      userId
+    });
+
+    //3. wait for 2 sec
+    await new Promise(resolve => setTimeout(resolve, 4000));
+    await job.updateProgress({
+      stage: "audio_generated",
+      percent: 70,
+      status: "progress",
+      userId
+    });
+
+    //4. wait for 2 sec
+    await new Promise(resolve => setTimeout(resolve, 4000));
+    await job.updateProgress({
+      stage: "caption_generated",
+      percent: 80,
+      status: "progress",
+      userId
+    });
+
+
+    //wait for 10 sec
+    await new Promise(resolve => setTimeout(resolve, 10000));
+    //return tmp video data
+    return {
+      url: "https://res.cloudinary.com/dpnae0bod/video/upload/zennvid/x8ytcshoj7usiw0sakcs.mp4",
+      publicId: "zennvid/x8ytcshoj7usiw0sakcs",
+      resourceType: "video",
+      format: "mp4"
+    }
+
+  } catch (error) {
+    console.log("why u r comming ", error)
+    return null;
+  }
+}
+
 /* MAGIC VIDEO */
 const createMagicVideo = async (
   {
@@ -55,7 +121,7 @@ const createMagicVideo = async (
         await job.updateProgress({
           stage: "script_generated",
           percent: 10,
-          status: "processing",
+          status: "progress",
           userId
         });
         console.log("\n\n\n\n\nStage 1: cleared - script gen");
@@ -79,7 +145,7 @@ const createMagicVideo = async (
         return img;
       })
     );
-    await job.updateProgress({ stage: "generating_images", percent: 30, status: "processing", userId });
+    await job.updateProgress({ stage: "generating_images", percent: 30, status: "progress", userId });
 
 
     //3. generate audio
@@ -100,7 +166,7 @@ const createMagicVideo = async (
       await job.updateProgress({
         stage: "translate_generated",
         percent: 50,
-        status: "processing",
+        status: "progress",
         userId
       });
     }
@@ -120,7 +186,7 @@ const createMagicVideo = async (
     await job.updateProgress({
       stage: "audio_generated",
       percent: 70,
-      status: "processing",
+      status: "progress",
       userId
     });
 
@@ -139,7 +205,7 @@ const createMagicVideo = async (
     await job.updateProgress({
       stage: "caption_generated",
       percent: 80,
-      status: "processing",
+      status: "progress",
       userId
     });
 
@@ -166,7 +232,7 @@ const createMagicVideo = async (
     await job.updateProgress({
       stage: "video_stitched",
       percent: 90,
-      status: "processing",
+      status: "progress",
       userId
     });
     // 6. delete temp files (images, audio)
@@ -246,7 +312,7 @@ const syncStudioVideo = async ({
     await job.updateProgress({
       stage: "voice_cloned",
       percent: 20,
-      status: "processing",
+      status: "progress",
       userId
     });
 
@@ -263,7 +329,7 @@ const syncStudioVideo = async ({
     await job.updateProgress({
       stage: "caption_generated",
       percent: 40,
-      status: "processing",
+      status: "progress",
       userId
     });
 
@@ -291,7 +357,7 @@ const syncStudioVideo = async ({
     await job.updateProgress({
       stage: "lip_sync_completed",
       percent: 70,
-      status: "processing",
+      status: "progress",
       userId
     });
 
@@ -309,7 +375,7 @@ const syncStudioVideo = async ({
     await job.updateProgress({
       stage: "subtitles_added",
       percent: 90,
-      status: "processing",
+      status: "progress",
       userId
     });
 
@@ -332,9 +398,10 @@ const syncStudioVideo = async ({
     console.log("Error in createMagicVideo:", error);
     return null;
   }
+
 }
 
 
 
 
-export { createMagicVideo, syncStudioVideo };
+export { createMagicVideo, syncStudioVideo, tmpCreateMagicVideo };

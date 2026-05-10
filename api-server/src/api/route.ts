@@ -40,7 +40,7 @@ ApiRouter.use("/admin",isAuthenticated, AdminUserRouter);
 ApiRouter.use("/feed", FeedRouter);
 
 /** anime matching */
-ApiRouter.use("/anime", upload.single("image"),isAuthenticated, animeMatching);
+ApiRouter.use("/anime", isAuthenticated, upload.single("image"), animeMatching);
 /**credits */
 ApiRouter.post("/update-credit", isAuthenticated, updateCredit);
 
@@ -49,7 +49,7 @@ ApiRouter.post("/update-credit", isAuthenticated, updateCredit);
 ApiRouter.post("/magic-video",isAuthenticated ,magicVideo);
 ApiRouter.get("/videos", isAuthenticated, getVideos);
 /** sadtalker */
-ApiRouter.post("/syncstudio-video",upload.fields([{name: "image", maxCount: 1}, {name: "audio", maxCount: 1}]), isAuthenticated, syncStudio);
+ApiRouter.post("/syncstudio-video", isAuthenticated, upload.fields([{name: "image", maxCount: 1}, {name: "audio", maxCount: 1}]), syncStudio);
 /** delete */
 ApiRouter.delete("/videos/:videoId", isAuthenticated, deleteVideo);
 
