@@ -51,6 +51,15 @@ const GROQ_API_KEY = process.env.GROQ_API_KEY;
 
 //hugging face token
 const HF_TOKEN = process.env.HF_TOKEN;
+const HF_TOKEN2 = process.env.HF_TOKEN2;
+const HF_TOKEN3 = process.env.HF_TOKEN3;
+const HF_TOKEN4 = process.env.HF_TOKEN4;
+const HF_TOKEN5 = process.env.HF_TOKEN5;
+const HF_TOKEN6 = process.env.HF_TOKEN6;
+const HF_TOKEN7 = process.env.HF_TOKEN7;
+const HF_TOKEN8 = process.env.HF_TOKEN8;
+const HF_TOKEN9 = process.env.HF_TOKEN9;
+const HF_TOKEN10 = process.env.HF_TOKEN10;
 
 //nebius api
 const NEBIUS_API_KEY = process.env.NEBIUS_API_KEY;
@@ -76,6 +85,11 @@ const IMAGE_PIPELINE_REPO_API = process.env.IMAGE_PIPELINE_REPO_API;
 
 const HF_IMAGE_GEN_REPO = process.env.IMAGE_GEN_REPO;
 const HF_IMAGE_GEN_REPO_API = process.env.IMAGE_GEN_REPO_API;
+
+
+//worker of cloudflare
+const CLOUDFLARE_WORKER_URL = process.env.CLOUDFLARE_WORKER_URL;
+const CLOUDFLARE_WORKER_KEY = process.env.CLOUDFLARE_WORKER_KEY;
 
 //pinecone
 const PINECONE_API_KEY = process.env.PINECONE_API_KEY;
@@ -129,6 +143,15 @@ export {
   SMTP_PASS,
   GROQ_API_KEY,
   HF_TOKEN,
+  HF_TOKEN2,
+  HF_TOKEN3,
+  HF_TOKEN4,
+  HF_TOKEN5,
+  HF_TOKEN6,
+  HF_TOKEN7,
+  HF_TOKEN8,
+  HF_TOKEN9,
+  HF_TOKEN10,
   NEBIUS_API_KEY,
   NEBIUS_API_URL,
   VOICE_CLONE_REPO,
@@ -159,6 +182,8 @@ export {
   magicVideoJobName,
   active_job_time,
   active_job_data,
-  active_job_zset
+  active_job_zset,
+  CLOUDFLARE_WORKER_KEY,
+  CLOUDFLARE_WORKER_URL,
 }
 

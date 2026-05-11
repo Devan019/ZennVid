@@ -1,46 +1,52 @@
+import { CLOUDFLARE_WORKER_KEY, CLOUDFLARE_WORKER_URL } from "../../env_var";
 import { uploadToCloudinary } from "../../utils/cloudinary";
-import { nebius } from "../helpers/nebius_client"
 
 const imageGen = async (prompt: string) => {
   try {
-    //image generation
-    const result = await nebius.images.generate({
-      "model": "black-forest-labs/flux-schnell",
-      "response_format": "url",
-      // "response_extension": "png",
-      // "width": 1024,
-      // "height": 1024,
-      // "num_inference_steps": 4,
-      // "negative_prompt": "",
-      // "seed": -1,
-      // "loras": null,
-      "prompt": prompt
-    });
-    
-    const imageUrl = result.data?.[0].url;
 
-    if (!imageUrl) {
-      throw new Error("No image URL returned from Nebius API");
+    // call cloudflare worker
+    const res = await fetch(CLOUDFLARE_WORKER_URL!, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${CLOUDFLARE_WORKER_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ prompt }),
+    });
+
+    if (!res.ok) {
+      throw new Error("Failed to generate image");
     }
 
-    //upload to cloudinary
-    const videoData = await uploadToCloudinary({
-      filePath: imageUrl,
+    // blob -> arrayBuffer -> buffer
+    const blob = await res.blob();
+    const arrayBuffer = await blob.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    // buffer -> base64
+    const base64Image = `data:image/jpeg;base64,${buffer.toString("base64")}`;
+
+    // upload to cloudinary
+    const imageData = await uploadToCloudinary({
+      filePath: base64Image,
       resource_type: "image",
-      folder: "zennvid"
-    })
-    return videoData;
+      folder: "zennvid",
+    });
+
+    return imageData;
 
   } catch (error) {
     console.log("Image generation error:", error);
     return null;
   }
-}
+};
 
-// imageGen("A serene beach at sunset with vibrant colors and gentle waves").then(url => {
-//   console.log("Generated image URL:", url);
-// }).catch(error => {
-//   console.error("Error generating image:", error);
+//to test the function
+// imageGen("a cat sitting on a chair").then((res) => {
+//   console.log(res);
+// })
+// .catch((err) => {
+//   console.error("Error in image generation:", err);
 // });
 
 export { imageGen };

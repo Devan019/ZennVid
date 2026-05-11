@@ -94,94 +94,97 @@ const performMagicVideoGen = async (job: Job) => {
 
 //helper function to perfoem job of sync studio video gen
 const performSyncStudioVideoGen = async (job: Job) => {
+  try {
+    const {
+      imageUrl,
+      audioUrl,
+      text,
+      userId,
+      character, title, style, language
+    } = job.data;
 
-  const {
-    imageUrl,
-    audioUrl,
-    text,
-    userId,
-    character, title, style, language
-  } = job.data;
+    if (!imageUrl || !audioUrl || !text || !userId || !character || !title || !style || !language || !userId) {
+      console.error('Missing required data for sync studio video generation in job:', job.id);
+      throw new Error('Missing required data for sync studio video generation');
+    }
 
-  if (!imageUrl || !audioUrl || !text || !userId || !character || !title || !style || !language || !userId) {
-    console.error('Missing required data for sync studio video generation in job:', job.id);
-    throw new Error('Missing required data for sync studio video generation');
-  }
+    //check userid exists
+    const user = await User.findById(userId);
+    if (!user) {
+      console.error('User not found for sync studio video generation in job:', job.id, 'with userId:', userId);
+      throw new Error('User not found for sync studio video generation');
+    }
 
-  //check userid exists
-  const user = await User.findById(userId);
-  if (!user) {
-    console.error('User not found for sync studio video generation in job:', job.id, 'with userId:', userId);
-    throw new Error('User not found for sync studio video generation');
-  }
+    //call sync studio video gen api with image, audio and text
+    const data = await syncStudioVideo({
+      job,
+      userId,
+      imagePath: imageUrl,
+      audioPath: audioUrl,
+      text
+    });
 
-  //call sync studio video gen api with image, audio and text
-  const data = await syncStudioVideo({
-    job,
-    userId,
-    imagePath: imageUrl,
-    audioPath: audioUrl,
-    text
-  });
+    if (!data) {
+      //sent sse to frontend to notify video gen failed
+      throw new Error('Video generation failed');
+    }
 
-  if (!data) {
-    //sent sse to frontend to notify video gen failed
+
+    // //delete uploaded image and audio from cloudinary
+    //image
+    await deleteFromCloudinary({
+      publicId: extractPublicId(imageUrl),
+      resource_type: "image"
+    })
+
+    // //audio
+    await deleteFromCloudinary({
+      publicId: extractPublicId(audioUrl),
+      resource_type: "raw"
+    })
+
+
+    //save video info to db
+    const newVideo = new Video({
+      videoMetadata: {
+        publicId: data?.publicId,
+        resourceType: data?.resourceType,
+        format: data?.format
+      },
+      user: userId,
+      type: VideoType.SYNC_STUDIO_VIDEO,
+      title: title,
+      style: style,
+      language: language,
+      voiceCharacter: character
+    })
+    await newVideo.save();
+
+    // //reduce user credits by 20
+    await user.updateOne({
+      $inc: {
+        credits: -20
+      }
+    })
+
+    // //send sse to frontend to notify video gen success with video url
+    return {
+      stage: "video_generated",
+      percent: 100,
+      status: "completed",
+      userId,
+      videoUrl: data.url
+    };
+  } catch (error) {
+    console.error('Error in performSyncStudioVideoGen:', error);
     return {
       stage: "video_generated",
       percent: 100,
       status: "failed",
-      userId,
-      error: 'Video generation failed'
-    }
+      userId: job.data.userId,
+      error: (error as Error).message || 'Video generation failed'
+    };
   }
-
-
-  // //delete uploaded image and audio from cloudinary
-  //image
-  await deleteFromCloudinary({
-    publicId: extractPublicId(imageUrl),
-    resource_type: "image"
-  })
-
-  // //audio
-  await deleteFromCloudinary({
-    publicId: extractPublicId(audioUrl),
-    resource_type: "raw"
-  })
-
-
-  //save video info to db
-  const newVideo = new Video({
-    videoMetadata: {
-      publicId: data?.publicId,
-      resourceType: data?.resourceType,
-      format: data?.format
-    },
-    user: userId,
-    type: VideoType.SYNC_STUDIO_VIDEO,
-    title: title,
-    style: style,
-    language: language,
-    voiceCharacter: character
-  })
-  await newVideo.save();
-
-  // //reduce user credits by 20
-  await user.updateOne({
-    $inc: {
-      credits: -20
-    }
-  })
-
-  // //send sse to frontend to notify video gen success with video url
-  return {
-    stage: "video_generated",
-    percent: 100,
-    status: "completed",
-    userId,
-    videoUrl: data.url
-  };
-
 }
 
 

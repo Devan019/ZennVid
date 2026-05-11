@@ -14,7 +14,7 @@ import { cleanupUploadedFiles } from "./controller";
 const inProgressVideoCache = async (userId: string, job: any) => {
   try {
     //add job with userId to redis - using sorted set with score as timestamp for easy retrieval of active jobs
-    const timestamp = Date.now() + active_job_time;
+    const timestamp = Date.now() + (active_job_time*1000); //set expiration time for job in redis based on active_job_time
 
     //1. create pipline
     const pipeline = redisClient.pipeline();

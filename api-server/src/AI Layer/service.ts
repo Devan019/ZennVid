@@ -6,8 +6,8 @@ import { deleteFromCloudinary } from "../utils/cloudinary";
 import { generateTranscript } from "./helpers/transcript";
 import { audioGen } from "./magic-video/audio_gen";
 import { createVideo } from "./magic-video/ffmpeg";
-// import { imageGen } from "./magic-video/image_gen";
-import { HFImageGen } from "./magic-video/hf_image";
+import { imageGen } from "./magic-video/image_gen";
+// import { HFImageGen } from "./magic-video/hf_image";
 import { scriptGen } from "./magic-video/script_gen";
 import { translateService } from "./magic-video/translate";
 import { addSubtitles } from "./sync-studio/add_subtitle";
@@ -140,7 +140,7 @@ const createMagicVideo = async (
 
     const imagePaths = await Promise.all(
       prompts.map(async (prompt: string) => {
-        const img = await HFImageGen(prompt);
+        const img = await imageGen(prompt);
         completedImages++;
         return img;
       })
@@ -276,6 +276,7 @@ const createMagicVideo = async (
     await job.updateProgress({
       status: "failed",
       error: error.message || "Unknown error during video generation",
+      userId
     });
     throw error;
   }
@@ -349,8 +350,12 @@ const syncStudioVideo = async ({
       imagePath,
       audioPath: voiceCloneResult?.url ?? ""
     });
-    if (!videoData) {
-      console.log("Lip sync video creation failed, exiting.");
+    // ensure videoData contains a url (lipSync may return an error object)
+    if (!videoData || typeof videoData !== "object" || !("url" in videoData)) {
+      console.log("Lip sync video creation failed or returned error, exiting.");
+      if (videoData && typeof videoData === "object" && "error" in videoData) {
+        throw new Error((videoData as any).error);
+      }
       return null;
     }
     console.log("\n\n\n\n\nStage 3: cleared - lip sync");
@@ -364,7 +369,7 @@ const syncStudioVideo = async ({
 
     //4. add subtitles to video 
     const finalVideo = await addSubtitles({
-      videoPath: videoData?.url ?? "",
+      videoPath: (videoData && typeof videoData === "object" && "url" in videoData) ? (videoData as any).url : "",
       captions: finalCaptions
     });
     if (!finalVideo) {
@@ -393,10 +398,14 @@ const syncStudioVideo = async ({
     //6. return final video data
     return finalVideo;
 
-    // return null
-  } catch (error) {
-    console.log("Error in createMagicVideo:", error);
-    return null;
+  } catch (error: any) {
+    console.log("Error in syncStudioVideo:", error);
+    await job.updateProgress({
+      status: "failed",
+      error: error.message || "Unknown error during sync studio video generation",
+      userId
+    });
+    throw error;
   }
 
 }
