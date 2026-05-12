@@ -1,173 +1,371 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Zap, Twitter, Instagram, Youtube, Linkedin, Mail, Phone, MapPin } from "lucide-react"
+import { motion } from "framer-motion";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+
+import {
+  Twitter,
+  Instagram,
+  Youtube,
+  Linkedin,
+  Mail,
+  Phone,
+  MapPin,
+} from "lucide-react";
 
 export function Footer() {
   return (
-    <div className="sticky z-0 bottom-0 left-0 w-full dark:bg-[#0D0B0B]  bg-white flex justify-center items-center">
-      <div className="relative overflow-hidden w-full h-full flex justify-end px-12 text-right items-start py-12 ">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-            {/* Brand Section */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              viewport={{ once: true }}
-              className="space-y-6"
-            >
-              <div className="flex items-center space-x-2">
-                <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
-                  <Zap className="w-6 h-6 text-white" />
-                </div>
-                <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                  ZennVid
-                </span>
-              </div>
-              <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                Transform your ideas into stunning AI-generated videos. Create professional content in seconds with our
-                advanced artificial intelligence.
-              </p>
-              <div className="flex space-x-4">
-                {[Twitter, Instagram, Youtube, Linkedin].map((Icon, index) => (
-                  <motion.a
-                    key={index}
-                    href="#"
-                    whileHover={{ scale: 1.1, y: -2 }}
-                    className="w-10 h-10 bg-gray-100 hover:bg-purple-100 dark:bg-white/5 dark:hover:bg-purple-500/20 rounded-lg flex items-center justify-center transition-colors"
-                  >
-                    <Icon className="w-5 h-5 text-gray-600 hover:text-purple-600 dark:text-gray-300 dark:hover:text-purple-400" />
-                  </motion.a>
-                ))}
-              </div>
-            </motion.div>
+    <footer  className="relative min-h-screen overflow-hidden bg-black text-white">
 
-            {/* Product Links */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              viewport={{ once: true }}
-            >
-              <h3 className="text-gray-800 dark:text-white font-semibold text-lg mb-6">Product</h3>
-              <ul className="space-y-4">
-                {["Features", "Pricing", "Templates", "API", "Integrations", "Mobile App"].map((item, index) => (
-                  <li key={index}>
-                    <a
-                      href="#"
-                      className="text-gray-600 hover:text-purple-600 dark:text-gray-300 dark:hover:text-purple-400 transition-colors"
-                    >
-                      {item}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
+      {/* BACKGROUND GLOW */}
+      <div
+        className="
+          absolute
+          left-1/2
+          top-1/2
+          h-[700px]
+          w-[700px]
+          -translate-x-1/2
+          -translate-y-1/2
+          rounded-full
+          bg-blue-500/10
+          blur-[180px]
+        "
+      />
 
-            {/* Company Links */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              viewport={{ once: true }}
-            >
-              <h3 className="text-gray-800 dark:text-white font-semibold text-lg mb-6">Company</h3>
-              <ul className="space-y-4">
-                {["About Us", "Careers", "Blog", "Press", "Partners", "Contact"].map((item, index) => (
-                  <li key={index}>
-                    <a
-                      href="#"
-                      className="text-gray-600 hover:text-purple-600 dark:text-gray-300 dark:hover:text-purple-400 transition-colors"
-                    >
-                      {item}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
+      {/* GRID */}
+      <div className="absolute inset-0 opacity-20">
 
-            {/* Newsletter */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              viewport={{ once: true }}
-              className="space-y-6"
-            >
-              <h3 className="text-gray-800 dark:text-white font-semibold text-lg">Stay Updated</h3>
-              <p className="text-gray-600 dark:text-gray-300">
-                Get the latest updates on new features and AI video trends.
-              </p>
-              <div className="space-y-3">
-                <Input
-                  placeholder="Enter your email"
-                  className="bg-white/80 dark:bg-white/5 border-gray-300 dark:border-white/10 text-gray-800 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400"
-                />
-                <Button className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600">
-                  Subscribe
-                </Button>
-              </div>
-            </motion.div>
-          </div>
+        <div className="absolute left-[5%] top-0 h-full w-px border-l border-dashed border-white/10" />
 
-          {/* Contact Info */}
+        <div className="absolute right-[5%] top-0 h-full w-px border-l border-dashed border-white/10" />
+
+        <div className="absolute top-[20%] left-0 h-px w-full border-t border-dashed border-white/10" />
+      </div>
+
+      {/* CONTENT */}
+      <div className="relative z-10 flex min-h-screen flex-col justify-between px-6 py-20 md:px-10">
+
+        {/* TOP */}
+        <div className="grid grid-cols-1 gap-20 lg:grid-cols-4">
+
+          {/* BRAND */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
+            transition={{ duration: 1 }}
             viewport={{ once: true }}
-            className="border-t border-gray-200 dark:border-white/10 mt-12 pt-8"
+            className="space-y-8"
           >
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <div className="flex items-center space-x-3">
-                <Mail className="w-5 h-5 text-purple-500" />
-                <span className="text-gray-600 dark:text-gray-300">devanchauhan012@gmail.com</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <Phone className="w-5 h-5 text-purple-500" />
-                <span className="text-gray-600 dark:text-gray-300">+91 90232 40018</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <MapPin className="w-5 h-5 text-purple-500" />
-                <span className="text-gray-600 dark:text-gray-300">Nadiad, Gujarat, India</span>
-              </div>
+
+            <div>
+
+              <h2 className="text-3xl font-semibold uppercase tracking-tight">
+
+                Zennvid
+
+              </h2>
+
+              <p className="mt-6 max-w-sm text-lg leading-relaxed text-white/50">
+
+                Cinematic AI video generation
+                for creators, dreamers,
+                and impossible ideas.
+
+              </p>
+            </div>
+
+            {/* SOCIALS */}
+            <div className="flex gap-4">
+
+              {[
+                Twitter,
+                Instagram,
+                Youtube,
+                Linkedin,
+              ].map((Icon, index) => (
+                <motion.a
+                  key={index}
+                  href="#"
+                  whileHover={{
+                    scale: 1.1,
+                    y: -4,
+                  }}
+                  className="
+                    flex
+                    h-12
+                    w-12
+                    items-center
+                    justify-center
+                    rounded-2xl
+                    border
+                    border-white/10
+                    bg-white/5
+                    backdrop-blur-xl
+                    transition-all
+                    duration-500
+                    hover:border-white/20
+                    hover:bg-white/10
+                  "
+                >
+                  <Icon className="h-5 w-5 text-white/70" />
+                </motion.a>
+              ))}
             </div>
           </motion.div>
 
-          {/* Bottom Bar */}
-          <div className="border-t border-gray-200 dark:border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center">
-            <p className="text-gray-500 dark:text-gray-400 text-sm">© 2025 ZennVid. All rights reserved.</p>
-            <div className="flex space-x-6 mt-4 md:mt-0">
-              <a
-                href="#"
-                className="text-gray-500 hover:text-purple-600 dark:text-gray-400 dark:hover:text-purple-400 text-sm transition-colors"
-              >
-                Privacy Policy
-              </a>
-              <a
-                href="#"
-                className="text-gray-500 hover:text-purple-600 dark:text-gray-400 dark:hover:text-purple-400 text-sm transition-colors"
-              >
-                Terms of Service
-              </a>
-              <a
-                href="#"
-                className="text-gray-500 hover:text-purple-600 dark:text-gray-400 dark:hover:text-purple-400 text-sm transition-colors"
-              >
-                Cookie Policy
-              </a>
+          {/* PRODUCT */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: 1,
+              delay: 0.1,
+            }}
+            viewport={{ once: true }}
+          >
+
+            <h3 className="mb-8 text-sm uppercase tracking-[0.3em] text-white/40">
+
+              Product
+
+            </h3>
+
+            <ul className="space-y-5 text-lg text-white/70">
+
+              {[
+                "Magic Studio",
+                "Sync Studio",
+                "Anime Twin",
+                "Feed",
+                "Pricing",
+              ].map((item) => (
+                <li key={item}>
+                  <a
+                    href="#"
+                    className="
+                      transition-all
+                      duration-300
+                      hover:text-white
+                    "
+                  >
+                    {item}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </motion.div>
+
+          {/* COMPANY */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: 1,
+              delay: 0.2,
+            }}
+            viewport={{ once: true }}
+          >
+
+            <h3 className="mb-8 text-sm uppercase tracking-[0.3em] text-white/40">
+
+              Company
+
+            </h3>
+
+            <ul className="space-y-5 text-lg text-white/70">
+
+              {[
+                "About",
+                "Contact",
+                "Instagram",
+                "LinkedIn",
+                "Careers",
+              ].map((item) => (
+                <li key={item}>
+                  <a
+                    href="#"
+                    className="
+                      transition-all
+                      duration-300
+                      hover:text-white
+                    "
+                  >
+                    {item}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </motion.div>
+
+          {/* NEWSLETTER */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: 1,
+              delay: 0.3,
+            }}
+            viewport={{ once: true }}
+            className="space-y-8"
+          >
+
+            <div>
+
+              <h3 className="text-sm uppercase tracking-[0.3em] text-white/40">
+
+                Stay Updated
+
+              </h3>
+
+              <p className="mt-6 text-lg leading-relaxed text-white/50">
+
+                Get updates about AI video,
+                cinematic tools, and future releases.
+
+              </p>
             </div>
-          </div>
+
+            {/* INPUT */}
+            <div className="space-y-4">
+
+              <Input
+                placeholder="Enter your email"
+                className="
+                  h-14
+                  rounded-2xl
+                  border-white/10
+                  bg-white/5
+                  text-white
+                  placeholder:text-white/30
+                "
+              />
+
+              <Button
+                className="
+                  h-14
+                  w-full
+                  rounded-2xl
+                  bg-white
+                  text-black
+                  transition-all
+                  duration-500
+                  hover:scale-[1.02]
+                  hover:bg-white/90
+                "
+              >
+                Subscribe
+              </Button>
+            </div>
+          </motion.div>
         </div>
 
-        {/* Background Elements */}
-        <div className="absolute top-0 left-1/4 w-64 h-64 bg-purple-100/50 dark:bg-purple-500/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-pink-100/50 dark:bg-pink-500/5 rounded-full blur-3xl" />
-        {/* </footer> */}
+        {/* CONTACT */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{
+            duration: 1,
+            delay: 0.4,
+          }}
+          viewport={{ once: true }}
+          className="
+            mt-20
+            flex
+            flex-col
+            gap-6
+            border-t
+            border-white/10
+            py-10
+            text-white/50
+            md:flex-row
+            md:items-center
+            md:justify-between
+          "
+        >
+
+          <div className="flex items-center gap-3">
+
+            <Mail className="h-5 w-5" />
+
+            <span>devanchauhan012@gmail.com</span>
+          </div>
+
+          <div className="flex items-center gap-3">
+
+            <Phone className="h-5 w-5" />
+
+            <span>+91 90232 40018</span>
+          </div>
+
+          <div className="flex items-center gap-3">
+
+            <MapPin className="h-5 w-5" />
+
+            <span>Nadiad, Gujarat, India</span>
+          </div>
+        </motion.div>
+
+        {/* HUGE TEXT */}
+        <motion.div
+          initial={{ opacity: 0, y: 80 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{
+            duration: 1.2,
+            ease: [0.22, 1, 0.36, 1],
+          }}
+          viewport={{ once: true }}
+          className="relative mt-10"
+        >
+
+          <h1
+            className="
+              text-center
+              text-[22vw]
+              font-black
+              uppercase
+              leading-none
+              tracking-[-0.08em]
+              text-white
+            "
+          >
+            ZENNVID
+          </h1>
+        </motion.div>
+
+        {/* BOTTOM */}
+        <div
+          className="
+            mt-6
+            flex
+            flex-col
+            items-center
+            justify-between
+            gap-4
+            border-t
+            border-white/10
+            pt-6
+            text-sm
+            uppercase
+            tracking-[0.2em]
+            text-white/30
+            md:flex-row
+          "
+        >
+
+          <p>© 2026 Zennvid. All rights reserved.</p>
+
+          <div className="flex gap-6">
+
+            <a href="#">Privacy</a>
+
+            <a href="#">Terms</a>
+
+            <a href="#">Cookies</a>
+          </div>
+        </div>
       </div>
-    </div>
-  )
+    </footer>
+  );
 }

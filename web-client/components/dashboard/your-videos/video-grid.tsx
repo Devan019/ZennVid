@@ -1,173 +1,520 @@
-"use client"
-import type React from "react"
-import { useState, useRef } from "react"
-import { motion } from "motion/react"
-import { Play, Pause, Volume2, VolumeX, MoreVertical, Download, Share2, Trash2 } from "lucide-react"
-import { VideoData } from "@/components/ui/video-layout"
+"use client";
+
+import type React from "react";
+
+import {
+  useState,
+  useRef,
+} from "react";
+
+import { motion } from "motion/react";
+
+import {
+  Play,
+  Pause,
+  Volume2,
+  VolumeX,
+  MoreVertical,
+  Download,
+  Share2,
+  Trash2,
+} from "lucide-react";
+
+import { VideoData } from "@/components/ui/video-layout";
 
 interface VideoCardProps {
-  video: VideoData
-  onDelete?: (id: string) => void
-  onShare?: (video: VideoData) => void
-  onDownload?: (video: VideoData) => void
+  video: VideoData;
+
+  onDelete?: (
+    id: string
+  ) => void;
+
+  onShare?: (
+    video: VideoData
+  ) => void;
+
+  onDownload?: (
+    video: VideoData
+  ) => void;
 }
 
-export const VideoCard = ({ video, onDelete, onShare, onDownload }: VideoCardProps) => {
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [isMuted, setIsMuted] = useState(true)
-  const [showMenu, setShowMenu] = useState(false)
-  const videoRef = useRef<HTMLVideoElement>(null)
+export const VideoCard = ({
+  video,
+  onDelete,
+  onShare,
+  onDownload,
+}: VideoCardProps) => {
+  const [isPlaying, setIsPlaying] =
+    useState(false);
 
-  const togglePlay = (e: React.MouseEvent) => {
-    e.stopPropagation()
+  const [isMuted, setIsMuted] =
+    useState(true);
+
+  const [showMenu, setShowMenu] =
+    useState(false);
+
+  const videoRef =
+    useRef<HTMLVideoElement>(null);
+
+  const togglePlay = (
+    e: React.MouseEvent
+  ) => {
+    e.stopPropagation();
+
     if (videoRef.current) {
       if (isPlaying) {
-        videoRef.current.pause()
+        videoRef.current.pause();
       } else {
-        videoRef.current.play()
+        videoRef.current.play();
       }
-      setIsPlaying(!isPlaying)
-    }
-  }
 
-  const toggleMute = (e: React.MouseEvent) => {
-    e.stopPropagation()
+      setIsPlaying(!isPlaying);
+    }
+  };
+
+  const toggleMute = (
+    e: React.MouseEvent
+  ) => {
+    e.stopPropagation();
+
     if (videoRef.current) {
-      videoRef.current.muted = !isMuted
-      setIsMuted(!isMuted)
-    }
-  }
+      videoRef.current.muted =
+        !isMuted;
 
-  const handleMenuAction = (action: string, e: React.MouseEvent) => {
-    e.stopPropagation()
-    setShowMenu(false)
+      setIsMuted(!isMuted);
+    }
+  };
+
+  const handleMenuAction = (
+    action: string,
+    e: React.MouseEvent
+  ) => {
+    e.stopPropagation();
+
+    setShowMenu(false);
 
     switch (action) {
       case "download":
-        onDownload?.(video)
-        break
+        onDownload?.(video);
+        break;
+
       case "share":
-        onShare?.(video)
-        break
+        onShare?.(video);
+        break;
+
       case "delete":
-        onDelete?.(video._id)
-        break
+        onDelete?.(video._id);
+        break;
     }
-  }
+  };
 
   return (
     <motion.div
-      className="relative bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300"
-      whileHover={{ y: -4 }}
-      transition={{ duration: 0.2 }}
+      whileHover={{
+        y: -4,
+      }}
+      transition={{
+        duration: 0.25,
+      }}
+      className="
+        group
+        relative
+        overflow-hidden
+        rounded-[28px]
+        border
+        border-black/10
+        bg-white/70
+        shadow-none
+        backdrop-blur-xl
+      "
     >
-      {/* Video Container */}
-      <div className="relative aspect-video bg-gray-100 dark:bg-gray-700 overflow-hidden">
+      {/* VIDEO */}
+      <div
+        className="
+          relative
+          aspect-video
+          overflow-hidden
+          bg-black
+        "
+      >
         <video
           ref={videoRef}
-          className="w-full h-full object-cover"
+          className="
+            h-full
+            w-full
+            object-cover
+            transition-transform
+            duration-700
+            group-hover:scale-[1.03]
+          "
           muted={isMuted}
           loop
           playsInline
-          onPlay={() => setIsPlaying(true)}
-          onPause={() => setIsPlaying(false)}
+          onPlay={() =>
+            setIsPlaying(true)
+          }
+          onPause={() =>
+            setIsPlaying(false)
+          }
         >
-          <source src={video.videoUrl} type="video/mp4" />
+          <source
+            src={video.videoUrl}
+            type="video/mp4"
+          />
         </video>
 
-        {/* Video Controls Overlay */}
-        <div className="absolute inset-0 bg-black/20 opacity-0 hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
-          <div className="flex items-center gap-3">
+        {/* OVERLAY */}
+        <div
+          className="
+            absolute
+            inset-0
+            bg-gradient-to-t
+            from-black/70
+            via-black/10
+            to-transparent
+          "
+        />
+
+        {/* CONTROLS */}
+        <div
+          className="
+            absolute
+            inset-0
+            flex
+            items-center
+            justify-center
+            opacity-0
+            transition-all
+            duration-300
+            group-hover:opacity-100
+          "
+        >
+          <div className="flex items-center gap-4">
             <button
               onClick={togglePlay}
-              className="bg-white/20 backdrop-blur-sm rounded-full p-3 hover:bg-white/30 transition-colors"
+              className="
+                flex
+                h-14
+                w-14
+                items-center
+                justify-center
+                rounded-full
+                border
+                border-white/10
+                bg-white/10
+                backdrop-blur-xl
+                transition-all
+                hover:scale-105
+              "
             >
               {isPlaying ? (
-                <Pause className="w-6 h-6 text-white" />
+                <Pause className="h-6 w-6 text-white" />
               ) : (
-                <Play className="w-6 h-6 text-white fill-white" />
+                <Play className="h-6 w-6 fill-white text-white" />
               )}
             </button>
 
             <button
               onClick={toggleMute}
-              className="bg-white/20 backdrop-blur-sm rounded-full p-3 hover:bg-white/30 transition-colors"
+              className="
+                flex
+                h-14
+                w-14
+                items-center
+                justify-center
+                rounded-full
+                border
+                border-white/10
+                bg-white/10
+                backdrop-blur-xl
+              "
             >
-              {isMuted ? <VolumeX className="w-6 h-6 text-white" /> : <Volume2 className="w-6 h-6 text-white" />}
+              {isMuted ? (
+                <VolumeX className="h-6 w-6 text-white" />
+              ) : (
+                <Volume2 className="h-6 w-6 text-white" />
+              )}
             </button>
           </div>
         </div>
 
-        {/* Menu Button */}
-        <div className="absolute top-3 right-3 z-40">
+        {/* MENU */}
+        <div className="absolute right-4 top-4 z-40">
           <div className="relative">
             <button
               onClick={(e) => {
-                e.stopPropagation()
-                setShowMenu(!showMenu)
+                e.stopPropagation();
+
+                setShowMenu(
+                  !showMenu
+                );
               }}
-              className="bg-black/20 backdrop-blur-sm rounded-full p-2 hover:bg-black/40 transition-colors"
+              className="
+                flex
+                h-11
+                w-11
+                items-center
+                justify-center
+                rounded-full
+                border
+                border-white/10
+                bg-black/30
+                backdrop-blur-xl
+              "
             >
-              <MoreVertical className="w-4 h-4 text-white" />
+              <MoreVertical className="h-4 w-4 text-white" />
             </button>
 
-            {/* Dropdown Menu */}
             {showMenu && (
               <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="absolute top-full right-0 mt-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 min-w-[150px] z-10"
+                initial={{
+                  opacity: 0,
+                  y: 8,
+                  scale: 0.96,
+                }}
+                animate={{
+                  opacity: 1,
+                  y: 0,
+                  scale: 1,
+                }}
+                className="
+                  absolute
+                  right-0
+                  top-full
+                  mt-3
+                  w-[190px]
+                  overflow-hidden
+                  rounded-2xl
+                  border
+                  border-black/10
+                  bg-white
+                  py-2
+                  shadow-2xl
+                "
               >
                 <button
-                  onClick={(e) => handleMenuAction("download", e)}
-                  className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                  onClick={(e) =>
+                    handleMenuAction(
+                      "download",
+                      e
+                    )
+                  }
+                  className="
+                    flex
+                    w-full
+                    items-center
+                    gap-3
+                    px-4
+                    py-3
+                    text-sm
+                    text-black
+                    transition-colors
+                    hover:bg-black/5
+                  "
                 >
-                  <Download className="w-4 h-4" />
+                  <Download className="h-4 w-4" />
                   Download
                 </button>
+
                 <button
-                  onClick={(e) => handleMenuAction("share", e)}
-                  className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                  onClick={(e) =>
+                    handleMenuAction(
+                      "share",
+                      e
+                    )
+                  }
+                  className="
+                    flex
+                    w-full
+                    items-center
+                    gap-3
+                    px-4
+                    py-3
+                    text-sm
+                    text-black
+                    transition-colors
+                    hover:bg-black/5
+                  "
                 >
-                  <Share2 className="w-4 h-4" />
+                  <Share2 className="h-4 w-4" />
                   Share
                 </button>
+
                 <button
-                  onClick={(e) => handleMenuAction("delete", e)}
-                  className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2"
+                  onClick={(e) =>
+                    handleMenuAction(
+                      "delete",
+                      e
+                    )
+                  }
+                  className="
+                    flex
+                    w-full
+                    items-center
+                    gap-3
+                    px-4
+                    py-3
+                    text-sm
+                    text-red-500
+                    transition-colors
+                    hover:bg-red-50
+                  "
                 >
-                  <Trash2 className="w-4 h-4" />
+                  <Trash2 className="h-4 w-4" />
                   Delete
                 </button>
               </motion.div>
             )}
           </div>
         </div>
+
+        {/* VIDEO TYPE */}
+        <div
+          className="
+            absolute
+            left-4
+            top-4
+            rounded-full
+            border
+            border-white/10
+            bg-white/10
+            px-3
+            py-2
+            text-[11px]
+            uppercase
+            tracking-[0.18em]
+            text-white
+            backdrop-blur-xl
+          "
+        >
+          {video.type
+            ?.replaceAll("_", " ")
+            ?.replaceAll(
+              "video",
+              ""
+            )}
+        </div>
       </div>
 
-      {/* Video Info */}
-      <div className="p-4">
-        <h3 className="font-semibold text-lg text-gray-900 dark:text-white mb-2 line-clamp-2">{video.title}</h3>
+      {/* CONTENT */}
+      <div className="space-y-5 p-6">
+        <div>
+          <div
+            className="
+              mb-3
+              text-[11px]
+              uppercase
+              tracking-[0.3em]
+              text-black/40
+            "
+          >
+            Cinematic Asset
+          </div>
 
-        <div className="grid grid-cols-2 gap-3 text-sm text-gray-600 dark:text-gray-400">
+          <h3
+            className="
+              line-clamp-2
+              text-2xl
+              font-semibold
+              leading-tight
+              text-black
+            "
+          >
+            {video.title}
+          </h3>
+        </div>
+
+        {/* META */}
+        <div
+          className="
+            grid
+            grid-cols-2
+            gap-4
+            rounded-2xl
+            border
+            border-black/10
+            bg-[#F8F6F1]
+            p-4
+          "
+        >
           <div>
-            <span className="font-medium">Style:</span>
-            <span className="ml-1 capitalize">{video.style}</span>
+            <p className="text-[11px] uppercase tracking-[0.15em] text-black/40">
+              Style
+            </p>
+
+            <p className="mt-1 text-sm font-medium capitalize text-black">
+              {video.style}
+            </p>
           </div>
+
           <div>
-            <span className="font-medium">Language:</span>
-            <span className="ml-1 capitalize">{video.language}</span>
+            <p className="text-[11px] uppercase tracking-[0.15em] text-black/40">
+              Language
+            </p>
+
+            <p className="mt-1 text-sm font-medium capitalize text-black">
+              {video.language}
+            </p>
           </div>
+
           <div className="col-span-2">
-            <span className="font-medium">Voice:</span>
-            <span className="ml-1">{video.voiceCharacter}</span>
+            <p className="text-[11px] uppercase tracking-[0.15em] text-black/40">
+              Voice
+            </p>
+
+            <p className="mt-1 text-sm font-medium text-black">
+              {video.voiceCharacter}
+            </p>
           </div>
-          <div className="col-span-2">
-            <span className="font-medium">Created:</span>
-            <span className="ml-1">{new Date(video.created_at).toLocaleDateString()}</span>
+        </div>
+
+        {/* FOOTER */}
+        <div
+          className="
+            flex
+            items-center
+            justify-between
+            border-t
+            border-black/10
+            pt-4
+          "
+        >
+          <div>
+            <p className="text-[11px] uppercase tracking-[0.15em] text-black/40">
+              Created
+            </p>
+
+            <p className="mt-1 text-sm font-medium text-black">
+              {new Date(
+                video.created_at
+              ).toLocaleDateString()}
+            </p>
           </div>
+
+          <button
+            onClick={(e) =>
+              handleMenuAction(
+                "download",
+                e
+              )
+            }
+            className="
+              rounded-full
+              bg-black
+              px-5
+              py-3
+              text-[11px]
+              uppercase
+              tracking-[0.18em]
+              text-white
+              transition-all
+              hover:opacity-90
+            "
+          >
+            Export
+          </button>
         </div>
       </div>
     </motion.div>
-  )
-}
+  );
+};

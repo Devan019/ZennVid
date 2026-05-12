@@ -22,6 +22,7 @@
     "@radix-ui/react-toast": "^1.2.14",
     "@radix-ui/react-tooltip": "^1.2.7",
     "@remotion/cli": "4.0.321",
+    "@studio-freight/react-lenis": "^0.0.47",
     "@tanstack/react-query": "^5.83.0",
     "@tanstack/react-table": "^8.21.3",
     "axios": "^1.10.0",

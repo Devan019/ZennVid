@@ -1,16 +1,42 @@
 "use client";
 
-import React, { useState, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { Upload, Sparkles, User, Tv, ImageIcon, Loader2 } from "lucide-react";
+import React, {
+  useState,
+  useRef,
+} from "react";
+
+import {
+  motion,
+  AnimatePresence,
+} from "framer-motion";
+
+import {
+  Upload,
+  Sparkles,
+  User,
+  Tv,
+  ImageIcon,
+  Loader2,
+  ArrowRight,
+} from "lucide-react";
+
 import { useMutation } from "@tanstack/react-query";
-import { animeMatching } from "@/lib/apiProvider";
-import { toast } from "sonner";
+
 import Image from "next/image";
+
+import { toast } from "sonner";
+
+import {
+  Card,
+  CardContent,
+} from "@/components/ui/card";
+
+import { Button } from "@/components/ui/button";
+
+import { Badge } from "@/components/ui/badge";
+
+import { animeMatching } from "@/lib/apiProvider";
+
 import { BASE_URL } from "@/constants/backend_routes";
 
 interface AnimeMatchResult {
@@ -24,154 +50,290 @@ interface AnimeMatchResult {
 }
 
 const AnimeMatcher = () => {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [result, setResult] = useState<AnimeMatchResult | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [selectedFile, setSelectedFile] =
+    useState<File | null>(null);
+
+  const [previewUrl, setPreviewUrl] =
+    useState<string | null>(null);
+
+  const [result, setResult] =
+    useState<AnimeMatchResult | null>(
+      null
+    );
+
+  const fileInputRef =
+    useRef<HTMLInputElement>(null);
 
   const animeMatchMutation = useMutation({
     mutationFn: async (file: File) => {
-      const formData = new FormData();
-      formData.append("image", file);
-      const data = await animeMatching({ formData });
+      const formData =
+        new FormData();
+
+      formData.append(
+        "image",
+        file
+      );
+
+      const data =
+        await animeMatching({
+          formData,
+        });
+
       return data;
     },
+
     onSuccess: (data) => {
       if (data && !data.SUCCESS) {
-        toast.error(data.MESSAGE || "Failed to match anime character");
+        toast.error(
+          data.MESSAGE ||
+            "Failed to match anime character"
+        );
+
         return;
       }
+
       if (data && data.DATA) {
         setResult(data.DATA);
       }
     },
+
     onError: (error) => {
       console.error(error);
-      toast.error("An error occurred while matching");
+
+      toast.error(
+        "An error occurred while matching"
+      );
     },
   });
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  const handleFileChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file =
+      e.target.files?.[0];
+
     if (file) {
       setSelectedFile(file);
-      setPreviewUrl(URL.createObjectURL(file));
+
+      setPreviewUrl(
+        URL.createObjectURL(file)
+      );
+
       setResult(null);
     }
   };
 
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDrop = (
+    e: React.DragEvent<HTMLDivElement>
+  ) => {
     e.preventDefault();
-    const file = e.dataTransfer.files?.[0];
-    if (file && file.type.startsWith("image/")) {
+
+    const file =
+      e.dataTransfer.files?.[0];
+
+    if (
+      file &&
+      file.type.startsWith("image/")
+    ) {
       setSelectedFile(file);
-      setPreviewUrl(URL.createObjectURL(file));
+
+      setPreviewUrl(
+        URL.createObjectURL(file)
+      );
+
       setResult(null);
     }
   };
 
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDragOver = (
+    e: React.DragEvent<HTMLDivElement>
+  ) => {
     e.preventDefault();
   };
 
   const handleSubmit = () => {
     if (selectedFile) {
-      animeMatchMutation.mutate(selectedFile);
+      animeMatchMutation.mutate(
+        selectedFile
+      );
     } else {
-      toast.error("Please select an image first");
+      toast.error(
+        "Please select an image first"
+      );
     }
   };
 
   const containerVariants = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: {
+      opacity: 0,
+      y: 20,
+    },
+
     visible: {
       opacity: 1,
       y: 0,
+
       transition: {
         duration: 0.6,
-        staggerChildren: 0.1,
+        staggerChildren: 0.08,
       },
     },
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 },
+    hidden: {
+      opacity: 0,
+      y: 20,
+    },
+
+    visible: {
+      opacity: 1,
+      y: 0,
+    },
   };
 
   const resultVariants = {
-    hidden: { opacity: 0, scale: 0.9 },
+    hidden: {
+      opacity: 0,
+      scale: 0.95,
+    },
+
     visible: {
       opacity: 1,
       scale: 1,
+
       transition: {
         type: "spring" as const,
-        stiffness: 200,
+        stiffness: 180,
         damping: 20,
       },
     },
   };
 
-  const formatDescription = (desc: string) => {
-    return desc?.split("\n").map((line, idx) => (
-      <p key={idx} className="mb-2 last:mb-0">
-        {line.startsWith("- ") ? (
-          <span className="flex items-start gap-2">
-            <span className="text-purple-500 mt-1">•</span>
-            <span dangerouslySetInnerHTML={{ __html: line.slice(2).replace(/\*\*(.*?)\*\*/g, '<strong class="text-purple-600 dark:text-purple-400">$1</strong>') }} />
-          </span>
-        ) : (
-          line
-        )}
-      </p>
-    ));
+  const formatDescription = (
+    desc: string
+  ) => {
+    return desc
+      ?.split("\n")
+      .map((line, idx) => (
+        <p
+          key={idx}
+          className="mb-3 last:mb-0"
+        >
+          {line.startsWith("- ") ? (
+            <span className="flex gap-3">
+              <span className="mt-[7px] h-1.5 w-1.5 rounded-full bg-black" />
+
+              <span
+                dangerouslySetInnerHTML={{
+                  __html: line
+                    .slice(2)
+                    .replace(
+                      /\*\*(.*?)\*\*/g,
+                      "<strong>$1</strong>"
+                    ),
+                }}
+              />
+            </span>
+          ) : (
+            line
+          )}
+        </p>
+      ));
   };
 
   return (
-    <div className="min-h-screen py-8 px-4">
+    <div className="relative">
       <motion.div
-        className="mx-auto w-auto desktop:max-w-5xl desktop:mr-36 lg:max-w-4xl mr-12 xlg:float-none float-right"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
+        className="
+          mx-auto
+          flex
+          w-full
+          max-w-[1600px]
+          flex-col
+          gap-6
+        "
       >
-        {/* Header */}
-        <motion.div variants={itemVariants} className="text-center mb-8">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <Sparkles className="h-8 w-8 text-pink-500" />
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent">
-              Anime Character Matcher
-            </h1>
-          </div>
-          <p className="text-slate-600 dark:text-slate-400 text-lg">
-            Upload your photo and discover which anime character you resemble!
-          </p>
-        </motion.div>
+       
 
-        <div className="grid gap-8 lg:grid-cols-2">
-          {/* Upload Section */}
+        {/* MAIN GRID */}
+        <div
+          className="
+            grid
+            gap-6
+            xl:grid-cols-[0.9fr_1.1fr]
+          "
+        >
+          {/* LEFT */}
           <motion.div variants={itemVariants}>
-            <Card className="shadow-lg border-0 backdrop-blur-sm h-full">
-              <CardHeader className="pb-4">
-                <CardTitle className="flex items-center gap-2">
-                  <Upload className="h-5 w-5 text-pink-500" />
-                  Upload Your Photo
-                </CardTitle>
-                <CardDescription>
-                  Drop an image or click to select from your device
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
+            <Card
+              className="
+                rounded-[32px]
+                border
+                border-black/10
+                bg-white/70
+                text-black
+                shadow-none
+                backdrop-blur-xl
+              "
+            >
+              <CardContent className="p-6 md:p-10">
+                {/* TOP */}
+                <div className="mb-8">
+                  <div className="flex items-center gap-3">
+                    <ImageIcon className="h-5 w-5 text-black" />
+
+                    <div>
+                      <h3 className="text-lg font-semibold">
+                        Upload Portrait
+                      </h3>
+
+                      <p className="text-sm text-black/50">
+                        Drag & drop or select
+                        an image
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* DROPZONE */}
                 <div
-                  onClick={() => fileInputRef.current?.click()}
+                  onClick={() =>
+                    fileInputRef.current?.click()
+                  }
                   onDrop={handleDrop}
-                  onDragOver={handleDragOver}
+                  onDragOver={
+                    handleDragOver
+                  }
                   className={`
-                    relative border-2 border-dashed rounded-xl p-8 text-center cursor-pointer
-                    transition-all duration-300 min-h-[300px] flex items-center justify-center
-                    ${previewUrl
-                      ? "border-pink-400 bg-pink-50/50 dark:bg-pink-950/20"
-                      : "border-gray-300 dark:border-gray-700 hover:border-pink-400 hover:bg-pink-50/30 dark:hover:bg-pink-950/10"
+                    group
+                    relative
+                    flex
+                    min-h-[420px]
+                    cursor-pointer
+                    items-center
+                    justify-center
+                    overflow-hidden
+                    rounded-[32px]
+                    border
+                    border-dashed
+                    transition-all
+                    duration-500
+
+                    ${
+                      previewUrl
+                        ? `
+                          border-black/10
+                          bg-black
+                        `
+                        : `
+                          border-black/10
+                          bg-[#F7F5F0]
+                          hover:border-black/30
+                        `
                     }
                   `}
                 >
@@ -179,81 +341,213 @@ const AnimeMatcher = () => {
                     ref={fileInputRef}
                     type="file"
                     accept="image/*"
-                    onChange={handleFileChange}
+                    onChange={
+                      handleFileChange
+                    }
                     className="hidden"
                   />
 
                   {previewUrl ? (
-                    <div className="relative w-full h-full min-h-[250px]">
+                    <div className="relative h-full min-h-[420px] w-full">
                       <Image
                         src={previewUrl}
                         alt="Preview"
                         fill
-                        className="object-contain rounded-lg"
+                        className="
+                          object-cover
+                        "
                       />
+
+                      <div
+                        className="
+                          absolute
+                          inset-0
+                          bg-gradient-to-t
+                          from-black/50
+                          to-transparent
+                        "
+                      />
+
+                      <div
+                        className="
+                          absolute
+                          bottom-6
+                          left-6
+                          rounded-full
+                          border
+                          border-white/10
+                          bg-white/10
+                          px-4
+                          py-2
+                          text-sm
+                          text-white
+                          backdrop-blur-xl
+                        "
+                      >
+                        {
+                          selectedFile?.name
+                        }
+                      </div>
                     </div>
                   ) : (
-                    <div className="space-y-4">
-                      <div className="w-16 h-16 mx-auto rounded-full bg-pink-100 dark:bg-pink-900/30 flex items-center justify-center">
-                        <ImageIcon className="h-8 w-8 text-pink-500" />
+                    <div className="px-6 text-center">
+                      <div
+                        className="
+                          mx-auto
+                          mb-6
+                          flex
+                          h-20
+                          w-20
+                          items-center
+                          justify-center
+                          rounded-full
+                          border
+                          border-black/10
+                          bg-white
+                        "
+                      >
+                        <Upload className="h-8 w-8 text-black/70" />
                       </div>
-                      <div>
-                        <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
-                          Drag & drop your image here
-                        </p>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                          or click to browse
-                        </p>
-                      </div>
-                      <Badge variant="secondary" className="mt-2">
-                        Supports JPG, PNG, WEBP
+
+                      <h3 className="text-2xl font-semibold">
+                        Drop Your Portrait
+                      </h3>
+
+                      <p className="mt-3 text-black/50">
+                        Upload JPG, PNG, or
+                        WEBP image
+                      </p>
+
+                      <Badge
+                        className="
+                          mt-6
+                          rounded-full
+                          border
+                          border-black/10
+                          bg-white
+                          px-4
+                          py-2
+                          text-black
+                          shadow-none
+                        "
+                      >
+                        Cinematic AI Matching
                       </Badge>
                     </div>
                   )}
                 </div>
 
+                {/* CTA */}
                 <Button
                   onClick={handleSubmit}
-                  disabled={!selectedFile || animeMatchMutation.isPending}
-                  className="w-full mt-6 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-semibold py-6 text-lg"
+                  disabled={
+                    !selectedFile ||
+                    animeMatchMutation.isPending
+                  }
+                  className="
+                    mt-6
+                    h-14
+                    w-full
+                    rounded-2xl
+                    bg-black
+                    text-sm
+                    uppercase
+                    tracking-[0.2em]
+                    text-white
+                    transition-all
+                    duration-300
+                    hover:bg-black/90
+                  "
                 >
                   {animeMatchMutation.isPending ? (
-                    <>
-                      <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                      Finding Your Match...
-                    </>
+                    <div className="flex items-center gap-3">
+                      <Loader2 className="h-5 w-5 animate-spin" />
+
+                      <span>
+                        Matching Anime
+                        Identity
+                      </span>
+                    </div>
                   ) : (
-                    <>
-                      <Sparkles className="h-5 w-5 mr-2" />
-                      Find My Anime Character
-                    </>
+                    <div className="flex items-center gap-3">
+                      <Sparkles className="h-5 w-5" />
+
+                      <span>
+                        Find Anime Twin
+                      </span>
+
+                      <ArrowRight className="h-4 w-4" />
+                    </div>
                   )}
                 </Button>
               </CardContent>
             </Card>
           </motion.div>
 
-          {/* Result Section */}
+          {/* RESULT */}
           <motion.div variants={itemVariants}>
             <AnimatePresence mode="wait">
               {animeMatchMutation.isPending ? (
                 <motion.div
                   key="loading"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
+                  initial={{
+                    opacity: 0,
+                  }}
+                  animate={{
+                    opacity: 1,
+                  }}
+                  exit={{
+                    opacity: 0,
+                  }}
                 >
-                  <Card className="shadow-lg border-0 backdrop-blur-sm h-full flex items-center justify-center min-h-[500px]">
-                    <CardContent className="text-center py-12">
+                  <Card
+                    className="
+                      flex
+                      min-h-[700px]
+                      items-center
+                      justify-center
+                      rounded-[32px]
+                      border
+                      border-black/10
+                      bg-black
+                      text-white
+                    "
+                  >
+                    <CardContent className="text-center">
                       <div className="relative">
-                        <div className="w-24 h-24 mx-auto rounded-full bg-gradient-to-r from-pink-500 to-purple-600 animate-pulse" />
-                        <div className="absolute inset-0 w-24 h-24 mx-auto rounded-full border-4 border-transparent border-t-pink-500 animate-spin" />
+                        <div
+                          className="
+                            mx-auto
+                            h-28
+                            w-28
+                            rounded-full
+                            bg-white/10
+                          "
+                        />
+
+                        <div
+                          className="
+                            absolute
+                            inset-0
+                            mx-auto
+                            h-28
+                            w-28
+                            rounded-full
+                            border-[3px]
+                            border-transparent
+                            border-t-white
+                            animate-spin
+                          "
+                        />
                       </div>
-                      <p className="mt-6 text-lg font-medium text-gray-600 dark:text-gray-300">
-                        Analyzing your features...
-                      </p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-                        Our AI is finding your anime twin
+
+                      <h3 className="mt-8 text-3xl font-semibold">
+                        Analyzing Features
+                      </h3>
+
+                      <p className="mt-3 text-white/60">
+                        AI is finding your
+                        cinematic anime twin
                       </p>
                     </CardContent>
                   </Card>
@@ -261,50 +555,170 @@ const AnimeMatcher = () => {
               ) : result ? (
                 <motion.div
                   key="result"
-                  variants={resultVariants}
+                  variants={
+                    resultVariants
+                  }
                   initial="hidden"
                   animate="visible"
                 >
-                  <Card className="shadow-lg border-0 backdrop-blur-sm overflow-hidden">
-                    <div className="relative bg-gradient-to-br from-pink-500/20 to-purple-600/20 flex items-center justify-center p-6">
+                  <Card
+                    className="
+                      overflow-hidden
+                      rounded-[32px]
+                      border
+                      border-black/10
+                      bg-white/70
+                      text-black
+                    "
+                  >
+                    {/* IMAGE */}
+                    <div
+                      className="
+                        relative
+                        flex
+                        min-h-[380px]
+                        items-center
+                        justify-center
+                        overflow-hidden
+                        bg-black
+                        p-8
+                      "
+                    >
                       <Image
                         src={`${BASE_URL}${result.image}`}
                         alt={result.name}
-                        width={400}
-                        height={400}
-                        className="object-contain max-h-[320px] w-auto rounded-lg shadow-md"
+                        width={500}
+                        height={500}
+                        className="
+                          max-h-[420px]
+                          w-auto
+                          object-contain
+                        "
                         unoptimized
                       />
+
+                      <div
+                        className="
+                          absolute
+                          inset-0
+                          bg-gradient-to-t
+                          from-black/60
+                          to-transparent
+                        "
+                      />
                     </div>
-                    <div className="bg-gradient-to-r from-pink-500/10 to-purple-600/10 px-6 py-4 border-b dark:border-gray-700">
-                      <h2 className="text-2xl font-bold text-gray-800 dark:text-white capitalize">
-                        {result.name}
-                      </h2>
-                      <div className="flex items-center gap-2 mt-1">
-                        <Tv className="h-4 w-4 text-pink-500" />
-                        <span className="text-pink-600 dark:text-pink-300">{result.anime}</span>
+
+                    {/* INFO */}
+                    <CardContent className="p-6 md:p-10">
+                      <div
+                        className="
+                          mb-6
+                          flex
+                          flex-wrap
+                          items-center
+                          justify-between
+                          gap-4
+                        "
+                      >
+                        <div>
+                          <div
+                            className="
+                              mb-2
+                              text-[11px]
+                              uppercase
+                              tracking-[0.3em]
+                              text-black/40
+                            "
+                          >
+                            Anime Identity
+                          </div>
+
+                          <h2
+                            className="
+                              text-4xl
+                              font-semibold
+                              capitalize
+                              leading-none
+                            "
+                          >
+                            {result.name}
+                          </h2>
+
+                          <div className="mt-3 flex items-center gap-2 text-black/60">
+                            <Tv className="h-4 w-4" />
+
+                            <span>
+                              {
+                                result.anime
+                              }
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="flex gap-3">
+                          <Badge
+                            className="
+                              rounded-full
+                              border
+                              border-black/10
+                              bg-black
+                              px-4
+                              py-2
+                              text-white
+                            "
+                          >
+                            {
+                              result.genre
+                            }
+                          </Badge>
+
+                          <Badge
+                            className="
+                              rounded-full
+                              border
+                              border-black/10
+                              bg-white
+                              px-4
+                              py-2
+                              text-black
+                            "
+                          >
+                            <User className="mr-2 h-3 w-3" />
+
+                            {result.type}
+                          </Badge>
+                        </div>
                       </div>
-                    </div>
 
-                    <CardContent className="p-6">
-                      <div className="flex items-center justify-between mb-4">
-                        <Badge className="bg-gradient-to-r from-pink-500 to-purple-600 text-white text-sm px-3 py-1">
-                          {result.genre}
-                        </Badge>
-                        <Badge variant="outline" className="border-purple-400 text-purple-600 dark:text-purple-400">
-                          <User className="h-3 w-3 mr-1" />
-                          {result.type}
-                        </Badge>
-                      </div>
+                      <div
+                        className="
+                          border-t
+                          border-black/10
+                          pt-6
+                        "
+                      >
+                        <div
+                          className="
+                            mb-5
+                            text-[11px]
+                            uppercase
+                            tracking-[0.3em]
+                            text-black/40
+                          "
+                        >
+                          Character Analysis
+                        </div>
 
-                      <Separator className="my-4" />
-
-                      <div className="prose prose-sm dark:prose-invert max-w-none">
-                        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-3">
-                          About {result.name}
-                        </h3>
-                        <div className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
-                          {formatDescription(result.description)}
+                        <div
+                          className="
+                            text-[15px]
+                            leading-relaxed
+                            text-black/70
+                          "
+                        >
+                          {formatDescription(
+                            result.description
+                          )}
                         </div>
                       </div>
                     </CardContent>
@@ -313,20 +727,63 @@ const AnimeMatcher = () => {
               ) : (
                 <motion.div
                   key="empty"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
+                  initial={{
+                    opacity: 0,
+                  }}
+                  animate={{
+                    opacity: 1,
+                  }}
+                  exit={{
+                    opacity: 0,
+                  }}
                 >
-                  <Card className="shadow-lg border-0 backdrop-blur-sm h-full flex items-center justify-center min-h-[500px]">
-                    <CardContent className="text-center py-12">
-                      <div className="w-20 h-20 mx-auto rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-4">
-                        <User className="h-10 w-10 text-gray-400" />
+                  <Card
+                    className="
+                      flex
+                      min-h-[700px]
+                      items-center
+                      justify-center
+                      rounded-[32px]
+                      border
+                      border-black/10
+                      bg-white/70
+                      text-black
+                    "
+                  >
+                    <CardContent className="text-center">
+                      <div
+                        className="
+                          mx-auto
+                          flex
+                          h-24
+                          w-24
+                          items-center
+                          justify-center
+                          rounded-full
+                          border
+                          border-black/10
+                          bg-[#F7F5F0]
+                        "
+                      >
+                        <User className="h-10 w-10 text-black/50" />
                       </div>
-                      <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                        Your Result Will Appear Here
+
+                      <h3 className="mt-8 text-3xl font-semibold">
+                        Awaiting Your Portrait
                       </h3>
-                      <p className="text-gray-500 dark:text-gray-400 max-w-sm">
-                        Upload a photo and click the button to discover which anime character matches your appearance!
+
+                      <p
+                        className="
+                          mx-auto
+                          mt-4
+                          max-w-md
+                          text-black/50
+                        "
+                      >
+                        Upload a portrait to
+                        discover your cinematic
+                        anime identity powered
+                        by AI.
                       </p>
                     </CardContent>
                   </Card>

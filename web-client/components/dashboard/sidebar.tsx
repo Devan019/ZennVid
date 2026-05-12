@@ -1,8 +1,25 @@
-"use client"
+"use client";
 
-import { Home, LogOut, Menu, VideoOff, Cog, Book, Languages, Speaker, UserPenIcon, UserCog, Videotape, Sparkles } from "lucide-react";
+import {
+  Home,
+  LogOut,
+  Menu,
+  VideoOff,
+  Cog,
+  Book,
+  Languages,
+  Speaker,
+  UserPenIcon,
+  UserCog,
+  Videotape,
+  Sparkles,
+  X,
+} from "lucide-react";
+
 import { motion, AnimatePresence } from "framer-motion";
+
 import { useEffect, useState } from "react";
+
 import {
   Sidebar,
   SidebarContent,
@@ -14,18 +31,30 @@ import {
   SidebarMenuButton,
   useSidebar,
 } from "@/components/ui/sidebar";
+
 import { GiLipstick } from "react-icons/gi";
-import ModeToggle from "../common/mode-toggle";
-import { useUser } from "@/context/UserProvider";
+
 import { FaMagic } from "react-icons/fa";
-import { TbApi, TbApiApp, TbPhoto, TbTransactionBitcoin } from "react-icons/tb";
+
+import {
+  TbApi,
+  TbApiApp,
+  TbPhoto,
+  TbTransactionBitcoin,
+} from "react-icons/tb";
+
+import ModeToggle from "../common/mode-toggle";
+
+import { useUser } from "@/context/UserProvider";
+import { useRouter } from "next/navigation";
+import { FRONTEND_ROUTES } from "@/constants/frontend_routes";
 
 const iconMap: Record<string, React.ElementType> = {
   home: Home,
   magic: FaMagic,
   lipstick: GiLipstick,
   videoOff: VideoOff,
-  dashboard: Home,         // or HomeIcon if you want alias
+  dashboard: Home,
   createApp: Cog,
   caption: Book,
   translate: Languages,
@@ -37,223 +66,535 @@ const iconMap: Record<string, React.ElementType> = {
   UserCog: UserCog,
   TbApiApp: TbApiApp,
   Videotape: Videotape,
-  sparkles: Sparkles
-}
+  sparkles: Sparkles,
+};
 
-export function AppSidebar({ menuItems }: {
+export function AppSidebar({
+  menuItems,
+}: {
   menuItems: {
-    href: string,
-    icon: string,
-    label: string,
-    tooltip: string
-  }[]
+    href: string;
+    icon: string;
+    label: string;
+    tooltip: string;
+  }[];
 }) {
-  const { setOpenMobile, isMobile } = useSidebar();
-  const { logout } = useUser();
-  const { user } = useUser();
-  const [activeHash, setActiveHash] = useState<string>("magic-video");
+  const { setOpenMobile, isMobile } =
+    useSidebar();
+
+  const { logout, user } = useUser();
+
+  const [activeHash, setActiveHash] =
+    useState<string>("magic-video");
+
+  const router = useRouter();
 
   useEffect(() => {
     const syncActiveHash = () => {
-      const currentHash = window.location.hash.replace('#', '');
-      setActiveHash(currentHash || 'magic-video');
+      const currentHash =
+        window.location.hash.replace("#", "");
+
+      setActiveHash(
+        currentHash || "magic-video"
+      );
     };
 
     syncActiveHash();
-    window.addEventListener('hashchange', syncActiveHash);
 
-    return () => window.removeEventListener('hashchange', syncActiveHash);
+    window.addEventListener(
+      "hashchange",
+      syncActiveHash
+    );
+
+    return () =>
+      window.removeEventListener(
+        "hashchange",
+        syncActiveHash
+      );
   }, []);
 
   const containerVariants = {
-    hidden: { opacity: 0, x: -20 },
+    hidden: {
+      opacity: 0,
+      x: -20,
+    },
+
     visible: {
       opacity: 1,
       x: 0,
+
       transition: {
-        duration: 0.3,
-        staggerChildren: 0.1
-      }
-    }
+        duration: 0.4,
+        staggerChildren: 0.06,
+      },
+    },
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, x: -10 },
+    hidden: {
+      opacity: 0,
+      x: -10,
+    },
+
     visible: {
       opacity: 1,
       x: 0,
-      transition: { duration: 0.2 }
-    }
+
+      transition: {
+        duration: 0.25,
+      },
+    },
   };
 
-
-
   return (
-    <Sidebar
-      variant="inset"
-      collapsible="icon"
-      className="dark:bg-zinc-950 bg-white  shadow-lg dark:shadow-2xl transition-all duration-300"
-    >
+    <>
+      {/* MOBILE MENU BUTTON */}
       {isMobile && (
         <button
           onClick={() => setOpenMobile(true)}
-          className="md:hidden fixed top-4 left-4 z-50 p-2 rounded-lg bg-gray-100 dark:bg-gray-800"
+          className="
+            fixed
+            left-4
+            top-4
+            z-[120]
+            flex
+            h-11
+            w-11
+            items-center
+            justify-center
+            rounded-2xl
+            border
+            border-white/10
+            bg-[#0D0D0D]
+            text-white
+            shadow-xl
+            backdrop-blur-xl
+            lg:hidden
+          "
         >
-          <Menu className="w-5 h-5" />
+          <Menu className="h-5 w-5" />
         </button>
       )}
-      <SidebarHeader className="flex items-center justify-center p-4 border-b border-gray-100 dark:border-gray-800">
-        <motion.span
-          // variants={logoVariants}
-          initial="hidden"
-          animate="visible"
-          className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent"
+
+
+
+      <Sidebar
+        variant="sidebar"
+        collapsible="offcanvas"
+        className="
+    z-[60]
+    border-r
+    border-white/[0.06]
+    bg-[#0D0D0D]
+    text-white
+    3xl:w-96
+    w-64
+  "
+      >
+        {/* HEADER */}
+        <SidebarHeader
+          className="
+    relative
+    border-b
+    border-white/[0.06]
+    px-4
+    py-5
+  "
         >
-          ZennvidAI
-        </motion.span>
-      </SidebarHeader>
+          <motion.button
+            type="button"
+            initial={{
+              opacity: 0,
+              y: -10,
+            }}
+            animate={{
+              opacity: 1,
+              y: 0,
+            }}
+            transition={{
+              duration: 0.6,
+            }}
+            whileHover={{
+              scale: 1.02,
+            }}
+            whileTap={{
+              scale: 0.98,
+            }}
+            onClick={() => {
+              if (isMobile) {
+                setOpenMobile(false);
+              }
 
-      <SidebarContent className="px-2 py-4">
-        <SidebarGroup>
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
+              router.push(
+                FRONTEND_ROUTES.HOME
+              );
+            }}
+            className="
+      flex
+      w-full
+      cursor-pointer
+      items-center
+      justify-center
+    "
           >
-            <SidebarMenu className="space-y-2">
-              {menuItems.map((item, index) => {
-                const Icon = iconMap[item.icon]
-                const itemHash = item.href.split('#')[1] ?? '';
-                const isActive = activeHash === itemHash;
+            <span
+              className="
+        text-sm
+        font-semibold
+        uppercase
+        tracking-[0.3em]
+        text-white
+        lg:text-base
+      "
+            >
+              Zennvid
+            </span>
+          </motion.button>
 
-                const handleNavigation = () => {
-                  window.location.hash = itemHash;
-                };
+          {/* CLOSE BUTTON */}
+          {isMobile && (
+            <button
+              onClick={() =>
+                setOpenMobile(false)
+              }
+              className="
+        absolute
+        right-4
+        top-4
+        z-[120]
+        flex
+        h-11
+        w-11
+        items-center
+        justify-center
+        rounded-2xl
+        border
+        border-white/10
+        bg-[#0D0D0D]
+        text-white
+        shadow-xl
+        backdrop-blur-xl
+        xl:hidden
+      "
+            >
+              <X className="h-5 w-5" />
+            </button>
+          )}
+        </SidebarHeader>
 
-                return (
-                  <motion.div
-                    key={index}
-                    variants={itemVariants}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <SidebarMenuItem>
-                      <SidebarMenuButton
-                        onClick={handleNavigation}
-                        isActive={isActive}
-                        tooltip={item.tooltip}
-                        className={`
-                          relative group w-full transition-all duration-200 ease-in-out
-                          hover:bg-gray-100 dark:hover:bg-gray-800
-                          ${isActive
-                            ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border-r-2 border-blue-600 dark:border-blue-400'
-                            : 'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100'
-                          }
-                          rounded-lg mx-1 px-3 py-2
-                        `}
+
+
+        {/* CONTENT */}
+        <SidebarContent
+          className="
+            overflow-x-hidden
+            px-2
+            py-4
+          "
+        >
+          <SidebarGroup>
+            <motion.div
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+            >
+              <SidebarMenu className="space-y-2">
+                {menuItems.map(
+                  (item, index) => {
+                    const Icon =
+                      iconMap[item.icon];
+
+                    const itemHash =
+                      item.href.split(
+                        "#"
+                      )[1] ?? "";
+
+                    const isActive =
+                      activeHash ===
+                      itemHash;
+
+                    const handleNavigation =
+                      () => {
+                        window.location.hash =
+                          itemHash;
+
+                        if (isMobile) {
+                          setOpenMobile(
+                            false
+                          );
+                        }
+                      };
+
+                    return (
+                      <motion.div
+                        key={index}
+                        variants={
+                          itemVariants
+                        }
+                        whileHover={{
+                          x: 3,
+                        }}
+                        whileTap={{
+                          scale: 0.98,
+                        }}
                       >
-                        <motion.div
-                          whileHover={{ rotate: isActive ? 0 : 5 }}
-                          transition={{ duration: 0.2 }}
-                        >
-                          <Icon className={`
-                            size-4 transition-colors duration-200
-                            ${isActive
-                              ? 'text-blue-600 dark:text-blue-400'
-                              : 'text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-200'
+                        <SidebarMenuItem>
+                          <SidebarMenuButton
+                            type="button"
+                            size="lg"
+                            onClick={
+                              handleNavigation
                             }
-                          `} />
-                        </motion.div>
-                        <span className={`
-                          font-medium transition-colors duration-200
-                          ${isActive
-                            ? 'text-blue-600 dark:text-blue-400'
-                            : 'text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-gray-100'
-                          }
-                        `}>
-                          {item.label}
-                        </span>
+                            tooltip={
+                              item.tooltip
+                            }
+                            isActive={
+                              isActive
+                            }
+                            className={`
+                              group
+                              relative
+                              w-full
+                              overflow-hidden
+                              rounded-2xl
+                              border
+                              px-3
+                              py-6
+                              transition-all
+                              duration-300
 
-                        {/* Active indicator */}
-                        <AnimatePresence>
-                          {isActive && (
+                              ${isActive
+                                ? `
+                                    border-white/10
+                                    bg-white/[0.08]
+                                    text-white
+                                  `
+                                : `
+                                    border-transparent
+                                    text-white/50
+                                    hover:border-white/[0.06]
+                                    hover:bg-white/[0.04]
+                                    hover:text-white
+                                  `
+                              }
+                            `}
+                          >
+                            {/* ICON */}
                             <motion.div
-                              initial={{ scale: 0, opacity: 0 }}
-                              animate={{ scale: 1, opacity: 1 }}
-                              exit={{ scale: 0, opacity: 0 }}
-                              className="absolute right-2 w-2 h-2 bg-blue-600 dark:bg-blue-400 rounded-full"
-                            />
-                          )}
-                        </AnimatePresence>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  </motion.div>
-                );
-              })}
-              {user && user.role === "user" && (<motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.5 }}
-                className="w-full flex items-center space-x-2 bg-gradient-to-r from-blue-50 to-purple-50 px-3 py-2 rounded-full border border-blue-200 cursor-pointer"
-                whileHover={{ scale: 1.05 }}
-              >
-                <motion.div
-                  className="w-2 h-2 bg-green-500 rounded-full"
-                  animate={{ scale: [1, 1.2, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                />
-                <span className="w-18 text-sm font-semibold text-gray-700">
-                  {user.credits + " Credits"}
-                </span>
-              </motion.div>)}
-            </SidebarMenu>
-          </motion.div>
-        </SidebarGroup>
-      </SidebarContent>
+                              whileHover={{
+                                rotate:
+                                  isActive
+                                    ? 0
+                                    : 5,
+                              }}
+                            >
+                              <Icon
+                                className={`
+                                  size-[18px]
+                                  shrink-0
+                                  transition-all
+                                  duration-300
 
-      <SidebarFooter className="p-2 border-t border-gray-100 dark:border-gray-800">
-        <SidebarMenu className="space-y-2">
-          <motion.div
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
+                                  ${isActive
+                                    ? "text-white"
+                                    : "text-white/40 group-hover:text-white"
+                                  }
+                                `}
+                              />
+                            </motion.div>
+
+                            {/* LABEL */}
+                            <span
+                              className={`
+                                truncate
+                                text-[13px]
+                                font-medium
+                                tracking-[0.03em]
+                                transition-all
+                                duration-300
+
+                                ${isActive
+                                  ? "text-white"
+                                  : "text-white/50 group-hover:text-white"
+                                }
+                              `}
+                            >
+                              {item.label}
+                            </span>
+
+                            {/* ACTIVE DOT */}
+                            <AnimatePresence>
+                              {isActive && (
+                                <motion.div
+                                  initial={{
+                                    scale: 0,
+                                    opacity: 0,
+                                  }}
+                                  animate={{
+                                    scale: 1,
+                                    opacity: 1,
+                                  }}
+                                  exit={{
+                                    scale: 0,
+                                    opacity: 0,
+                                  }}
+                                  className="
+                                    absolute
+                                    right-3
+                                    h-2
+                                    w-2
+                                    rounded-full
+                                    bg-white
+                                  "
+                                />
+                              )}
+                            </AnimatePresence>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                      </motion.div>
+                    );
+                  }
+                )}
+
+                {/* CREDITS */}
+                {user &&
+                  user.role ===
+                  "user" && (
+                    <motion.div
+                      initial={{
+                        opacity: 0,
+                        y: 20,
+                      }}
+                      animate={{
+                        opacity: 1,
+                        y: 0,
+                      }}
+                      transition={{
+                        delay: 0.5,
+                      }}
+                      className="
+                        mt-5
+                        flex
+                        items-center
+                        gap-3
+                        rounded-2xl
+                        border
+                        border-white/10
+                        bg-white/[0.04]
+                        px-4
+                        py-4
+                      "
+                    >
+                      <motion.div
+                        className="
+                          h-2
+                          w-2
+                          rounded-full
+                          bg-green-400
+                        "
+                        animate={{
+                          scale: [
+                            1,
+                            1.3,
+                            1,
+                          ],
+                        }}
+                        transition={{
+                          duration: 2,
+                          repeat:
+                            Infinity,
+                        }}
+                      />
+
+                      <span
+                        className="
+                          text-sm
+                          font-medium
+                          text-white/80
+                        "
+                      >
+                        {
+                          user.credits
+                        }{" "}
+                        Credits
+                      </span>
+                    </motion.div>
+                  )}
+              </SidebarMenu>
+            </motion.div>
+          </SidebarGroup>
+        </SidebarContent>
+
+        {/* FOOTER */}
+        <SidebarFooter
+          className="
+            border-t
+            border-white/[0.06]
+            p-3
+          "
+        >
+          <SidebarMenu className="space-y-2">
+            {/* THEME */}
             <SidebarMenuItem>
-              <div >
+              <div
+                className="
+                  rounded-2xl
+                  border
+                  border-white/[0.06]
+                  bg-white/[0.03]
+                  p-2
+                "
+              >
                 <ModeToggle />
               </div>
             </SidebarMenuItem>
-          </motion.div>
 
-          <motion.div
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
+            {/* LOGOUT */}
             <SidebarMenuItem>
               <SidebarMenuButton
-                onClick={logout}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  logout();
+                }}
                 tooltip="Logout"
                 className="
-                    group w-full transition-all duration-200 ease-in-out
-                    hover:bg-red-50 dark:hover:bg-red-900/20
-                    text-gray-700 dark:text-gray-300
-                    hover:text-red-600 dark:hover:text-red-400
-                    rounded-lg mx-1 px-3 py-2
-                  "
+                  group
+                  rounded-2xl
+                  border
+                  border-transparent
+                  px-4
+                  py-6
+                  text-white/50
+                  transition-all
+                  duration-300
+
+                  hover:border-red-500/10
+                  hover:bg-red-500/10
+                  hover:text-red-400
+                "
               >
-                <motion.div
-                  whileHover={{ x: 2 }}
-                  transition={{ duration: 0.2 }}
+                <LogOut
+                  className="
+                    size-[18px]
+                    transition-colors
+                    duration-300
+                    group-hover:text-red-400
+                  "
+                />
+
+                <span
+                  className="
+                    text-sm
+                    font-medium
+                  "
                 >
-                  <LogOut className="size-4 group-hover:text-red-500 dark:group-hover:text-red-400 transition-colors duration-200" />
-                </motion.div>
-                <span className="font-medium group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors duration-200">
                   Logout
                 </span>
               </SidebarMenuButton>
             </SidebarMenuItem>
-          </motion.div>
-        </SidebarMenu>
-      </SidebarFooter>
-    </Sidebar>
+          </SidebarMenu>
+        </SidebarFooter>
+      </Sidebar>
+    </>
   );
 }

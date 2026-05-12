@@ -1,19 +1,38 @@
-"use client"
+"use client";
+
 import { Providers, signInSchema, signUpSchema } from "@/types/auth";
-import { motion, AnimatePresence } from "framer-motion"
-import { Mail, User, EyeOff, Eye, ArrowRight, Lock } from "lucide-react"
-import {useRouter } from "next/navigation";
-import {  useState } from "react"
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Mail,
+  User,
+  EyeOff,
+  Eye,
+  ArrowRight,
+  Lock,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { z } from "zod";
-import {  FaGoogle } from "react-icons/fa"
+import { FaGoogle } from "react-icons/fa";
 import { useMutation } from "@tanstack/react-query";
-import { checkUserWithOtp, loginWithCredentials, signUpWithCredentials } from "./api";
+import {
+  checkUserWithOtp,
+  loginWithCredentials,
+  signUpWithCredentials,
+} from "./api";
 import { toast } from "sonner";
-import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogOverlay, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogOverlay,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { OtpInput } from "@/components/common/OtpInput";
 import { AUTH_GOOGLE_OAUTH_URI } from "@/constants/backend_routes";
 import { FRONTEND_ROUTES } from "@/constants/frontend_routes";
-
 
 // Types
 export interface ConformUser {
@@ -38,43 +57,53 @@ interface IFormErrors {
   general?: string;
 }
 
-
 const AuthPages: React.FC = () => {
   const router = useRouter();
 
   // State management
   const [isSignUp, setIsSignUp] = useState<boolean>(false);
-  const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [showPassword, setShowPassword] =
+    useState<boolean>(false);
 
-  const [openotp, setopenotp] = useState(false)
-  const [otp, setotp] = useState<string>("")
+  const [showConfirmPassword, setShowConfirmPassword] =
+    useState<boolean>(false);
+
+  const [isLoading, setIsLoading] =
+    useState<boolean>(false);
+
+  const [openotp, setopenotp] = useState(false);
+  const [otp, setotp] = useState<string>("");
 
   const [formData, setFormData] = useState<IFormData>({
-    email: '',
-    password: '',
-    confirmPassword: '',
-    username: '',
+    email: "",
+    password: "",
+    confirmPassword: "",
+    username: "",
   });
 
   const [errors, setErrors] = useState<IFormErrors>({});
 
   // Mutations
-
-  // Credentials mutation for sign in and sign up
   const credentialsMutation = useMutation({
     mutationFn: async () => {
       if (isSignUp) {
-        // For sign up
         const { email, password, username } = formData;
-        return await signUpWithCredentials(email, password, username);
+
+        return await signUpWithCredentials(
+          email,
+          password,
+          username
+        );
       } else {
-        // For sign in
         const { email, password } = formData;
-        return await loginWithCredentials(email, password);
+
+        return await loginWithCredentials(
+          email,
+          password
+        );
       }
     },
+
     onSuccess: (data) => {
       if (data.SUCCESS === false) {
         toast.error(data.MESSAGE);
@@ -82,103 +111,144 @@ const AuthPages: React.FC = () => {
       } else {
         if (!isSignUp) {
           setTimeout(() => {
-            window.location.href = FRONTEND_ROUTES.HOME
+            window.location.href =
+              FRONTEND_ROUTES.HOME;
           }, 1000);
         } else {
-          setopenotp(true)
+          setopenotp(true);
         }
       }
-
-      // Redirect to dashboard or appropriate page
     },
+
     onError: (error) => {
-      console.error(`${isSignUp ? 'Sign up' : 'Sign in'} error:`, error);
-      const errorMessage = error?.message ||
-        (isSignUp ? "Failed to create account. Please try again." :
-          "Invalid credentials. Please check your email and password.");
+      console.error(
+        `${isSignUp ? "Sign up" : "Sign in"} error:`,
+        error
+      );
+
+      const errorMessage =
+        error?.message ||
+        (isSignUp
+          ? "Failed to create account. Please try again."
+          : "Invalid credentials. Please check your email and password.");
+
       toast.error(errorMessage);
     },
   });
 
-  //check otp mutation
+  // OTP Mutation
   const checkOtpMutation = useMutation({
     mutationFn: async (otp: string) => {
       const { email } = formData;
+
       return await checkUserWithOtp(email, otp);
     },
+
     onSuccess: () => {
       setTimeout(() => {
-        window.location.href = FRONTEND_ROUTES.HOME;
+        window.location.href =
+          FRONTEND_ROUTES.HOME;
       }, 1000);
     },
+
     onError: (error) => {
-      console.error("OTP verification error:", error);
-      toast.error("Invalid OTP. Please try again.");
+      console.error(
+        "OTP verification error:",
+        error
+      );
+
+      toast.error(
+        "Invalid OTP. Please try again."
+      );
     },
   });
 
-
-
-
   // Event handlers
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ): void => {
     const { name, value } = e.target;
 
-    // Handle emailOrUsername for sign in
-    const fieldName = name === 'emailOrUsername' ? 'email' : name;
+    const fieldName =
+      name === "emailOrUsername"
+        ? "email"
+        : name;
 
-    setFormData(prev => ({ ...prev, [fieldName]: value }));
+    setFormData((prev) => ({
+      ...prev,
+      [fieldName]: value,
+    }));
 
-    // Clear specific field error when user starts typing
-    if (errors[fieldName as keyof IFormErrors]) {
-      setErrors(prev => ({ ...prev, [fieldName]: undefined }));
+    if (
+      errors[fieldName as keyof IFormErrors]
+    ) {
+      setErrors((prev) => ({
+        ...prev,
+        [fieldName]: undefined,
+      }));
     }
 
-    // Clear general error
     if (errors.general) {
-      setErrors(prev => ({ ...prev, general: undefined }));
+      setErrors((prev) => ({
+        ...prev,
+        general: undefined,
+      }));
     }
   };
 
   const validateForm = (): boolean => {
     try {
-      const schema = isSignUp ? signUpSchema : signInSchema;
+      const schema = isSignUp
+        ? signUpSchema
+        : signInSchema;
 
-      // Prepare data for validation
       const dataToValidate = isSignUp
         ? formData
-        : { email: formData.email, password: formData.password };
+        : {
+          email: formData.email,
+          password: formData.password,
+        };
 
       schema.parse(dataToValidate);
+
       setErrors({});
+
       return true;
     } catch (error) {
       if (error instanceof z.ZodError) {
         const newErrors: IFormErrors = {};
-        error.errors.forEach(err => {
-          const fieldName = err.path[0] as keyof IFormErrors;
-          newErrors[fieldName] = err.message;
+
+        error.errors.forEach((err) => {
+          const fieldName =
+            err.path[0] as keyof IFormErrors;
+
+          newErrors[fieldName] =
+            err.message;
         });
+
         setErrors(newErrors);
       }
+
       return false;
     }
   };
 
-  const handleSubmit = async (e?: React.FormEvent) => {
+  const handleSubmit = async (
+    e?: React.FormEvent
+  ) => {
     e?.preventDefault();
 
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
     setIsLoading(true);
 
     try {
       await credentialsMutation.mutateAsync();
     } catch (error) {
-      // Error is already handled in the mutation
-      console.error('Submit error:', error);
+      console.error(
+        "Submit error:",
+        error
+      );
     } finally {
       setIsLoading(false);
     }
@@ -186,507 +256,860 @@ const AuthPages: React.FC = () => {
 
   const switchMode = (): void => {
     setIsSignUp(!isSignUp);
+
     setFormData({
-      email: '',
-      password: '',
-      confirmPassword: '',
-      username: '',
+      email: "",
+      password: "",
+      confirmPassword: "",
+      username: "",
     });
+
     setErrors({});
+
     setShowPassword(false);
     setShowConfirmPassword(false);
-  };
-
-  const togglePasswordVisibility = (): void => {
-    setShowPassword(!showPassword);
-  };
-
-  const toggleConfirmPasswordVisibility = (): void => {
-    setShowConfirmPassword(!showConfirmPassword);
   };
 
   const socialProviders = [
     {
       name: Providers.GOOGLE,
       icon: FaGoogle,
-      color: 'from-red-500 to-yellow-500',
-      hoverColor: 'hover:shadow-red-500/20',
       enabled: true,
-      redirectUrl: `${AUTH_GOOGLE_OAUTH_URI}`
-    }
+      redirectUrl: `${AUTH_GOOGLE_OAUTH_URI}`,
+    },
   ];
 
-  const handleSocialLogin = async (provider: Providers) => {
+  const handleSocialLogin = async (
+    provider: Providers
+  ) => {
     try {
       setIsLoading(true);
-      const socialProvider = socialProviders.find(p => p.name === provider);
+
+      const socialProvider =
+        socialProviders.find(
+          (p) => p.name === provider
+        );
+
       switch (provider) {
         case Providers.GOOGLE:
           if (socialProvider?.redirectUrl) {
-            router.push(socialProvider?.redirectUrl);
+            router.push(
+              socialProvider.redirectUrl
+            );
           }
           break;
+
         default:
-          toast.error(`${provider} login is not implemented yet.`);
+          toast.error(
+            `${provider} login is not implemented yet.`
+          );
       }
     } catch (error) {
-      console.error(`${provider} login error:`, error);
+      console.error(
+        `${provider} login error:`,
+        error
+      );
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Social providers configuration
-
-
-  const iconErrorClass = "-translate-y-[110%]";
+  const inputClass = `
+    h-14
+    w-full
+    rounded-2xl
+    border
+    border-black/10
+    bg-black/[0.02]
+    pl-12
+    pr-4
+    text-black
+    placeholder:text-black/30
+    outline-none
+    transition-all
+    duration-300
+    focus:border-black
+    focus:bg-white
+  `;
 
   return (
-    <div className="min-h-screen flex items-center justify-center  relative overflow-hidden">
+    <div className="relative min-h-screen overflow-hidden bg-white text-black">
+      {/* GRID */}
+      <div
+        className="
+          absolute
+          inset-0
+          opacity-[0.03]
+          [background-image:linear-gradient(to_right,#000_1px,transparent_1px),linear-gradient(to_bottom,#000_1px,transparent_1px)]
+          [background-size:60px_60px]
+        "
+      />
 
-      <div className="fixed top-1/2 left-1/4 w-64 h-64 bg-purple-200/30 dark:bg-purple-500/10 rounded-full blur-3xl -z-10" />
-      <div className="fixed bottom-1/4 right-1/4 w-96 h-96 bg-pink-200/30 dark:bg-pink-500/10 rounded-full blur-3xl -z-10" />
-      {/* Background gradient elements */}
-      {/* <div className="absolute inset-0 overflow-hidden">
-        <motion.div
-          animate={{
-            x: [0, 100, 0],
-            y: [0, -50, 0],
-            scale: [1, 1.1, 1]
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: "linear"
-          }}
-          className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500 rounded-full filter blur-3xl opacity-20"
-        />
-        <motion.div
-          animate={{
-            x: [0, -100, 0],
-            y: [0, 100, 0],
-            scale: [1, 0.9, 1]
-          }}
-          transition={{
-            duration: 25,
-            repeat: Infinity,
-            ease: "linear"
-          }}
-          className="absolute top-1/2 left-1/4 w-96 h-96 bg-cyan-500 rounded-full filter blur-3xl opacity-20"
-        />
-        <motion.div
-          animate={{
-            x: [0, 50, 0],
-            y: [0, -100, 0],
-            scale: [1, 1.2, 1]
-          }}
-          transition={{
-            duration: 30,
-            repeat: Infinity,
-            ease: "linear"
-          }}
-          className="absolute bottom-20 right-1/3 w-64 h-64 bg-pink-500 rounded-full filter blur-3xl opacity-15"
-        />
-      </div> */}
+      {/* TOP LIGHT */}
+      <div
+        className="
+          absolute
+          left-1/2
+          top-[-20%]
+          h-[600px]
+          w-[600px]
+          -translate-x-1/2
+          rounded-full
+          bg-black/5
+          blur-3xl
+        "
+      />
 
-      {/* Auth Form Container */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="relative z-10 w-full max-w-md mx-4"
+      {/* BOTTOM LIGHT */}
+      <div
+        className="
+          absolute
+          bottom-[-10%]
+          right-[-10%]
+          h-[500px]
+          w-[500px]
+          rounded-full
+          bg-black/5
+          blur-3xl
+        "
+      />
+
+      {/* CONTAINER */}
+      <div
+        className="
+          relative
+          z-10
+          mx-auto
+          flex
+          min-h-screen
+          w-full
+          max-w-7xl
+          items-center
+          justify-center
+          px-6
+          py-10
+        "
       >
-        <div className=" backdrop-blur-xl rounded-2xl p-8 border border-gray-700/50 shadow-2xl text-black dark:text-white">
-          {/* Header */}
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="text-center mb-8"
+        <motion.div
+          initial={{
+            opacity: 0,
+            y: 30,
+          }}
+          animate={{
+            opacity: 1,
+            y: 0,
+          }}
+          transition={{
+            duration: 0.7,
+          }}
+          className="
+            relative
+            grid
+            w-full
+            max-w-6xl
+            overflow-hidden
+            rounded-[40px]
+            border
+            border-black/10
+            bg-white/70
+            backdrop-blur-2xl
+            lg:grid-cols-2
+          "
+        >
+          {/* LEFT */}
+          <div
+            className="
+              relative
+              hidden
+              flex-col
+              justify-between
+              overflow-hidden
+              border-r
+              border-white/10
+              bg-black
+              p-14
+              text-white
+              lg:flex
+            "
           >
-            <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-cyan-500 mb-2">
-              {isSignUp ? 'Create Account' : 'Welcome Back'}
-            </h1>
-            <p className="">
-              {isSignUp
-                ? 'Join us and start your creative journey'
-                : 'Sign in to access your dashboard'
-              }
-            </p>
-          </motion.div>
+            <div>
+              <h1
+                className="
+                  text-sm
+                  font-medium
+                  uppercase
+                  tracking-[0.4em]
+                  text-white/60
+                "
+              >
+                ZENNVID
+              </h1>
+            </div>
 
-          {/* Social Login Buttons */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.15 }}
-            className="mb-8"
+            <div className="max-w-lg">
+              <h2
+                className="
+                  text-6xl
+                  font-semibold
+                  leading-[0.95]
+                  tracking-[-0.05em]
+                "
+              >
+                Create cinematic AI videos.
+              </h2>
+
+              <p
+                className="
+                  mt-6
+                  text-lg
+                  leading-relaxed
+                  text-white/60
+                "
+              >
+                Generate premium AI visuals,
+                cinematic edits, and modern
+                storytelling workflows.
+              </p>
+            </div>
+
+            <div
+              className="
+                flex
+                items-center
+                gap-3
+                text-sm
+                text-white/40
+              "
+            >
+              <div className="h-2 w-2 rounded-full bg-white" />
+              Trusted by modern creators
+            </div>
+
+            <div
+              className="
+                absolute
+                bottom-[-20%]
+                left-1/2
+                h-[400px]
+                w-[400px]
+                -translate-x-1/2
+                rounded-full
+                bg-white/10
+                blur-3xl
+              "
+            />
+          </div>
+
+          {/* RIGHT */}
+          <div
+            className="
+              flex
+              flex-col
+              justify-center
+              px-8
+              py-16
+              sm:px-14
+            "
           >
-            <div className="flex items-center justify-center gap-4 flex-wrap">
-              {socialProviders.map((provider, index) => (
-                <motion.button
-                  key={provider.name}
-                  type="button"
-                  onClick={() => handleSocialLogin(provider.name)}
-                  disabled={!provider.enabled || isLoading}
-                  whileHover={provider.enabled && !isLoading ? { scale: 1.05 } : {}}
-                  whileTap={provider.enabled && !isLoading ? { scale: 0.95 } : {}}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: 0.2 + index * 0.1 }}
-                  className={`dark:border-white border-black p-3 rounded-xl  dark:text-white text-black flex items-center justify-center hover:shadow-lg ${provider.hoverColor} transition-all group relative overflow-hidden ${provider.enabled && !isLoading
-                    ? 'cursor-pointer'
-                    : 'cursor-not-allowed opacity-50'
-                    }`}
-                  aria-label={`Sign ${isSignUp ? 'up' : 'in'} with ${provider.name}`}
-                >
-                  <motion.div
+            {/* HEADING */}
+            <div className="mb-10">
+              <motion.h1
+                layout
+                className="
+                  text-5xl
+                  font-semibold
+                  tracking-[-0.05em]
+                  text-black
+                "
+              >
+                {isSignUp
+                  ? "Create account"
+                  : "Welcome back"}
+              </motion.h1>
 
-                    transition={{ duration: 0.6 }}
+              <p
+                className="
+                  mt-4
+                  max-w-md
+                  text-base
+                  leading-relaxed
+                  text-black/50
+                "
+              >
+                {isSignUp
+                  ? "Start creating cinematic AI content in minutes."
+                  : "Continue building with Zennvid."}
+              </p>
+            </div>
+
+            {/* SOCIAL */}
+            <div className="mb-8">
+              {socialProviders.map(
+                (provider) => (
+                  <motion.button
+                    key={provider.name}
+                    type="button"
+                    onClick={() =>
+                      handleSocialLogin(
+                        provider.name
+                      )
+                    }
+                    disabled={
+                      !provider.enabled ||
+                      isLoading
+                    }
+                    whileHover={{
+                      scale: 1.01,
+                    }}
+                    whileTap={{
+                      scale: 0.98,
+                    }}
+                    className="
+                      flex
+                      h-14
+                      w-full
+                      items-center
+                      justify-center
+                      gap-3
+                      rounded-2xl
+                      border
+                      border-black/10
+                      bg-white
+                      text-sm
+                      font-medium
+                      text-black
+                      transition-all
+                      duration-300
+                      hover:border-black
+                      hover:bg-black
+                      hover:text-white
+                    "
                   >
-                    <div className="flex items-center w-full h-full">
-                      <provider.icon className="w-5 h-5" />
-                      <h1 className="ml-2">Login with {provider.name}</h1>
+                    <provider.icon className="h-5 w-5" />
+
+                    Continue with Google
+                  </motion.button>
+                )
+              )}
+
+              <div className="my-8 flex items-center">
+                <div className="h-px flex-1 bg-black/10" />
+
+                <span className="px-4 text-sm text-black/40">
+                  or continue with email
+                </span>
+
+                <div className="h-px flex-1 bg-black/10" />
+              </div>
+            </div>
+
+            {/* FORM */}
+            <form
+              onSubmit={handleSubmit}
+              className="space-y-5"
+            >
+              {/* EMAIL SIGNUP */}
+              <AnimatePresence>
+                {isSignUp && (
+                  <motion.div
+                    initial={{
+                      opacity: 0,
+                      height: 0,
+                    }}
+                    animate={{
+                      opacity: 1,
+                      height: "auto",
+                    }}
+                    exit={{
+                      opacity: 0,
+                      height: 0,
+                    }}
+                  >
+                    <div className="relative">
+                      <Mail
+                        className="
+                          absolute
+                          left-4
+                          top-1/2
+                          h-5
+                          w-5
+                          -translate-y-1/2
+                          text-black/30
+                        "
+                      />
+
+                      <input
+                        type="email"
+                        name="email"
+                        placeholder="Email address"
+                        value={formData.email}
+                        onChange={
+                          handleInputChange
+                        }
+                        disabled={isLoading}
+                        className={inputClass}
+                      />
                     </div>
                   </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* USERNAME */}
+              <AnimatePresence>
+                {isSignUp && (
                   <motion.div
-                    className="absolute inset-0  rounded-xl"
-                    initial={{ scale: 0, opacity: 0 }}
-                    whileHover={provider.enabled && !isLoading ? { scale: 1, opacity: 1 } : {}}
-                    transition={{ duration: 0.3 }}
-                  />
-                </motion.button>
-              ))}
-            </div>
+                    initial={{
+                      opacity: 0,
+                      height: 0,
+                    }}
+                    animate={{
+                      opacity: 1,
+                      height: "auto",
+                    }}
+                    exit={{
+                      opacity: 0,
+                      height: 0,
+                    }}
+                  >
+                    <div className="relative">
+                      <User
+                        className="
+                          absolute
+                          left-4
+                          top-1/2
+                          h-5
+                          w-5
+                          -translate-y-1/2
+                          text-black/30
+                        "
+                      />
 
-            <div className="flex items-center my-6">
-              <div className="flex-1 h-px bg-gray-600"></div>
-              <span className="px-4  text-sm">or continue with</span>
-              <div className="flex-1 h-px bg-gray-600"></div>
-            </div>
-          </motion.div>
+                      <input
+                        type="text"
+                        name="username"
+                        placeholder="Username"
+                        value={formData.username}
+                        onChange={
+                          handleInputChange
+                        }
+                        disabled={isLoading}
+                        className={inputClass}
+                      />
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Email Field for Sign Up */}
-            <AnimatePresence mode="wait">
-              {isSignUp && (
-                <motion.div
-                  key="email"
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <div className="relative">
-                    <Mail className={`absolute left-3 top-1/2 transform -translate-y-1/2  w-5 h-5 ${errors.email ? iconErrorClass : ""}`} />
-                    <input
-                      type="email"
-                      name="email"
-                      placeholder="Email address"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      disabled={isLoading}
-                      className={`w-full pl-10 pr-4 py-3  border rounded-xl   focus:outline-none focus:ring-2 transition-all ${errors.email
-                        ? 'border-red-500 focus:ring-red-500/20'
-                        : 'border-gray-600 focus:ring-purple-500/20 focus:border-purple-500'
-                        } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    />
-                    {errors.email && (
-                      <motion.p
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="text-red-400 text-sm mt-1"
-                      >
-                        {errors.email}
-                      </motion.p>
-                    )}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            {/* Username Field for Sign Up */}
-            <AnimatePresence mode="wait">
-              {isSignUp && (
-                <motion.div
-                  key="username-signup"
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <div className="relative">
-                    <User className={`absolute left-3 top-1/2 transform -translate-y-1/2  w-5 h-5 ${errors.username ? iconErrorClass : ""}`} />
-                    <input
-                      type="text"
-                      name="username"
-                      placeholder="Username"
-                      value={formData.username}
-                      onChange={handleInputChange}
-                      disabled={isLoading}
-                      className={`w-full pl-10 pr-4 py-3  border rounded-xl   focus:outline-none focus:ring-2 transition-all ${errors.username
-                        ? 'border-red-500 focus:ring-red-500/20'
-                        : 'border-gray-600 focus:ring-purple-500/20 focus:border-purple-500'
-                        } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    />
-                    {errors.username && (
-                      <motion.p
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="text-red-400 text-sm mt-1"
-                      >
-                        {errors.username}
-                      </motion.p>
-                    )}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            {/* Email/Username Field for Sign In */}
-            <AnimatePresence mode="wait">
+              {/* LOGIN EMAIL */}
               {!isSignUp && (
-                <motion.div
-                  key="signin-email"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <div className="relative">
-                    <Mail className={`absolute left-3 top-1/2 transform -translate-y-1/2  w-5 h-5 ${errors.email ? iconErrorClass : ""}`} />
-                    <input
-                      type="email"
-                      name="emailOrUsername"
-                      placeholder="Email address"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      disabled={isLoading}
-                      className={`w-full pl-10 pr-4 py-3  border rounded-xl  focus:outline-none focus:ring-2 transition-all ${errors.email
-                        ? 'border-red-500 focus:ring-red-500/20'
-                        : 'border-gray-600 focus:ring-purple-500/20 focus:border-purple-500'
-                        } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    />
-                    {errors.email && (
-                      <motion.p
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="text-red-400 text-sm mt-1"
-                      >
-                        {errors.email}
-                      </motion.p>
-                    )}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                <div className="relative">
+                  <Mail
+                    className="
+                      absolute
+                      left-4
+                      top-1/2
+                      h-5
+                      w-5
+                      -translate-y-1/2
+                      text-black/30
+                    "
+                  />
 
-            {/* Password Field */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-            >
+                  <input
+                    type="email"
+                    name="emailOrUsername"
+                    placeholder="Email address"
+                    value={formData.email}
+                    onChange={
+                      handleInputChange
+                    }
+                    disabled={isLoading}
+                    className={inputClass}
+                  />
+                </div>
+              )}
+
+              {/* PASSWORD */}
               <div className="relative">
-                <Lock className={`absolute left-3 top-1/2 transform -translate-y-1/2  w-5 h-5 ${errors.password ? iconErrorClass : ""}`} />
+                <Lock
+                  className="
+                    absolute
+                    left-4
+                    top-1/2
+                    h-5
+                    w-5
+                    -translate-y-1/2
+                    text-black/30
+                  "
+                />
+
                 <input
-                  type={showPassword ? "text" : "password"}
+                  type={
+                    showPassword
+                      ? "text"
+                      : "password"
+                  }
                   name="password"
                   placeholder="Password"
                   value={formData.password}
-                  onChange={handleInputChange}
+                  onChange={
+                    handleInputChange
+                  }
                   disabled={isLoading}
-                  className={`w-full pl-10 pr-12 py-3  border rounded-xl   focus:outline-none focus:ring-2 transition-all ${errors.password
-                    ? 'border-red-500 focus:ring-red-500/20'
-                    : 'border-gray-600 focus:ring-purple-500/20 focus:border-purple-500'
-                    } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  className={inputClass}
                 />
-                <motion.button
+
+                <button
                   type="button"
-                  onClick={togglePasswordVisibility}
-                  disabled={isLoading}
-                  whileHover={!isLoading ? { scale: 1.1 } : {}}
-                  whileTap={!isLoading ? { scale: 0.9 } : {}}
-                  className={`absolute right-3 top-1/2 transform -translate-y-1/2  hover:text-white transition-colors ${isLoading ? 'cursor-not-allowed' : 'cursor-pointer'
-                    }`}
-                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  onClick={() =>
+                    setShowPassword(
+                      !showPassword
+                    )
+                  }
+                  className="
+                    absolute
+                    right-4
+                    top-1/2
+                    -translate-y-1/2
+                    text-black/30
+                    hover:text-black
+                  "
                 >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                </motion.button>
-                {errors.password && (
-                  <motion.p
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="text-red-400 text-sm mt-1"
-                  >
-                    {errors.password}
-                  </motion.p>
-                )}
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
+                </button>
               </div>
-            </motion.div>
 
-            {/* Confirm Password Field for Sign Up */}
-            <AnimatePresence mode="wait">
-              {isSignUp && (
-                <motion.div
-                  key="confirmPassword"
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <div className="relative">
-                    <Lock className={`absolute left-3 top-1/2 transform -translate-y-1/2  w-5 h-5 ${errors.confirmPassword ? iconErrorClass : ""}`} />
-                    <input
-                      type={showConfirmPassword ? "text" : "password"}
-                      name="confirmPassword"
-                      placeholder="Confirm Password"
-                      value={formData.confirmPassword}
-                      onChange={handleInputChange}
-                      disabled={isLoading}
-                      className={`w-full pl-10 pr-12 py-3  border rounded-xl   focus:outline-none focus:ring-2 transition-all ${errors.confirmPassword
-                        ? 'border-red-500 focus:ring-red-500/20'
-                        : 'border-gray-600 focus:ring-purple-500/20 focus:border-purple-500'
-                        } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    />
-                    <motion.button
-                      type="button"
-                      onClick={toggleConfirmPasswordVisibility}
-                      disabled={isLoading}
-                      whileHover={!isLoading ? { scale: 1.1 } : {}}
-                      whileTap={!isLoading ? { scale: 0.9 } : {}}
-                      className={`absolute right-3 top-1/2 transform -translate-y-1/2  hover:text-white transition-colors ${isLoading ? 'cursor-not-allowed' : 'cursor-pointer'
-                        }`}
-                      aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
-                    >
-                      {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                    </motion.button>
-                    {errors.confirmPassword && (
-                      <motion.p
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="text-red-400 text-sm mt-1"
-                      >
-                        {errors.confirmPassword}
-                      </motion.p>
-                    )}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            {/* General Error Message */}
-            {errors.general && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="text-red-400 text-sm text-center bg-red-500/10 border border-red-500/20 rounded-lg p-3"
-              >
-                {errors.general}
-              </motion.div>
-            )}
-
-            {/* Submit Button */}
-            <motion.button
-              type="submit"
-              disabled={isLoading}
-              whileHover={!isLoading ? { scale: 1.02 } : {}}
-              whileTap={!isLoading ? { scale: 0.98 } : {}}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-              className={`w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-cyan-600  font-medium flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-purple-500/20 transition-all group ${isLoading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
-                }`}
-              aria-label={isSignUp ? 'Create new account' : 'Sign in to account'}
-            >
-              {isLoading ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
-                  {isSignUp ? 'Creating Account...' : 'Signing In...'}
-                </>
-              ) : (
-                <>
-                  {isSignUp ? 'Create Account' : 'Sign In'}
+              {/* CONFIRM PASSWORD */}
+              <AnimatePresence>
+                {isSignUp && (
                   <motion.div
-                    className="group-hover:translate-x-1 transition-transform"
-                    whileHover={{ x: 3 }}
-                  >
-                    <ArrowRight className="w-4 h-4" />
-                  </motion.div>
-                </>
-              )}
-            </motion.button>
-          </form>
-
-          {/* Switch Mode */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.5 }}
-            className="text-center mt-6"
-          >
-            <p className="">
-              {isSignUp ? 'Already have an account?' : "Don't have an account?"}
-              <motion.button
-                type="button"
-                onClick={switchMode}
-                disabled={isLoading}
-                whileHover={!isLoading ? { scale: 1.05 } : {}}
-                whileTap={!isLoading ? { scale: 0.95 } : {}}
-                className={`font-medium ml-2 transition-colors ${isLoading
-                  ? 'text-gray-500 cursor-not-allowed'
-                  : 'text-purple-400 hover:text-purple-300 cursor-pointer'
-                  }`}
-                aria-label={isSignUp ? 'Switch to sign in' : 'Switch to sign up'}
-              >
-                {isSignUp ? 'Sign In' : 'Sign Up'}
-              </motion.button>
-            </p>
-          </motion.div>
-
-          {/* dialog for otp */}
-          <Dialog open={openotp} >
-            <DialogOverlay className="fixed inset-0 bg-black/50 backdrop-blur-sm" />
-            <DialogContent className="fixed left-1/2 top-1/2 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-lg bg-white p-6 shadow-lg dark:bg-gray-800">
-              <DialogHeader>
-                <DialogTitle className="text-2xl font-bold text-gray-900 dark:text-white">
-                  Verify Your Email
-                </DialogTitle>
-              </DialogHeader>
-
-              <div className="mt-4 text-gray-600 dark:text-gray-300">
-                <p className="mb-3">
-                  We sent a 6-digit code to <span className="font-medium text-gray-900 dark:text-white">{formData.email}</span>
-
-                </p>
-                <p className="mb-3  text-red-500"> It is valid for 10 minutes. </p>
-                <p className="mb-6">Please enter it below to continue.</p>
-
-                <div className="flex justify-center gap-3 mb-6">
-                  <OtpInput setOtp={setotp} otp={otp} length={6} />
-                </div>
-              </div>
-
-              <DialogFooter>
-
-                <DialogClose asChild>
-                  <button
-                    className="rounded-lg bg-blue-600 px-4 py-2  hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 dark:bg-blue-500 dark:hover:bg-blue-600"
-
-                    onClick={async () => {
-                      await checkOtpMutation.mutateAsync(otp);
-                      setopenotp(false);
+                    initial={{
+                      opacity: 0,
+                      height: 0,
+                    }}
+                    animate={{
+                      opacity: 1,
+                      height: "auto",
+                    }}
+                    exit={{
+                      opacity: 0,
+                      height: 0,
                     }}
                   >
-                    Verify
-                  </button>
-                </DialogClose>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        </div>
-      </motion.div>
+                    <div className="relative">
+                      <Lock
+                        className="
+                          absolute
+                          left-4
+                          top-1/2
+                          h-5
+                          w-5
+                          -translate-y-1/2
+                          text-black/30
+                        "
+                      />
+
+                      <input
+                        type={
+                          showConfirmPassword
+                            ? "text"
+                            : "password"
+                        }
+                        name="confirmPassword"
+                        placeholder="Confirm Password"
+                        value={
+                          formData.confirmPassword
+                        }
+                        onChange={
+                          handleInputChange
+                        }
+                        disabled={isLoading}
+                        className={inputClass}
+                      />
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setShowConfirmPassword(
+                            !showConfirmPassword
+                          )
+                        }
+                        className="
+                          absolute
+                          right-4
+                          top-1/2
+                          -translate-y-1/2
+                          text-black/30
+                          hover:text-black
+                        "
+                      >
+                        {showConfirmPassword ? (
+                          <EyeOff className="h-5 w-5" />
+                        ) : (
+                          <Eye className="h-5 w-5" />
+                        )}
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* SUBMIT */}
+              <motion.button
+                type="submit"
+                disabled={isLoading}
+                whileHover={{
+                  scale: 1.01,
+                }}
+                whileTap={{
+                  scale: 0.98,
+                }}
+                className="
+                  group
+                  flex
+                  h-14
+                  w-full
+                  items-center
+                  justify-center
+                  gap-3
+                  rounded-2xl
+                  bg-black
+                  text-sm
+                  font-medium
+                  uppercase
+                  tracking-[0.2em]
+                  text-white
+                  transition-all
+                  duration-300
+                  hover:bg-black/90
+                "
+              >
+                {isLoading ? (
+                  <>
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-white" />
+                    Loading...
+                  </>
+                ) : (
+                  <>
+                    {isSignUp
+                      ? "Create Account"
+                      : "Sign In"}
+
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </>
+                )}
+              </motion.button>
+            </form>
+
+            {/* SWITCH */}
+            <div className="mt-8 text-center">
+              <p className="text-black/50">
+                {isSignUp
+                  ? "Already have an account?"
+                  : "Don't have an account?"}
+
+                <button
+                  type="button"
+                  onClick={switchMode}
+                  className="
+                    ml-2
+                    font-medium
+                    text-black
+                    transition-opacity
+                    hover:opacity-60
+                  "
+                >
+                  {isSignUp
+                    ? "Sign In"
+                    : "Sign Up"}
+                </button>
+              </p>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* OTP DIALOG */}
+      <Dialog open={openotp}>
+        {/* OVERLAY */}
+        <DialogOverlay
+          className="
+      fixed
+      inset-0
+      z-[100]
+      bg-black/50
+      backdrop-blur-xl
+    "
+        />
+
+        {/* DIALOG */}
+        <DialogContent
+          className="
+      z-[101]
+      w-[92vw]
+      max-w-[620px]
+      overflow-hidden
+      rounded-[32px]
+      border
+      border-black/10
+      bg-white
+      p-0
+      shadow-[0_40px_120px_rgba(0,0,0,0.25)]
+    "
+        >
+          {/* TOP LIGHT */}
+          <div
+            className="
+        pointer-events-none
+        absolute
+        inset-x-0
+        top-0
+        h-[180px]
+        bg-gradient-to-b
+        from-black/[0.03]
+        to-transparent
+      "
+          />
+
+          {/* BODY */}
+          <div
+            className="
+        relative
+        overflow-visible
+        sm:px-10
+        sm:py-12
+       
+      "
+          >
+            {/* HEADER */}
+            <DialogHeader className="space-y-5 text-left">
+              {/* ICON */}
+              <div
+                className="
+            flex
+            h-14
+            w-14
+            items-center
+            justify-center
+            rounded-2xl
+            bg-black
+            text-white
+          "
+              >
+                <span className="text-xl font-semibold">
+                  ✦
+                </span>
+              </div>
+
+              {/* TITLE */}
+              <div>
+                <DialogTitle
+                  className="
+              text-4xl
+              font-semibold
+              tracking-[-0.06em]
+              text-black
+            "
+                >
+                  Verify your email
+                </DialogTitle>
+
+                <p
+                  className="
+              mt-4
+              text-base
+              leading-relaxed
+              text-black/50
+            "
+                >
+                  We sent a 6-digit verification code to
+                </p>
+
+                <p
+                  className="
+              mt-2
+              break-all
+              text-sm
+              font-medium
+              text-black
+            "
+                >
+                  {formData.email}
+                </p>
+              </div>
+            </DialogHeader>
+
+            {/* OTP */}
+            <div className="mt-10">
+              <OtpInput
+                setOtp={setotp}
+                otp={otp}
+                length={6}
+              />
+            </div>
+
+            {/* INFO */}
+            <div
+              className="
+          mt-7
+          flex
+          items-center
+          justify-center
+          gap-2
+          text-sm
+          text-black/40
+        "
+            >
+              <div className="h-2 w-2 rounded-full bg-black/30" />
+              Code expires in 10 minutes
+            </div>
+
+            {/* BUTTON */}
+            <DialogFooter className="mt-10 w-full">
+              <DialogClose asChild>
+                <motion.button
+                  whileHover={{
+                    scale: 1.01,
+                  }}
+                  whileTap={{
+                    scale: 0.98,
+                  }}
+                  onClick={async () => {
+                    await checkOtpMutation.mutateAsync(
+                      otp
+                    );
+
+                    setopenotp(false);
+                  }}
+                  className="
+              flex
+              h-14
+              w-full
+              items-center
+              justify-center
+              rounded-2xl
+              bg-black
+              text-sm
+              font-medium
+              uppercase
+              tracking-[0.25em]
+              text-white
+              transition-all
+              duration-300
+              hover:bg-black/90
+            "
+                >
+                  Verify
+                </motion.button>
+              </DialogClose>
+            </DialogFooter>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
