@@ -52,16 +52,16 @@ const Chart = ({
            formatter={(value: any) => [`₹${value}`, "Amount"]}
             labelFormatter={(label) => label}
             contentStyle={{
-              backgroundColor: theme === "dark" ? "#1f1f1f" : "#ffffff",
-              color: theme === "dark" ? "#ffffff" : "#000000",
+              backgroundColor:"#ffffff",
+              color:"#000000",
               borderRadius: "8px",
               border: "none",
             }}
           />)}
           {!isAmount && (<Tooltip
             contentStyle={{
-              backgroundColor: theme === "dark" ? "#1f1f1f" : "#ffffff",
-              color: theme === "dark" ? "#ffffff" : "#000000",
+              backgroundColor:"#ffffff",
+              color: "#000000",
               borderRadius: "8px",
               border: "none",
             }}

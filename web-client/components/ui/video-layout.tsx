@@ -74,8 +74,8 @@ export const VideoLayoutGrid = ({ cards, onDelete, onShare, onDownload, deleting
     <div className="w-full min-h-screen p-6 md:p-10 ml-36">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">Your Video Gallery</h1>
-          <p className="text-gray-600 dark:text-gray-400">
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900  mb-2">Your Video Gallery</h1>
+          <p className="text-gray-600 ">
             {cards.length} video{cards.length !== 1 ? "s" : ""} in your collection
           </p>
         </div>
@@ -89,7 +89,7 @@ export const VideoLayoutGrid = ({ cards, onDelete, onShare, onDownload, deleting
                   "relative overflow-hidden cursor-pointer group",
                   selected?.id === card.id
                     ? "fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 h-1/2 w-1/2 z-50 rounded-2xl"
-                    : "rounded-xl aspect-video bg-gray-100 dark:bg-gray-800",
+                    : "rounded-xl aspect-video bg-gray-100 ",
                 )}
                 layoutId={`card-${card.id}`}
                 transition={{ duration: 0.3, ease: "easeInOut" }}
@@ -199,18 +199,18 @@ const VideoThumbnail = ({ card, onDelete, onShare, onDownload, deletingIds }: Vi
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="absolute top-full right-0 mt-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 min-w-[150px] z-10"
+              className="absolute top-full right-0 mt-2 bg-white  rounded-lg shadow-lg border border-gray-200  py-2 min-w-[150px] z-10"
             >
               <button
                 onClick={(e) => handleMenuAction("download", e)}
-                className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                className="w-full px-4 py-2 text-left text-sm text-gray-700  hover:bg-gray-100  flex items-center gap-2"
               >
                 <Download className="w-4 h-4" />
                 Download
               </button>
               <button
                 onClick={(e) => handleMenuAction("share", e)}
-                className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                className="w-full px-4 py-2 text-left text-sm text-gray-700  hover:bg-gray-100  flex items-center gap-2"
               >
                 <Share2 className="w-4 h-4" />
                 Share
@@ -229,7 +229,7 @@ const VideoThumbnail = ({ card, onDelete, onShare, onDownload, deletingIds }: Vi
                 return (
                   <button
                     onClick={(e) => handleMenuAction("delete", e)}
-                    className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2"
+                    className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50  flex items-center gap-2"
                   >
                     <Trash2 className="w-4 h-4" />
                     Delete

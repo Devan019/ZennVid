@@ -180,14 +180,14 @@ function SpringElement({
       <svg
         width="100vw"
         height="100vh"
-        className="fixed inset-0 w-screen h-screen pointer-events-none z-40 inset-0"
+        className="fixed inset-0 w-screen h-screen pointer-events-none z-40
       >
         <path
           d={path}
           strokeLinecap="round"
           strokeLinejoin="round"
           className={cn(
-            'stroke-2 stroke-neutral-900 dark:stroke-neutral-100 fill-none',
+            'stroke-2 stroke-neutral-900 fill-none',
             springClassName,
           )}
         />

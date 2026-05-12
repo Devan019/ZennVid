@@ -12,11 +12,11 @@ export const FRONTEND_ROUTES = {
 
   /**openapi */
   OPENAPI: "/zennvid/openapi",
-  APPS: "/zennvid/openapi/apps",
-  CAPTION: "/zennvid/openapi/caption-gen",
-  TRANSLATE: "/zennvid/openapi/text-translate",
-  IMAGE: "/zennvid/openapi/image",
-  TEXT_AUDIO: "/zennvid/openapi/audio-gen",
+  APPS: "/zennvid/openapi#apps",
+  CAPTION: "/zennvid/openapi#caption-gen",
+  TRANSLATE: "/zennvid/openapi#text-translate",
+  IMAGE: "/zennvid/openapi#image",
+  TEXT_AUDIO: "/zennvid/openapi#audio-gen",
 
   /**pricing */
   PRICING: "/zennvid/pricing",

@@ -2,15 +2,15 @@
 import Chart from '@/components/admin/Chart';
 import MonthlyChart from '@/components/admin/monthlyChart';
 import { StatsCard } from '@/components/admin/StatCard';
-import {  UserStats } from '@/constants/admin_analisys';
+import { UserStats } from '@/constants/admin_analisys';
 import { ResponseData } from '@/constants/response';
-import {  changeDailyUser,  userStats, } from './api';
+import { changeDailyUser, userStats, } from './api';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import {  ChevronLeft, ChevronRight} from 'lucide-react';
-import React, {  useEffect, useState } from 'react'
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { useEffect, useState } from 'react'
 import { FaGoogle } from 'react-icons/fa';
 import { FaMoneyBillTransfer } from 'react-icons/fa6';
-import {  TbPassword } from 'react-icons/tb';
+import { TbPassword } from 'react-icons/tb';
 import { toast } from 'sonner';
 
 
@@ -67,7 +67,7 @@ const Page = () => {
       <h1 className='pb-4 text-center'>User Stats</h1>
       <div>
         {/** Stats Section - Component 1 */}
-        <div className='border-2 border-gray-300 dark:border-gray-600 rounded-lg p-6 m-4  shadow-sm'>
+        <div className='border-2 border-gray-300  rounded-lg p-6 m-4  shadow-sm'>
           <h2 className='text-xl font-semibold mb-4'>Statistics Overview</h2>
           <div className='flex justify-start items-center gap-4 flex-wrap'>
             <StatsCard
@@ -89,7 +89,7 @@ const Page = () => {
         </div>
 
         {/** Chart Section - Component 2 */}
-        <div className='border-2 border-gray-300 dark:border-gray-600 rounded-lg p-6 m-4  shadow-sm'>
+        <div className='border-2 border-gray-300  rounded-lg p-6 m-4  shadow-sm'>
           <h2 className='text-xl font-semibold mb-4'>User Chart</h2>
           <div className='flex gap-4 mb-4'>
             <button
@@ -141,16 +141,16 @@ const Page = () => {
 
           {isMonthly ? (
             <MonthlyChart
-            isAmount={false}
-             data={chartData} />
+              isAmount={false}
+              data={chartData} />
           ) : (
             <Chart
-            isAmount={false}
-            data={chartData} XAxisKey="_id" />
+              isAmount={false}
+              data={chartData} XAxisKey="_id" />
           )}
         </div>
 
-        
+
       </div>
     </div>
   )

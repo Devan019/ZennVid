@@ -85,8 +85,8 @@ export default function CreateApp() {
       }
 
       const apis = data.DATA.apis ?? data.DATA[0];
-      let tmp:{
-         _id: string; appName: string; created_at: string;
+      let tmp: {
+        _id: string; appName: string; created_at: string;
       }[] = [];
       apis.forEach((api: { apps: any[] }) => {
         tmp = tmp.concat(api.apps);
@@ -138,34 +138,34 @@ export default function CreateApp() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+        <h1 className="text-2xl font-bold text-gray-900  mb-6">
           Create New App
         </h1>
 
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
-          <DialogContent className="max-w-md rounded-2xl shadow-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700">
+          <DialogContent className="max-w-md rounded-2xl shadow-lg bg-white  border border-gray-200 ">
             <DialogHeader>
-              <DialogTitle className="text-xl font-semibold text-gray-900 dark:text-white">
+              <DialogTitle className="text-xl font-semibold text-gray-900 ">
                 App Created Successfully 🎉
               </DialogTitle>
             </DialogHeader>
 
-            <div className="space-y-4 text-gray-700 dark:text-gray-300">
+            <div className="space-y-4 text-gray-700 ">
               <p>
                 Your API key has been securely sent to your email:{" "}
-                <span className="font-medium text-blue-600 dark:text-blue-400">{user?.email}</span>
+                <span className="font-medium text-blue-600 ">{user?.email}</span>
               </p>
 
               {app && (
                 <div className="">
-                  <p className="text-sm text-gray-500 dark:text-gray-400">App Name</p>
-                  <p className="font-medium text-gray-900 dark:text-white">{app.appName}</p>
+                  <p className="text-sm text-gray-500 ">App Name</p>
+                  <p className="font-medium text-gray-900 ">{app.appName}</p>
 
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-3">App ID</p>
-                  <p className="font-mono text-sm text-gray-800 dark:text-gray-200">{app._id}</p>
+                  <p className="text-sm text-gray-500  mt-3">App ID</p>
+                  <p className="font-mono text-sm text-gray-800 ">{app._id}</p>
 
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-3">Created At</p>
-                  <p className="font-medium text-gray-900 dark:text-white">
+                  <p className="text-sm text-gray-500  mt-3">Created At</p>
+                  <p className="font-medium text-gray-900 ">
                     {new Date(app.created_at).toLocaleString()}
                   </p>
                 </div>
@@ -181,14 +181,14 @@ export default function CreateApp() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6"
+            className="bg-white  rounded-lg shadow-lg p-6"
           >
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+            <h3 className="text-lg font-semibold text-gray-900  mb-4">
               Your Apps
             </h3>
 
             {apps.length === 0 ? (
-              <p className="text-gray-500 dark:text-gray-400 text-center py-8">
+              <p className="text-gray-500  text-center py-8">
                 No apps created yet. Generate your first API key to get started!
               </p>
             ) : (
@@ -196,11 +196,11 @@ export default function CreateApp() {
                 {apps.map((app) => (
                   <div
                     key={app._id}
-                    className="p-4 border border-gray-200 dark:border-gray-600 rounded-lg flex justify-between items-center"
+                    className="p-4 border border-gray-200  rounded-lg flex justify-between items-center"
                   >
                     <div className="flex gap-4 items-center">
-                      <h4 className="font-medium text-gray-900 dark:text-white">{app.appName}</h4>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                      <h4 className="font-medium text-gray-900 ">{app.appName}</h4>
+                      <p className="text-sm text-gray-500 ">
                         Created: {new Date(app.created_at).toLocaleDateString()}
                       </p>
                     </div>
@@ -214,18 +214,18 @@ export default function CreateApp() {
                         Email API Key
                       </Button>
 
-                      
+
                     </div>
                   </div>
                 ))}
 
                 {/* Delete Dialog */}
                 <Dialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
-                  <DialogContent className="rounded-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700">
+                  <DialogContent className="rounded-2xl bg-white  border border-gray-200 ">
                     <DialogHeader>
-                      <DialogTitle className="text-gray-900 dark:text-white">Confirm Delete</DialogTitle>
+                      <DialogTitle className="text-gray-900 ">Confirm Delete</DialogTitle>
                     </DialogHeader>
-                    <p className="text-gray-600 dark:text-gray-300">
+                    <p className="text-gray-600 ">
                       Are you sure you want to delete this app? This action cannot be undone.
                     </p>
                     <div className="flex justify-end gap-3 mt-4">
@@ -247,15 +247,15 @@ export default function CreateApp() {
 
                 {/* Update Dialog */}
                 <Dialog open={!!updateId} onOpenChange={() => setUpdateId(null)}>
-                  <DialogContent className="rounded-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700">
+                  <DialogContent className="rounded-2xl bg-white  border border-gray-200 ">
                     <DialogHeader>
-                      <DialogTitle className="text-gray-900 dark:text-white">Update App Name</DialogTitle>
+                      <DialogTitle className="text-gray-900 ">Update App Name</DialogTitle>
                     </DialogHeader>
                     <Input
                       value={newName}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewName(e.target.value)}
                       placeholder="Enter new app name"
-                      className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
+                      className="bg-white  text-gray-900  border-gray-300 "
                     />
                     <div className="flex justify-end gap-3 mt-4">
                       <Button variant="outline" onClick={() => setUpdateId(null)}>

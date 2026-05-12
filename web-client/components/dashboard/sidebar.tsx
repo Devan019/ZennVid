@@ -534,20 +534,7 @@ export function AppSidebar({
           "
         >
           <SidebarMenu className="space-y-2">
-            {/* THEME */}
-            <SidebarMenuItem>
-              <div
-                className="
-                  rounded-2xl
-                  border
-                  border-white/[0.06]
-                  bg-white/[0.03]
-                  p-2
-                "
-              >
-                <ModeToggle />
-              </div>
-            </SidebarMenuItem>
+            
 
             {/* LOGOUT */}
             <SidebarMenuItem>

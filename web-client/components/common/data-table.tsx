@@ -105,10 +105,10 @@ export function DataTable({
           onChange={handleSearchChange}
           className="
             pl-4 pr-10 h-10 rounded-lg 
-            border-gray-300 dark:border-gray-700 
-            bg-white dark:bg-gray-900 
-            text-gray-900 dark:text-gray-200 
-            placeholder-gray-400 dark:placeholder-gray-500 
+            border-gray-300  
+            bg-white  
+            text-gray-900  
+            placeholder-gray-400
             shadow-sm focus:ring-2 focus:ring-blue-500 
             transition-all duration-200
           "
@@ -122,8 +122,8 @@ export function DataTable({
 
       {/* Table Container */}
       <div className="
-        rounded-xl border border-gray-200 dark:border-gray-800 
-        shadow-lg bg-white dark:bg-gray-900 
+        rounded-xl border border-gray-200  
+        shadow-lg bg-white  
         transition-colors duration-200 overflow-hidden
       ">
         <div className="overflow-x-auto">
@@ -133,8 +133,8 @@ export function DataTable({
                 <TableRow
                   key={headerGroup.id}
                   className="
-                    bg-gray-50 dark:bg-gray-800
-                    border-b border-gray-200 dark:border-gray-700
+                    bg-gray-50 
+                    border-b border-gray-200 
                   "
                 >
                   {headerGroup.headers.map((header) => (
@@ -142,7 +142,7 @@ export function DataTable({
                       key={header.id}
                       className="
                         font-semibold 
-                        text-gray-700 dark:text-gray-200 
+                        text-gray-700  
                         text-sm py-4 px-4 
                         whitespace-nowrap
                       "
@@ -150,9 +150,9 @@ export function DataTable({
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
 
                       {datePickerColumns?.includes(header.column.id) && (
                         <div className="mt-2">
@@ -177,13 +177,13 @@ export function DataTable({
                     className={`
                       transition-colors duration-150
                      
-                      ${index % 2 === 0 ? "bg-white dark:bg-gray-950" : "bg-gray-50 dark:bg-gray-900"}
+                      ${index % 2 === 0 ? "bg-white " : "bg-gray-50 "}
                     `}
                   >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell
                         key={cell.id}
-                        className="py-4 px-4 text-gray-700 dark:text-gray-300"
+                        className="py-4 px-4 text-gray-700 "
                       >
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </TableCell>
@@ -196,7 +196,7 @@ export function DataTable({
                     colSpan={columns.length}
                     className="h-32 text-center"
                   >
-                    <div className="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400">
+                    <div className="flex flex-col items-center justify-center text-gray-500 ">
                       <Search className="h-10 w-10 mb-3 opacity-30" />
                       <p className="text-sm font-medium">No results found</p>
                       <p className="text-xs mt-1">Try adjusting your search</p>
@@ -213,27 +213,27 @@ export function DataTable({
           <div className="
             flex flex-col sm:flex-row items-center justify-between 
             gap-4 px-6 py-4 
-            bg-gray-50 dark:bg-gray-800 
-            border-t border-gray-200 dark:border-gray-700
+            bg-gray-50  
+            border-t border-gray-200 
           ">
             {/* Rows per page */}
             <div className="flex items-center space-x-3">
-              <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              <p className="text-sm font-medium text-gray-700 ">
                 Rows per page
               </p>
               <Select
                 value={`${limit}`}
                 onValueChange={(value) => onLimitChange?.(Number(value))}
               >
-                <SelectTrigger className="h-9 w-[75px] rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 shadow-sm">
+                <SelectTrigger className="h-9 w-[75px] rounded-lg border-gray-300  bg-white  text-gray-700  shadow-sm">
                   <SelectValue placeholder={`${limit}`} />
                 </SelectTrigger>
-                <SelectContent className="bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700">
+                <SelectContent className="bg-white  rounded-lg shadow-xl border border-gray-200 ">
                   {[10, 20, 25, 30, 40, 50].map((pageSize) => (
                     <SelectItem
                       key={pageSize}
                       value={`${pageSize}`}
-                      className="cursor-pointer hover:bg-blue-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200"
+                      className="cursor-pointer hover:bg-blue-50  text-gray-700 "
                     >
                       {pageSize}
                     </SelectItem>
@@ -243,8 +243,8 @@ export function DataTable({
             </div>
 
             {/* Page info */}
-            <div className="text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-900 px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
-              Page <span className="font-bold text-blue-600 dark:text-blue-400">{page}</span> of{" "}
+            <div className="text-sm font-medium text-gray-700  bg-white  px-4 py-2 rounded-lg border border-gray-200  shadow-sm">
+              Page <span className="font-bold text-blue-600 ">{page}</span> of{" "}
               <span className="font-bold">{totalPages}</span>
             </div>
 
@@ -253,7 +253,7 @@ export function DataTable({
               <Button
                 variant="outline"
                 size="icon"
-                className="hidden lg:flex h-9 w-9 rounded-lg dark:bg-gray-900"
+                className="hidden lg:flex h-9 w-9 rounded-lg "
                 onClick={() => onPageChange(1)}
                 disabled={page === 1}
               >
@@ -263,7 +263,7 @@ export function DataTable({
               <Button
                 variant="outline"
                 size="icon"
-                className="h-9 w-9 rounded-lg dark:bg-gray-900"
+                className="h-9 w-9 rounded-lg "
                 onClick={() => onPageChange(Number(page) - 1)}
                 disabled={page === 1}
               >
@@ -273,7 +273,7 @@ export function DataTable({
               <Button
                 variant="outline"
                 size="icon"
-                className="h-9 w-9 rounded-lg dark:bg-gray-900"
+                className="h-9 w-9 rounded-lg "
                 onClick={() => onPageChange(Number(page) + 1)}
                 disabled={page === totalPages}
               >
@@ -283,7 +283,7 @@ export function DataTable({
               <Button
                 variant="outline"
                 size="icon"
-                className="hidden lg:flex h-9 w-9 rounded-lg dark:bg-gray-900"
+                className="hidden lg:flex h-9 w-9 rounded-lg "
                 onClick={() => onPageChange(totalPages ?? 1)}
                 disabled={page === totalPages}
               >

@@ -78,15 +78,6 @@ export const createAnimation = (
         animation-name: reveal-light;
       }
 
-      ::view-transition-old(root),
-      .dark::view-transition-old(root) {
-        animation: none;
-        z-index: -1;
-      }
-      .dark::view-transition-new(root) {
-        animation-name: reveal-dark;
-      }
-
       @keyframes reveal-dark {
         from {
           clip-path: polygon(50% -71%, -50% 71%, -50% 71%, 50% -71%);
@@ -118,15 +109,6 @@ export const createAnimation = (
             
       ::view-transition-new(root) {
         animation-name: reveal-light;
-      }
-
-      ::view-transition-old(root),
-      .dark::view-transition-old(root) {
-        animation: none;
-        z-index: -1;
-      }
-      .dark::view-transition-new(root) {
-        animation-name: reveal-dark;
       }
 
       @keyframes reveal-dark {
@@ -162,10 +144,6 @@ export const createAnimation = (
   animation: scale 3s;
 }
 
-::view-transition-old(root),
-.dark::view-transition-old(root) {
-  animation: scale 3s;
-}
 
 @keyframes scale {
   0% {
@@ -195,12 +173,6 @@ export const createAnimation = (
         mask-origin: content-box;
         animation: scale-${start} 1s;
         transform-origin: ${transformOrigin};
-      }
-      ::view-transition-old(root),
-      .dark::view-transition-old(root) {
-        animation: scale-${start} 1s;
-        transform-origin: ${transformOrigin};
-        z-index: -1;
       }
       @keyframes scale-${start} {
         to {

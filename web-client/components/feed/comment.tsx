@@ -1,125 +1,466 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { X, Send } from "lucide-react"
-import { IFeed } from "./video-card"
-import { useMutation } from "@tanstack/react-query"
-import { feedComment } from "@/lib/apiProvider"
-import { useUser } from "@/context/UserProvider"
-import { ResponseData } from "@/constants/response"
-import { toast } from "sonner"
-import { getTimeSince } from "@/lib/calculateTime"
+import { useState } from "react";
 
+import {
+  motion,
+  AnimatePresence,
+} from "framer-motion";
+
+import {
+  X,
+  Send,
+} from "lucide-react";
+
+import { useMutation } from "@tanstack/react-query";
+
+import { toast } from "sonner";
+
+import { feedComment } from "@/lib/apiProvider";
+
+import { useUser } from "@/context/UserProvider";
+
+import { ResponseData } from "@/constants/response";
+
+import { getTimeSince } from "@/lib/calculateTime";
+
+import { IFeed } from "./video-card";
 
 interface CommentPanelProps {
-  feed: IFeed
-  onClose: () => void
+  feed: IFeed;
+  onClose: () => void;
 }
 
-export function CommentPanel({ feed, onClose }: CommentPanelProps) {
-  const [newComment, setNewComment] = useState("")
-  const [comments, setComments] = useState(feed.comments)
-  const { user } = useUser()
+export function CommentPanel({
+  feed,
+  onClose,
+}: CommentPanelProps) {
+  const [newComment, setNewComment] =
+    useState("");
 
-  const commentMutation = useMutation({
-    mutationKey: ["addComment"],
-    mutationFn: async () => {
-      return await feedComment({ feedId: feed._id, userId: user?._id ?? "", content: newComment });
-    },
-    onSuccess: (data: ResponseData) => {
-      if (data.SUCCESS) {
-        const addedComment = data.DATA;
-        setComments((prevComments) => [...prevComments, addedComment]);
-        setNewComment("");
-        toast.success(data.MESSAGE || "Comment added successfully");
-      }else{
-        toast.error(data.MESSAGE || "Failed to add comment");
-      }
-    },
-    onError: () => {
-      toast.error("An error occurred while adding the comment");
-    }
-  })
+  const [comments, setComments] =
+    useState(feed.comments);
+
+  const { user } = useUser();
+
+  const commentMutation =
+    useMutation({
+      mutationKey: [
+        "addComment",
+      ],
+
+      mutationFn:
+        async () => {
+          return await feedComment(
+            {
+              feedId:
+                feed._id,
+
+              userId:
+                user?._id ?? "",
+
+              content:
+                newComment,
+            }
+          );
+        },
+
+      onSuccess: (
+        data: ResponseData
+      ) => {
+        if (data.SUCCESS) {
+          const addedComment =
+            data.DATA;
+
+          setComments(
+            (
+              prevComments
+            ) => [
+              ...prevComments,
+              addedComment,
+            ]
+          );
+
+          setNewComment("");
+
+          toast.success(
+            data.MESSAGE ||
+              "Comment added successfully"
+          );
+        } else {
+          toast.error(
+            data.MESSAGE ||
+              "Failed to add comment"
+          );
+        }
+      },
+
+      onError: () => {
+        toast.error(
+          "An error occurred while adding the comment"
+        );
+      },
+    });
 
   const handleAddComment = () => {
+    if (!newComment.trim())
+      return;
+
     commentMutation.mutate();
-  }
+  };
 
   return (
-    <motion.div
-      initial={{ x: 400, opacity: 0 }}
-      animate={{ x: 0, opacity: 1 }}
-      exit={{ x: 400, opacity: 0 }}
-      transition={{ type: "spring", stiffness: 300, damping: 30 }}
-      className="fixed inset-y-0 right-0 w-full md:w-96 bg-background border-l border-border z-50 flex flex-col"
-    >
-      {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-border">
-        <div>
-          <h3 className="font-semibold text-foreground">Comments</h3>
-          <p className="text-xs text-muted-foreground">{comments?.length} comments</p>
-        </div>
-        <motion.button
-          onClick={onClose}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          className="p-1 hover:bg-accent/10 rounded-lg transition-colors"
+    <AnimatePresence>
+      <motion.div
+        initial={{
+          opacity: 0,
+        }}
+        animate={{
+          opacity: 1,
+        }}
+        exit={{
+          opacity: 0,
+        }}
+        transition={{
+          duration: 0.2,
+        }}
+        onClick={onClose}
+        className="
+          fixed
+          inset-0
+          z-[999999]
+          bg-black/60
+          backdrop-blur-sm
+        "
+      >
+        {/* PANEL */}
+        <motion.div
+          initial={{
+            x: 500,
+          }}
+          animate={{
+            x: 0,
+          }}
+          exit={{
+            x: 500,
+          }}
+          transition={{
+            type: "spring",
+            stiffness: 260,
+            damping: 28,
+          }}
+          onClick={(e) =>
+            e.stopPropagation()
+          }
+          className="
+            absolute
+            right-0
+            top-0
+            z-[1000000]
+            flex
+            h-full
+            w-full
+            flex-col
+            overflow-hidden
+            border-l
+            border-black/10
+            bg-[#F4F1EA]
+            shadow-2xl
+
+            md:max-w-[430px]
+          "
         >
-          <X className="w-5 h-5" />
-        </motion.button>
-      </div>
-
-      {/* Comments List */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        <AnimatePresence>
-          {comments.map((comment, idx) => (
-            <motion.div
-              key={comment._id}
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 10 }}
-              transition={{ delay: idx * 0.05 }}
-              className="flex gap-3"
-            >
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-accent to-accent/50 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
-                {comment?.user?.username?.charAt(0)?.toUpperCase()}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-semibold text-foreground truncate">{comment?.user?.username}</span>
-                  <span className="text-xs text-muted-foreground whitespace-nowrap">{getTimeSince(new Date(comment?.createdAt))} </span>
-                </div>
-                <p className="text-sm text-foreground/80 mt-1 break-words">{comment?.content}</p>
-               
-              </div>
-            </motion.div>
-          ))}
-        </AnimatePresence>
-      </div>
-
-      {/* Comment Input */}
-      <div className="p-4 border-t border-border bg-background/50 backdrop-blur-sm">
-        <div className="flex gap-2">
-          <input
-            type="text"
-            placeholder="Add a comment..."
-            value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
-            onKeyPress={(e) => e.key === "Enter" && handleAddComment()}
-            className="flex-1 px-3 py-2 bg-background border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent text-foreground placeholder:text-muted-foreground"
-          />
-          <motion.button
-            onClick={handleAddComment}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            disabled={!newComment.trim()}
-            className="p-2 bg-accent text-accent-foreground rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+          {/* HEADER */}
+          <div
+            className="
+              sticky
+              top-0
+              z-20
+              flex
+              items-center
+              justify-between
+              border-b
+              border-black/10
+              bg-[#F4F1EA]/95
+              px-5
+              py-5
+              backdrop-blur-xl
+            "
           >
-            <Send className="w-4 h-4" />
-          </motion.button>
-        </div>
-      </div>
-    </motion.div>
-  )
+            <div>
+              <h2
+                className="
+                  text-xl
+                  font-semibold
+                  tracking-tight
+                  text-black
+                "
+              >
+                Comments
+              </h2>
+
+              <p
+                className="
+                  mt-1
+                  text-sm
+                  text-black/50
+                "
+              >
+                {
+                  comments?.length
+                }{" "}
+                comments
+              </p>
+            </div>
+
+            {/* CLOSE */}
+            <motion.button
+              type="button"
+              onClick={(e) => {
+                console.log("click on close")
+                e.stopPropagation();
+                onClose();
+              }}
+              whileHover={{
+                scale: 1.05,
+              }}
+              whileTap={{
+                scale: 0.95,
+              }}
+              className="
+                flex
+                h-11
+                w-11
+                items-center
+                justify-center
+                rounded-2xl
+                border
+                border-black/10
+                bg-white
+                text-black
+                shadow-sm
+                transition-all
+                hover:bg-black
+                hover:text-white
+              "
+            >
+              <X className="h-5 w-5" />
+            </motion.button>
+          </div>
+
+          {/* COMMENTS */}
+          <div
+            className="
+              flex-1
+              overflow-y-auto
+              px-5
+              py-5
+            "
+          >
+            <div className="space-y-4">
+              {comments.map(
+                (
+                  comment,
+                  idx
+                ) => (
+                  <motion.div
+                    key={
+                      comment._id
+                    }
+                    initial={{
+                      opacity: 0,
+                      y: 15,
+                    }}
+                    animate={{
+                      opacity: 1,
+                      y: 0,
+                    }}
+                    transition={{
+                      delay:
+                        idx * 0.03,
+                    }}
+                    className="
+                      rounded-3xl
+                      border
+                      border-black/10
+                      bg-white
+                      p-4
+                      shadow-sm
+                    "
+                  >
+                    <div className="flex gap-3">
+                      {/* AVATAR */}
+                      <div
+                        className="
+                          flex
+                          h-10
+                          w-10
+                          flex-shrink-0
+                          items-center
+                          justify-center
+                          rounded-full
+                          bg-black
+                          text-sm
+                          font-semibold
+                          uppercase
+                          text-white
+                        "
+                      >
+                        {comment?.user?.username
+                          ?.charAt(0)
+                          ?.toUpperCase()}
+                      </div>
+
+                      {/* CONTENT */}
+                      <div className="min-w-0 flex-1">
+                        <div
+                          className="
+                            flex
+                            items-center
+                            gap-2
+                          "
+                        >
+                          <span
+                            className="
+                              truncate
+                              text-sm
+                              font-semibold
+                              text-black
+                            "
+                          >
+                            {
+                              comment
+                                ?.user
+                                ?.username
+                            }
+                          </span>
+
+                          <span
+                            className="
+                              text-xs
+                              text-black/40
+                            "
+                          >
+                            {getTimeSince(
+                              new Date(
+                                comment?.createdAt
+                              )
+                            )}
+                          </span>
+                        </div>
+
+                        <p
+                          className="
+                            mt-2
+                            break-words
+                            text-sm
+                            leading-6
+                            text-black/70
+                          "
+                        >
+                          {
+                            comment?.content
+                          }
+                        </p>
+                      </div>
+                    </div>
+                  </motion.div>
+                )
+              )}
+            </div>
+          </div>
+
+          {/* INPUT */}
+          <div
+            className="
+              border-t
+              border-black/10
+              bg-[#F4F1EA]
+              p-5
+            "
+          >
+            <div
+              className="
+                flex
+                items-center
+                gap-3
+              "
+            >
+              <input
+                type="text"
+                placeholder="Write a comment..."
+                value={
+                  newComment
+                }
+                onChange={(e) =>
+                  setNewComment(
+                    e.target.value
+                  )
+                }
+                onKeyDown={(e) => {
+                  if (
+                    e.key ===
+                    "Enter"
+                  ) {
+                    handleAddComment();
+                  }
+                }}
+                className="
+                  h-14
+                  flex-1
+                  rounded-2xl
+                  border
+                  border-black/10
+                  bg-white
+                  px-5
+                  text-sm
+                  text-black
+                  outline-none
+                  transition-all
+
+                  placeholder:text-black/40
+
+                  focus:border-black/20
+                  focus:ring-2
+                  focus:ring-black/5
+                "
+              />
+
+              <motion.button
+                type="button"
+                onClick={
+                  handleAddComment
+                }
+                whileHover={{
+                  scale: 1.04,
+                }}
+                whileTap={{
+                  scale: 0.95,
+                }}
+                disabled={
+                  !newComment.trim()
+                }
+                className="
+                  flex
+                  h-14
+                  w-14
+                  items-center
+                  justify-center
+                  rounded-2xl
+                  bg-black
+                  text-white
+                  transition-all
+
+                  hover:opacity-90
+                  disabled:opacity-40
+                "
+              >
+                <Send className="h-5 w-5" />
+              </motion.button>
+            </div>
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
 }

@@ -15,7 +15,7 @@ export default function ApiKeyGenerator({ onGenerate }: ApiKeyGeneratorProps) {
 
   const handleGenerate = async () => {
     if (!appname.trim()) return;
-    
+
     setLoading(true);
     try {
       const result = await onGenerate(appname);
@@ -36,15 +36,15 @@ export default function ApiKeyGenerator({ onGenerate }: ApiKeyGeneratorProps) {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6"
+      className="bg-white  rounded-lg shadow-lg p-6"
     >
-      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+      <h3 className="text-lg font-semibold text-gray-900  mb-4">
         Generate API Key
       </h3>
-      
+
       <div className="space-y-4">
         <div>
-          <label htmlFor="appname" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label htmlFor="appname" className="block text-sm font-medium text-gray-700  mb-2">
             App name
           </label>
           <input
@@ -53,7 +53,7 @@ export default function ApiKeyGenerator({ onGenerate }: ApiKeyGeneratorProps) {
             value={appname}
             onChange={(e) => setAppname(e.target.value)}
             placeholder="Enter your app name"
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
+            className="w-full px-3 py-2 border border-gray-300  rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500  "
           />
         </div>
 

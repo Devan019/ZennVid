@@ -12,9 +12,9 @@ import {
 } from "@/components/ui/popover"
 import { useState } from "react"
 
-export function DatePicker({date , setDate}: {
+export function DatePicker({ date, setDate }: {
   date: Date | undefined,
-  setDate:(date: Date | undefined) => void
+  setDate: (date: Date | undefined) => void
 }) {
   const [open, setOpen] = useState(false)
 
@@ -33,7 +33,7 @@ export function DatePicker({date , setDate}: {
               <ChevronDownIcon />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-auto overflow-hidden p-0 z-[99] bg-white dark:bg-zinc-900" align="start">
+          <PopoverContent className="w-auto overflow-hidden p-0 z-[99] bg-white " align="start">
             <Calendar
               mode="single"
               selected={date}

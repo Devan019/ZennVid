@@ -55,15 +55,14 @@ const TerminalLoader = ({ completed, setCompleted, isVideoLoading, steps, progre
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className={`rounded-lg overflow-hidden shadow-xl border ${resolvedTheme === "dark"
-          ? "border-gray-700 bg-zinc-900 text-zinc-100"
-          : "border-gray-200 bg-white text-zinc-900"
-          }`}
+        className={`rounded-lg overflow-hidden shadow-xl border 
+          border-gray-200 bg-white text-zinc-900
+          `}
       >
         {/* Terminal header */}
         <div
-          className={`flex items-center px-4 py-3 ${resolvedTheme === "dark" ? "bg-gray-800" : "bg-gray-100"
-            }`}
+          className={`flex items-center px-4 py-3 bg-gray-100
+            `}
         >
           <div className="flex space-x-2 mr-4">
             <div className="w-3 h-3 rounded-full bg-red-500"></div>
@@ -79,20 +78,20 @@ const TerminalLoader = ({ completed, setCompleted, isVideoLoading, steps, progre
         <div className="p-4 font-mono text-sm">
           <div className="mb-4">
             <div className="flex items-center">
-              <span className={resolvedTheme === "dark" ? "text-fuchsia-300" : "text-violet-600"}>$</span>
+              <span className={"text-violet-600"}>$</span>
               <span className="ml-2">Starting video generation pipeline...</span>
             </div>
-            <div className={`mt-3 rounded-md border border-dashed px-3 py-2 text-xs opacity-90 ${resolvedTheme === "dark" ? "border-cyan-400" : "border-sky-500"}`}>
+            <div className={`mt-3 rounded-md border border-dashed px-3 py-2 text-xs opacity-90 border-sky-500}`}>
               <div className="flex items-center justify-between gap-3">
                 <span>{currentStage || "Waiting for the first update..."}</span>
                 <span>{progressPercent}%</span>
               </div>
-              <div className="mt-2 h-2 overflow-hidden rounded-full bg-black/10 dark:bg-white/10">
+              <div className="mt-2 h-2 overflow-hidden rounded-full bg-black/10 /10">
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${Math.min(Math.max(progressPercent, 0), 100)}%` }}
                   transition={{ duration: 0.3, ease: "easeOut" }}
-                  className={`h-full rounded-full ${resolvedTheme === "dark" ? "bg-cyan-300" : "bg-sky-500"}`}
+                  className={`h-full rounded-full bg-sky-500`}
                 />
               </div>
             </div>
@@ -133,7 +132,7 @@ const TerminalLoader = ({ completed, setCompleted, isVideoLoading, steps, progre
                         repeat: Infinity,
                         ease: "easeInOut",
                       }}
-                      className={`w-4 h-4 rounded-full ${resolvedTheme === "dark" ? "bg-cyan-300" : "bg-sky-500"}`}
+                      className={`w-4 h-4 rounded-full bg-sky-500`}
                     />
                   )}
                 </div>
@@ -147,7 +146,7 @@ const TerminalLoader = ({ completed, setCompleted, isVideoLoading, steps, progre
                     )}
                   </div>
                   {!progress[step.id as keyof typeof progress] && (
-                    <div className={`h-1 mt-2 rounded-full ${resolvedTheme === "dark" ? "bg-cyan-300/40" : "bg-sky-500/40"}`} />
+                    <div className={`h-1 mt-2 rounded-full bg-sky-500/40`} />
                   )}
                 </div>
               </div>
@@ -156,14 +155,13 @@ const TerminalLoader = ({ completed, setCompleted, isVideoLoading, steps, progre
 
           {/* Terminal output */}
           <div
-            className={`mt-6 min-h-[150px] p-3 rounded ${resolvedTheme === "dark" ? "bg-gray-900" : "bg-gray-50"
-              }`}
+            className={`mt-6 min-h-[150px] p-3 rounded bg-gray-50`}
           >
             {terminalLines.map((line, index) => (
               <div key={index} className="mb-1">
                 {line.startsWith("$") ? (
                   <>
-                    <span className={resolvedTheme === "dark" ? "text-fuchsia-300" : "text-violet-600"}>$</span>
+                    <span className={"text-violet-600"}>$</span>
                     <span className="ml-2">{line.substring(2)}</span>
                   </>
                 ) : line.startsWith("✓") ? (
@@ -178,7 +176,7 @@ const TerminalLoader = ({ completed, setCompleted, isVideoLoading, steps, progre
             ))}
             {!completed && isVideoLoading && (
               <div className="flex items-center">
-                <span className={resolvedTheme === "dark" ? "text-fuchsia-300" : "text-violet-600"}>$</span>
+                <span className={"text-violet-600"}>$</span>
                 <motion.span
                   animate={{ opacity: [0, 1, 0] }}
                   transition={{
@@ -186,7 +184,7 @@ const TerminalLoader = ({ completed, setCompleted, isVideoLoading, steps, progre
                     repeat: Infinity,
                     ease: "easeInOut",
                   }}
-                  className={`ml-2 inline-block h-4 w-2 ${resolvedTheme === "dark" ? "bg-zinc-100" : "bg-zinc-800"}`}
+                  className={`ml-2 inline-block h-4 w-2 bg-zinc-800`}
                 />
               </div>
             )}
@@ -199,7 +197,7 @@ const TerminalLoader = ({ completed, setCompleted, isVideoLoading, steps, progre
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
-                className={`mt-6 p-4 rounded-lg text-center ${resolvedTheme === "dark" ? "bg-emerald-400 text-black" : "bg-emerald-500 text-white"}`}
+                className={`mt-6 p-4 rounded-lg text-center bg-emerald-500 text-white`}
               >
                 <div className="flex flex-col items-center justify-center">
                   <div className="flex items-center">

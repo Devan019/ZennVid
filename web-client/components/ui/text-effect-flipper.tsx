@@ -15,7 +15,7 @@ const FlipLink: React.FC<FlipLinkProps> = ({ children, href, className }) => {
   return (
     <Link
       href={href}
-      className={`relative block overflow-hidden whitespace-nowrap font-semibold  dark:text-white/90  ${className} w-auto`}
+      className={`relative block overflow-hidden whitespace-nowrap font-semibold  /90  ${className} w-auto`}
     >
       <div>
         {children.split("").map((l, i) => (

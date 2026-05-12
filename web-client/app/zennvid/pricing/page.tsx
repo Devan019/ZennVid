@@ -6,7 +6,7 @@ import React from 'react'
 const page = () => {
   return (
     <div className='min-h-screen relative  h-dvh'>
-      <div className='relative  w-full z-10 dark:bg-[#040305] bg-white'>
+      <div className='relative  w-full z-10  bg-white'>
         <Navigation />
         <PricingComponent />
       </div>

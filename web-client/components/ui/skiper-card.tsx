@@ -61,17 +61,17 @@ function FeatureCard({
     >
       <div
         className={cn(
-          "group relative w-full overflow-hidden rounded-3xl border border-black/10  bg-gradient-to-b from-neutral-200/90 to-stone-200 transition duration-300 dark:from-neutral-950/90 dark:to-neutral-800/90",
+          "group relative w-full overflow-hidden rounded-3xl border border-black/10  bg-gradient-to-b from-neutral-200/90 to-stone-200 transition duration-300",
           "md:hover:border-transparent",
           bgClass
         )}
       >
         <div className="m-10 min-h-[550px] w-full">
           <div className="flex w-4/6 flex-col gap-3">
-            <h2 className="text-xl font-bold tracking-tight text-black dark:text-white  md:text-2xl">
+            <h2 className="text-xl font-bold tracking-tight text-black   md:text-2xl">
               {title}
             </h2>
-            <p className="text-sm leading-5 text-neutral-800 dark:text-white/80 sm:text-base sm:leading-5">
+            <p className="text-sm leading-5 text-neutral-800 /80 sm:text-base sm:leading-5">
               <Balancer>{description}</Balancer>
             </p>
           </div>
@@ -98,7 +98,7 @@ export function SkiperCard({
   step2img1Class?: string
   step2img2Class?: string
   step3imgClass?: string
-  step4imgClass?:string,
+  step4imgClass?: string,
   image?: {
     step1dark1?: StaticImageData
     step1dark2?: StaticImageData
@@ -129,7 +129,7 @@ export function SkiperCard({
         >
           <Image
             alt={image.alt || "Step 4"}
-            className="pointer-events-none top-1/2 w-[90%] overflow-hidden rounded-2xl border border-neutral-100/10 transition-all duration-500 dark:border-zinc-700 md:left-[35px] md:top-[30%] md:w-full"
+            className="pointer-events-none top-1/2 w-[90%] overflow-hidden rounded-2xl border border-neutral-100/10 transition-all duration-500  md:left-[35px] md:top-[30%] md:w-full"
             src={image.step4light}
             width={800}
             height={300}
@@ -231,14 +231,14 @@ export function SkiperCard({
 
         {/* Steps indicator */}
         <div className="absolute left-48 top-5 z-50 size-full cursor-pointer md:left-0">
-          <Steps 
-            current={step} 
-            onChange={() => {}} 
+          <Steps
+            current={step}
+            onChange={() => { }}
             steps={steps.length > 0 ? steps : [
               { id: "1", name: "Enter prompt" },
               { id: "2", name: "AI generates" },
               { id: "3", name: "Download" }
-            ]} 
+            ]}
           />
         </div>
       </>
@@ -302,15 +302,15 @@ export function Steps({ steps, current, onChange }: StepsProps) {
                     className={cn(
                       "flex shrink-0 items-center justify-center rounded-full duration-300",
                       isCompleted &&
-                        "bg-brand-400 dark:bg-brand-400 size-4 text-white",
+                      "bg-brand-400  size-4 text-white",
                       isCurrent &&
-                        "bg-brand-300/80 size-4 p-2 text-neutral-400 dark:bg-neutral-500/50",
+                      "bg-brand-300/80 size-4 p-2 text-neutral-400 ",
                       isFuture &&
-                        "bg-brand-300/10 size-4 p-2 dark:bg-neutral-500/20"
+                      "bg-brand-300/10 size-4 p-2 "
                     )}
                   >
                     {isCompleted ? (
-                      <IconCheck className="size-3 stroke-white stroke-[3] text-white dark:stroke-black" />
+                      <IconCheck className="size-3 stroke-white stroke-[3] text-white " />
                     ) : (
                       <span
                         className={cn(
@@ -325,7 +325,7 @@ export function Steps({ steps, current, onChange }: StepsProps) {
                   <span
                     className={cn(
                       "text-sm font-medium duration-300",
-                      isCompleted && "text-brand-400 dark:text-brand-500",
+                      isCompleted && "text-brand-400 ",
                       isFuture && "text-neutral-500"
                     )}
                   >

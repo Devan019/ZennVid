@@ -65,7 +65,7 @@ const Page = () => {
       <h1 className='pb-4 text-center'>Developer Stats</h1>
       <div>
         {/** Stats Section - Component 1 */}
-        <div className='border-2 border-gray-300 dark:border-gray-600 rounded-lg p-6 m-4  shadow-sm'>
+        <div className='border-2 border-gray-300  rounded-lg p-6 m-4  shadow-sm'>
           <h2 className='text-xl font-semibold mb-4'>Statistics Overview</h2>
           <div className='flex justify-start items-center gap-4 flex-wrap'>
             <StatsCard
@@ -87,7 +87,7 @@ const Page = () => {
         </div>
 
         {/** Chart Section - Component 2 */}
-        <div className='border-2 border-gray-300 dark:border-gray-600 rounded-lg p-6 m-4  shadow-sm'>
+        <div className='border-2 border-gray-300  rounded-lg p-6 m-4  shadow-sm'>
           <h2 className='text-xl font-semibold mb-4'>Developer Chart</h2>
           <div className='flex gap-4 mb-4'>
             <button

@@ -2,7 +2,7 @@ import React from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog'
 
 const Modal = (
-  {title, isOpen, onClose, children} : {
+  { title, isOpen, onClose, children }: {
     title: string,
     isOpen: boolean,
     onClose: () => void,
@@ -11,8 +11,8 @@ const Modal = (
 ) => {
   return (
     <div>
-      <Dialog  open={isOpen} onOpenChange={onClose}>
-        <DialogContent className='sm:w-[500px] w-[90%] bg-white dark:bg-black'>
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent className='sm:w-[500px] w-[90%] bg-white '>
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>
           </DialogHeader>

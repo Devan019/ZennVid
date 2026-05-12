@@ -1,32 +1,81 @@
+import { ThemeProvider } from "@/components/ui/theme-provider";
 
-import { AppSidebar } from '@/components/dashboard/sidebar'
-import { SidebarProvider } from '@/components/ui/sidebar'
-import { ThemeProvider } from '@/components/ui/theme-provider'
-import { FRONTEND_ROUTES } from '@/constants/frontend_routes'
-import { QueryClientProviderWrapper } from '@/context/queryProvider'
-import React from 'react'
+import { QueryClientProviderWrapper } from "@/context/queryProvider";
 
-const layout = ({ children }: {
-  children: React.ReactNode
+import React from "react";
+
+const layout = ({
+  children,
+}: {
+  children: React.ReactNode;
 }) => {
-  const items = [
-    { tooltip: "Home", label: "Home", href: FRONTEND_ROUTES.HOME, icon: "home" },
-  ]
-
   return (
-    <div>
-      <ThemeProvider>
-        <QueryClientProviderWrapper>
-            <SidebarProvider >
-              <AppSidebar menuItems={items} />
-              <div className="relative">{children}</div>
-              <div className="fixed top-1/2 left-1/4 w-64 h-64 bg-purple-200/30 dark:bg-purple-500/10 rounded-full blur-3xl -z-10" />
-              <div className="fixed bottom-1/4 right-1/4 w-96 h-96 bg-pink-200/30 dark:bg-pink-500/10 rounded-full blur-3xl -z-10" />
-            </SidebarProvider>
-        </QueryClientProviderWrapper>
-      </ThemeProvider>
-    </div>
-  )
-}
+    <ThemeProvider
+      attribute="class"
+      defaultTheme="dark"
+      enableSystem={false}
+    >
+      <QueryClientProviderWrapper>
+        <div
+          className="
+            min-h-screen
+            overflow-hidden
+            bg-[#F4F1EA]
+            text-black
+          "
+        >
+          {/* GLOBAL BG */}
+          <div
+            className="
+              pointer-events-none
+              fixed
+              inset-0
+              overflow-hidden
+            "
+          >
+            {/* GLOW */}
+            <div
+              className="
+                absolute
+                left-[10%]
+                top-[10%]
+                h-[450px]
+                w-[450px]
+                rounded-full
+                bg-black/[0.04]
+                blur-[120px]
+              "
+            />
 
-export default layout
+            <div
+              className="
+                absolute
+                bottom-[0%]
+                right-[10%]
+                h-[450px]
+                w-[450px]
+                rounded-full
+                bg-black/[0.03]
+                blur-[120px]
+              "
+            />
+
+            {/* GRID */}
+            <div className="absolute inset-0 opacity-[0.04]">
+              <div className="absolute left-1/3 top-0 h-full w-px bg-black" />
+              <div className="absolute left-2/3 top-0 h-full w-px bg-black" />
+              <div className="absolute left-0 top-1/3 h-px w-full bg-black" />
+              <div className="absolute left-0 top-2/3 h-px w-full bg-black" />
+            </div>
+          </div>
+
+          <main className="relative z-10">
+            {children}
+          </main>
+        </div>
+      </QueryClientProviderWrapper>
+    </ThemeProvider>
+  );
+};
+
+export default layout;
