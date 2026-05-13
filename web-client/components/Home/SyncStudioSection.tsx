@@ -4,8 +4,11 @@ import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { FaArrowRight } from "react-icons/fa6";
 import { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { FRONTEND_ROUTES } from "@/constants/frontend_routes";
 
 export const SyncStudioSection = () => {
+  const router = useRouter();
   const [isPlaying, setIsPlaying] = useState(false);
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -22,12 +25,9 @@ export const SyncStudioSection = () => {
 
   return (
     <section data-theme="dark" id="syncstudio" className="relative min-h-screen overflow-hidden bg-black px-10 py-40 text-white">
-
       {/* TOP */}
       <div className="mb-20 flex items-center justify-between border-b border-white/10 pb-6 uppercase text-white/40">
-
         <div>02 / Sync Studio</div>
-
         <div>Voice → Expression</div>
       </div>
 
@@ -48,33 +48,26 @@ export const SyncStudioSection = () => {
 
           {/* LABEL */}
           <div className="mb-6 uppercase tracking-[0.3em] text-white/40">
-
             AI Lip Sync Engine
-
           </div>
 
           {/* HEADING */}
           <h2 className="text-[7vw] uppercase leading-[0.9] tracking-tight">
-
             SYNC
             <br />
             STUDIO.
-
           </h2>
 
           {/* DESCRIPTION */}
           <p className="mt-10 max-w-xl text-xl leading-relaxed text-white/60">
-
             Generate realistic AI lip-sync videos
             from images, audio, and text with
             cinematic facial animation, voice cloning,
             emotional motion, and intelligent captions.
-
           </p>
 
           {/* META */}
           <div className="mt-12 flex flex-wrap gap-4 uppercase text-white/40">
-
             {[
               "Voice Clone",
               "Lip Sync",
@@ -99,8 +92,8 @@ export const SyncStudioSection = () => {
 
           {/* CTA */}
           <div className="mt-14 flex items-start">
-
             <button
+              onClick={() => router.push(FRONTEND_ROUTES.SYNCSTUDIO)}
               className="
                 group
                 inline-flex
@@ -252,25 +245,16 @@ export const SyncStudioSection = () => {
 
                   {/* BOTTOM CONTENT */}
                   <div className="absolute bottom-0 left-0 z-10 p-10">
-
                     <div className="mb-3 uppercase tracking-[0.3em] text-white/40">
-
                       Realistic AI Motion
-
                     </div>
-
                     <h3 className="text-[3vw] uppercase tracking-tight text-white">
-
                       Sync Studio
-
                     </h3>
-
                     <p className="mt-2 max-w-md text-white/60">
-
                       Realistic lip-sync powered by
                       voice cloning, emotion matching,
                       and cinematic facial animation.
-
                     </p>
                   </div>
                 </>

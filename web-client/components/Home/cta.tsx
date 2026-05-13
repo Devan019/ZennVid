@@ -1,23 +1,21 @@
 "use client";
 
+import { FRONTEND_ROUTES } from "@/constants/frontend_routes";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 import { FaArrowRight } from "react-icons/fa6";
 
 export const FinalCTASection = () => {
+  const router = useRouter();
   return (
     <section data-theme="dark" id="contact" className="min-h-screen relative overflow-hidden bg-black px-6 py-32 text-white md:px-10">
 
       {/* GRID LINES */}
       <div className="absolute inset-0 opacity-20">
-
         <div className="absolute left-[3%] top-0 h-full w-px border-l border-dashed border-white/20" />
-
         <div className="absolute left-1/2 top-0 h-full w-px border-l border-dashed border-white/20" />
-
         <div className="absolute right-[3%] top-0 h-full w-px border-l border-dashed border-white/20" />
-
         <div className="absolute top-[20%] left-0 h-px w-full border-t border-dashed border-white/20" />
-
         <div className="absolute bottom-[20%] left-0 h-px w-full border-t border-dashed border-white/20" />
       </div>
 
@@ -53,22 +51,16 @@ export const FinalCTASection = () => {
 
           {/* SMALL TEXT */}
           <div className="mb-8 uppercase tracking-[0.3em] text-white/40">
-
             Cinematic AI For Modern Creators
-
           </div>
 
           {/* MAIN HEADING */}
           <h2 className="max-w-6xl text-[5vw] leading-[1.05] tracking-tight text-white">
-
             Turn imagination
             into <span className="text-blue-500">motion</span>.
-
             <br />
-
             Create cinematic AI stories
             with the future of generative video.
-
           </h2>
 
           {/* BUTTONS */}
@@ -76,6 +68,7 @@ export const FinalCTASection = () => {
 
             {/* PRIMARY */}
             <button
+              onClick={ () => router.push(FRONTEND_ROUTES.DASHBOARD) }
               className="
                 group
                 inline-flex
@@ -107,7 +100,7 @@ export const FinalCTASection = () => {
             </button>
 
             {/* SECONDARY */}
-            <button
+            {/* <button
               className="
                 group
                 inline-flex
@@ -131,7 +124,7 @@ export const FinalCTASection = () => {
               "
             >
               <span>Talk To Us</span>
-            </button>
+            </button>  */}
           </div>
         </motion.div>
 
@@ -152,27 +145,20 @@ export const FinalCTASection = () => {
 
             {/* QUOTE */}
             <p className="text-2xl leading-relaxed text-white/90">
-
               “Zennvid feels like the future
               of cinematic storytelling.
               Ideas become motion in seconds.”
-
             </p>
 
             {/* AUTHOR */}
             <div className="mt-10">
-
               <h4 className="text-xl font-semibold text-white">
-
                 Creative AI Studio
-
               </h4>
 
               <p className="mt-2 text-white/40">
-
                 Built for creators, dreamers,
                 and impossible ideas.
-
               </p>
             </div>
           </div>

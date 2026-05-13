@@ -11,17 +11,17 @@ if (!REDIS_URL) {
  * 2. enableReadyCheck should be false for some serverless Redis providers.
  */
 const redisClient = new Redis(REDIS_URL, {
-  maxRetriesPerRequest: null, 
+  maxRetriesPerRequest: null,
   enableReadyCheck: false,
   tls: {
-    rejectUnauthorized: false, 
+    rejectUnauthorized: false,
   },
 });
 
 redisClient.on('connect', () => {
   console.log('✅ Connected to Upstash Redis');
 }).on('error', (err) => {
-  console.error('❌ Redis connection error:', err);
+  console.log('❌ Redis connection error:', err);
 });
 
 export { redisClient };

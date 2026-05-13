@@ -54,20 +54,15 @@ const queueEvents = new QueueEvents(queueName, { connection: redisClient as any 
 //connection Map
 const connections: Map<string, Set<Response>> = new Map();
 
-//listener for job active
-queueEvents.on('active', ({ jobId }) => {
-  console.log(`ACTIVE_EVENT: Job ${jobId} is now active`);
-});
 
 // listen for job progress updates
 queueEvents.on('progress', async ({ data, jobId }) => {
-  console.log(`PROGRESS_EVENT: Received progress update for job ${jobId}:`, data);
 
   //get UserId
   const { userId, status, percent, stage } = data as any;
 
   if (!userId) {
-    console.error(`PROGRESS_EVENT: Missing userId in progress data for job ${jobId}`);
+    console.log(`PROGRESS_EVENT: Missing userId in progress data for job ${jobId}`);
     return;
   }
 
@@ -92,7 +87,6 @@ queueEvents.on('progress', async ({ data, jobId }) => {
 });
 // listen for job completion
 queueEvents.on('completed', async ({ returnvalue, jobId }) => {
-  console.log(`COMPLETED_EVENT: Job ${jobId} completed with return value:`, returnvalue);
   //get UserId
   const { userId } = returnvalue as any;
 
@@ -123,7 +117,6 @@ queueEvents.on('completed', async ({ returnvalue, jobId }) => {
 });
 // listen for job failures
 queueEvents.on('failed', async ({ failedReason, jobId }) => {
-  console.log(`FAILED_EVENT: Job ${jobId} failed with reason:`, failedReason);
 
   const job = await Job.fromId(videoQueue, jobId);
 
@@ -131,7 +124,7 @@ queueEvents.on('failed', async ({ failedReason, jobId }) => {
   const { userId } = job?.data as any;
 
   if (!userId) {
-    console.error(`FAILED_EVENT: Missing userId in failed reason for job ${jobId}`);
+    console.log(`FAILED_EVENT: Missing userId in failed reason for job ${jobId}`);
     return;
   }
 
@@ -155,7 +148,6 @@ JobRouter.get("/:jobid", async (req: Request, res: Response) => {
   }
 
   const jobId = Array.isArray(jobid) ? jobid[0] : jobid; // Handle case where jobid might be an array
-  console.log(`Received SSE connection request for job: ${jobId}`);
 
   //new conection for the JOB
   res.writeHead(200, {
@@ -176,11 +168,9 @@ JobRouter.get("/:jobid", async (req: Request, res: Response) => {
   //add current res to the set of connections for the jobid
   connections.get(jobId)?.add(res);
 
-  console.log(`job ${jobId} connected to SSE for job updates`);
   // Clean up when the user closes the tab or job finishes
   req.on('close', () => {
     //close the connection and remove from the connections map
-    console.log(`SSE connection closed for job: ${jobId}`);
     const jobConnections = connections.get(jobId);
     if (jobConnections) {
       //delete the current res from the set of connections for the jobid

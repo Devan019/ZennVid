@@ -20,16 +20,13 @@ const createAnimeIndex = async () => {
         },
       });
 
-      console.log(`Index "${indexName}" created.`);
     }
 
-    console.log("Starting embedding upload...");
 
     // 2. embeddings
     for (const character of animeData) {
       const { id, name, anime, image, description, genre, type } = character;
 
-      console.log("Processing:", name);
 
       const emb = await getLocalImageEmbedding(image, "Anime");
 
@@ -57,15 +54,13 @@ const createAnimeIndex = async () => {
         ],
       });
 
-      console.log("Inserted:", name);
       
     }
 
-    console.log("All anime characters inserted successfully.");
     return true;
 
   } catch (error) {
-    console.error("Error creating Pinecone index:", error);
+    console.log("Error creating Pinecone index:", error);
     return false;
   }
 };

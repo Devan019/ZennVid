@@ -62,7 +62,6 @@ export const addSubtitles = async ({
         )
         .outputOptions(["-c:a copy"])
         .save(outputPath)
-        .on("start", (cmd) => console.log("FFmpeg command:\n", cmd))
         .on("stderr", (line) => console.log("FFmpeg:", line))
         .on("end", () => resolve())
         .on("error", reject);

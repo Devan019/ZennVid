@@ -38,14 +38,12 @@ const inProgressVideoCache = async (userId: string, job: any) => {
     await pipeline.exec();
     return true;
   } catch (error) {
-    console.log("Error caching in progress video:", error);
     return false;
   }
 
 }
 
 export const magicVideoCreationService = async (req: Request, res: Response, next: NextFunction) => {
-  console.log("inside the magic video gen")
   try {
 
     const { title, style, voiceGender, voiceLanguage, seconds, language } = videogeneraterZodValidation.parse(req.body);
@@ -79,7 +77,6 @@ export const magicVideoCreationService = async (req: Request, res: Response, nex
       return formatResponse(res, 500, "Failed to add job to queue", false, null);
     }
 
-    console.log('Magic video generation job added to queue with ID:', job.id);
 
     //add job to redis with userId
     if (!job.id) {
@@ -105,6 +102,8 @@ export const syncStudioCreationVideo = async (req: Request, res: Response, next:
   let imagePath: string = "";
   let audioPath: string = "";
   try {
+    //first validate the input
+    const { description, character, title, style, language } = lipSyncZodValidation.parse(req.body);
 
     if (!req.files || !(req.files as any).image || !(req.files as any).audio) {
       cleanupUploadedFiles(req.files);
@@ -136,7 +135,6 @@ export const syncStudioCreationVideo = async (req: Request, res: Response, next:
       return formatResponse(res, 500, "Audio upload failed", false, null);
     }
 
-    const { description, character, title, style, language } = lipSyncZodValidation.parse(req.body);
 
 
     //add to queue

@@ -14,7 +14,7 @@ export const Translater = expressAsyncHandler(async (req: Request, res: Response
   try {
 
     const user = req.user;
-    if(user.credits < 10) {
+    if (user.credits < 10) {
       return formatResponse(res, 400, "Not enough credits", false);
     }
 
@@ -37,8 +37,8 @@ export const Translater = expressAsyncHandler(async (req: Request, res: Response
     // await redisClient.del(`zennvid:dashboard:${req.user.id}`);
     return formatResponse(res, 200, "Translation succesfully", true, { result: doTranslate });
   } catch (error) {
-    console.error("error found", error);
-    return formatResponse(res, 500, "Internal server problem", false, {error});
+    console.log("error found", error);
+    return formatResponse(res, 500, "Internal server problem", false, { error });
   }
 })
 
@@ -50,7 +50,7 @@ export const Languages = expressAsyncHandler(async (req: Request, res: Response)
     // await redisClient.del(`zennvid:dashboard:${req.user.id}`);
     return formatResponse(res, 200, "Languages fetched succesfully", true, { Languages: languages });
   } catch (error) {
-    console.error("error found", error);
+    console.log("error found", error);
     return formatResponse(res, 500, "Internal server problem", false, error);
   }
 })
@@ -58,7 +58,7 @@ export const Languages = expressAsyncHandler(async (req: Request, res: Response)
 export const GenAudio = expressAsyncHandler(async (req: Request, res: Response) => {
   try {
     const user = req.user;
-    if(user.credits < 10) {
+    if (user.credits < 10) {
       return formatResponse(res, 400, "Not enough credits", false);
     }
     const { voice, text } = AudioGenSchema.parse(req.body);
@@ -84,7 +84,7 @@ export const GenAudio = expressAsyncHandler(async (req: Request, res: Response) 
 
 export const GetVoices = expressAsyncHandler(async (req: Request, res: Response) => {
   try {
-    
+
     await OpenApi.findOneAndUpdate({ "apps.appName": req.headers["x-app-name"] }, {
       $inc: { apiCalls: 1 }
     });
@@ -100,7 +100,7 @@ export const GenCaptions = expressAsyncHandler(async (req: Request, res: Respons
 
   try {
     const user = req.user;
-    if(user.credits < 10) {
+    if (user.credits < 10) {
       return formatResponse(res, 400, "Not enough credits", false);
     }
     const { audio, language } = CaptionGenSchema.parse(req.body);

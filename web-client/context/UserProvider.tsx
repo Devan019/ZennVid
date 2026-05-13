@@ -53,7 +53,7 @@ export const UserProvider = ({ children }: {
     setError(null);
     const { data } = await UserQuery.refetch();
     if (!data.SUCCESS) {
-      toast.error(data.MESSAGE);
+      // toast.error(data.MESSAGE);
       setIsLoading(false);
       return;
     }
@@ -99,7 +99,7 @@ export const UserProvider = ({ children }: {
     },
     onSuccess: (data: any) => {
       if (!data.SUCCESS) {
-        toast.error(data.MESSAGE);
+        // toast.error(data.MESSAGE);
         return;
       }
       setUser(null);

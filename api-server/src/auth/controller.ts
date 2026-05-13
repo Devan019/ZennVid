@@ -143,7 +143,6 @@ export const signInUser = expressAsyncHandler(async (req: Request, res: Response
 
 export const getUserFromSession = expressAsyncHandler(async (req: Request, res: Response, next: NextFunction) => {
   try {
-    console.log("Received request to fetch user profile.");
     const token = req.cookies.access_token;
     const response: ISendResponse = await GetUserByTokenService(token);
 

@@ -10,8 +10,8 @@ dotenv.config();
 
 interface Caption {
   id: number;
-  start: number; 
-  end: number;   
+  start: number;
+  end: number;
   text: string;
 }
 
@@ -22,8 +22,8 @@ export const createVideo = async ({
   outputFilename = "output_video.mp4",
 }: {
   captionsJson: string;
-  images: string[]; 
-  audio: string;    
+  images: string[];
+  audio: string;
   outputFilename?: string;
 }) => {
   try {
@@ -65,7 +65,7 @@ export const createVideo = async ({
       srtContent += `${secToSrtTime(c.start)} --> ${secToSrtTime(c.end)}\n`;
       srtContent += `${c.text}\n\n`;
     });
-    
+
     fs.writeFileSync(srtFile, srtContent);
 
     // Video Settings
@@ -164,7 +164,7 @@ export const createVideo = async ({
 
     // console.log("Video created at:", outputPath);
 
-    
+
     //upload to Cloudinary 
     const videoData = await uploadToCloudinary({
       filePath: outputPath,
@@ -350,6 +350,6 @@ export const createVideo = async ({
 //     console.log("Video created successfully:", output);
 //   })
 //   .catch((err) => {
-//     console.error("Error creating video:", err);
+//     console.log("Error creating video:", err);
 //   });
 

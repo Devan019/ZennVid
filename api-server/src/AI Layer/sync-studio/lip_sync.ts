@@ -42,7 +42,6 @@ const lipSync = async ({
     for (let i = 0; i < tokens.length; i++) {
       const currentToken = tokens[i];
       try {
-        console.log(`Trying lip sync with token ${i + 1}/${tokens.length}...`);
 
         const client = await Client.connect(LIP_SYNC_REPO, {
           token: `hf_${currentToken}`
@@ -62,7 +61,6 @@ const lipSync = async ({
           seed: -1,
         });
 
-        console.log(`Success with token ${i + 1}`);
         break; 
 
       } catch (err: any) {
@@ -72,10 +70,8 @@ const lipSync = async ({
           err?.message?.includes('quota');
 
         if (isQuotaError) {
-          console.log(`Token ${i + 1} ZeroGPU quota exceeded.`);
           
           if (i < tokens.length - 1) {
-            console.log(`Switching to token ${i + 2}...`);
             continue;
           } else {
             console.log("All HF tokens exhausted their ZeroGPU quota.");

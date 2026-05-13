@@ -19,10 +19,10 @@ import {
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import CreateApp from "@/components/openapi/CreateApp";
-import CaptionGeneratorPage from "@/components/openapi/CaptionGenerator";
-import TextTranslatorPage from "@/components/openapi/TextTranslator";
-import TextToAudioPage from "@/components/openapi/TextToAudio";
+import CreateApp from "./components/CreateApp";
+import CaptionGeneratorPage from "./components/CaptionGenerator";
+import TextTranslatorPage from "./components/TextTranslator";
+import TextToAudioPage from "./components/TextToAudio";
 
 type OpenApiTab =
   | "dashboard"
@@ -958,41 +958,41 @@ export default function OpenApiPage() {
         {/* PAGE HERO */}
         {activeTab !==
           "dashboard" && (
-          <motion.div
-            initial={{
-              opacity: 0,
-              y: 30,
-            }}
-            animate={{
-              opacity: 1,
-              y: 0,
-            }}
-            transition={{
-              duration: 0.7,
-            }}
-            className="
+            <motion.div
+              initial={{
+                opacity: 0,
+                y: 30,
+              }}
+              animate={{
+                opacity: 1,
+                y: 0,
+              }}
+              transition={{
+                duration: 0.7,
+              }}
+              className="
               mb-10
               border-b
               border-black/10
               pb-10
             "
-          >
-            <div
-              className="
+            >
+              <div
+                className="
                 mb-5
                 text-[11px]
                 uppercase
                 tracking-[0.35em]
                 text-black/40
               "
-            >
-              {
-                pageMeta.eyebrow
-              }
-            </div>
+              >
+                {
+                  pageMeta.eyebrow
+                }
+              </div>
 
-            <h1
-              className="
+              <h1
+                className="
                 text-[12vw]
                 font-medium
                 uppercase
@@ -1002,12 +1002,12 @@ export default function OpenApiPage() {
 
                 md:text-[7vw]
               "
-            >
-              {pageMeta.title}
-            </h1>
+              >
+                {pageMeta.title}
+              </h1>
 
-            <p
-              className="
+              <p
+                className="
                 mt-6
                 max-w-2xl
                 text-base
@@ -1015,13 +1015,13 @@ export default function OpenApiPage() {
                 text-black/60
                 md:text-lg
               "
-            >
-              {
-                pageMeta.description
-              }
-            </p>
-          </motion.div>
-        )}
+              >
+                {
+                  pageMeta.description
+                }
+              </p>
+            </motion.div>
+          )}
 
         {/* CONTENT */}
         <AnimatePresence mode="wait">

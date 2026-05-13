@@ -27,14 +27,14 @@ export const animeMatching = async (req: any, res: any) => {
 
     return formatResponse(res, 200, "Anime matching successful", true, matchAnime);
 
-  } catch (err:any) {
-    console.log(err);
+  } catch (err: any) {
+
     return formatResponse(res, 500, "Anime matching failed", false, null, err.message);
   } finally {
     // Delete file whether success or error
     if (imagePath && fs.existsSync(imagePath)) {
       fs.unlink(imagePath, (err) => {
-        if (err) console.error("File delete error:", err);
+        if (err) console.log("File delete error:", err);
       });
     }
   }

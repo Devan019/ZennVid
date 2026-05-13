@@ -7,7 +7,7 @@ import { User } from "../../../auth/model/User";
 
 export const checkApiKey = async (req: Request, res: Response, next: Function) => {
   try {
-    
+
     const apiHeader = req.headers["authorization"]?.split(" ");
     const apiKey = apiHeader && apiHeader[0] === "Bearer" ? apiHeader[1] : null;
     const appName = req.headers["x-app-name"];
@@ -49,9 +49,9 @@ export const checkApiKey = async (req: Request, res: Response, next: Function) =
     }
     req.user = user;
     return next();
-    
+
   } catch (err) {
-    console.error("Error in checkApiKey middleware:", err);
+    console.log("Error in checkApiKey middleware:", err);
     return formatResponse(res, 500, "Server error", false, err);
   }
 };

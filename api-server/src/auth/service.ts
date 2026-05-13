@@ -56,7 +56,6 @@ export const createTmpUserService = async (
              <p>ZennVid Team</p>`
       })
     } catch (error) {
-      console.log("Failed to send OTP email", error);
       //delete tmp user from redis
       await redisClient.del(`tmp_user_${email}`);
 
@@ -82,7 +81,6 @@ export const createTmpUserService = async (
     };
 
   } catch (error) {
-    console.log(error)
     return {
       status: 500,
       message: "Internal server error",
@@ -110,7 +108,6 @@ export const createUserService = async (user: IUser) => {
       data: { user: newUser }
     }
   } catch (error) {
-    console.log(error)
     return {
       status: 500,
       message: "Internal server error",
@@ -163,7 +160,6 @@ export const signInUserService = async ({ email, password, provider }: { email: 
     };
 
   } catch (error) {
-    console.log(error)
     return {
       status: 500,
       message: "Internal server error",

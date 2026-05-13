@@ -1,6 +1,6 @@
 import { groq } from "./groq_client";
 
-interface Transcript{
+interface Transcript {
   transcript: string,
   segments: {
     id: number,
@@ -12,7 +12,7 @@ interface Transcript{
   language: string
 }
 
-const generateTranscript = async ({audio, language = "en"} : {
+const generateTranscript = async ({ audio, language = "en" }: {
   audio: string,
   language: string
 }) => {
@@ -34,7 +34,7 @@ const generateTranscript = async ({audio, language = "en"} : {
 
     const transcript = transcription as unknown as Transcript;
 
-     return {
+    return {
       transcript: transcript.transcript,
       segments: transcript.segments || [],
       duration: transcript.duration,
@@ -51,7 +51,7 @@ const generateTranscript = async ({audio, language = "en"} : {
 // }).then(transcript => {
 //   console.log("Generated transcript:", transcript);
 // }).catch(error => {
-//   console.error("Error:", error);
+//   console.log("Error:", error);
 // } );
 
 export { generateTranscript };

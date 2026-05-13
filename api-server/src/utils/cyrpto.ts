@@ -17,19 +17,19 @@ async function getAesKey(secret: string) {
  */
 export async function encrypt(plain: string, secret: string) {
   const key = await getAesKey(secret);
-  
+
   // AES-GCM requires a random 12-byte Initialization Vector (IV) for every encryption
-  const ivBuf = crypto.getRandomValues(new Uint8Array(12)); 
-  
+  const ivBuf = crypto.getRandomValues(new Uint8Array(12));
+
   const cipherBuf = await crypto.subtle.encrypt(
-    { name: "AES-GCM", iv: ivBuf }, 
-    key, 
+    { name: "AES-GCM", iv: ivBuf },
+    key,
     te.encode(plain)
   );
 
-  return { 
-    iv: Buffer.from(ivBuf).toString("base64"), 
-    cipher: Buffer.from(cipherBuf).toString("base64") 
+  return {
+    iv: Buffer.from(ivBuf).toString("base64"),
+    cipher: Buffer.from(cipherBuf).toString("base64")
   };
 }
 
@@ -46,14 +46,14 @@ export async function decrypt(payload: { iv: string; cipher: string }, secret: s
   try {
     // If the data was tampered with, or the secret is wrong, this will throw an error.
     const plainBuf = await crypto.subtle.decrypt(
-      { name: "AES-GCM", iv: ivBuf }, 
-      key, 
+      { name: "AES-GCM", iv: ivBuf },
+      key,
       cipherBuf
     );
     return td.decode(plainBuf);
   } catch (error) {
-    console.error("Decryption failed! Data tampered or wrong secret.");
-    return null; 
+    console.log("Decryption failed! Data tampered or wrong secret.");
+    return null;
   }
 }
 

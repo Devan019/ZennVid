@@ -26,7 +26,6 @@ const tmpCreateMagicVideo = async (
 ) => {
   try {
     //simulate simple progress updates for testing sse flow without calling actual video gen functions, will uncomment above code when ready to test full flow
-    console.log("inside in tmp magic video")
 
     //1.wait for 3 sec
     await new Promise(resolve => setTimeout(resolve, 5000));
@@ -76,7 +75,6 @@ const tmpCreateMagicVideo = async (
     }
 
   } catch (error) {
-    console.log("why u r comming ", error)
     return null;
   }
 }
@@ -104,7 +102,6 @@ const createMagicVideo = async (
   }
 ) => {
   try {
-    console.log("Let's go with magic video creation!");
     //1. get script
     //max tries
     const MAX_RETRIES = 5;
@@ -114,7 +111,6 @@ const createMagicVideo = async (
       script = await scriptGen(title, style, seconds, language);
       attempts++;
       if (!script) {
-        console.log("Script generation failed, retrying attempt", attempts);
       } else {
         //sent sse to frontend
 
@@ -124,7 +120,6 @@ const createMagicVideo = async (
           status: "progress",
           userId
         });
-        console.log("\n\n\n\n\nStage 1: cleared - script gen");
         break;
       }
     }
@@ -156,7 +151,6 @@ const createMagicVideo = async (
         text: audioData,
         dest: language
       });
-      console.log("\n\n\n\n\nStage 2.5: cleared - translate");
       //sent sse to frontend
 
       if (!audioData) {
@@ -170,14 +164,12 @@ const createMagicVideo = async (
         userId
       });
     }
-    console.log("\n\n\n\n\nStage 3 prep: cleared - audioGen");
 
     const audio = await audioGen({
       text: audioData,
       voice
     })
 
-    console.log("\n\n\n\n\nStage 3: cleared - audioGen");
     if (!audio) {
       console.log("Audio generation failed, exiting.");
       return null;
@@ -196,7 +188,6 @@ const createMagicVideo = async (
       language: code
     })
 
-    console.log("\n\n\n\n\nStage 4: cleared - caption gen");
     if (!captions || !captions.segments || captions.segments.length === 0) {
       console.log("Caption generation failed, exiting.");
       return null;
@@ -224,7 +215,6 @@ const createMagicVideo = async (
       audio: audio.url
     })
 
-    console.log("\n\n\n\n\nStage 5: cleared - video gen");
     if (!videoData) {
       console.log("Video creation failed, exiting.");
       return null;
@@ -236,7 +226,6 @@ const createMagicVideo = async (
       userId
     });
     // 6. delete temp files (images, audio)
-    console.log("Starting cleanup...");
 
     // Delete Images using Promise.all to wait for all deletions
     if (imagePaths.length > 0) {
@@ -246,12 +235,11 @@ const createMagicVideo = async (
             deleteFromCloudinary({
               publicId: imagePath.publicId,
               resource_type: "image",
-            }).catch(err => console.error(`Failed to delete image ${imagePath.publicId}:`, err))
+            }).catch(err => console.log(`Failed to delete image ${imagePath.publicId}:`, err))
           )
         );
-        console.log("Stage 6: cleared - images deleted");
       } catch (err) {
-        console.error("Non-critical error during image cleanup:", err);
+        console.log("Non-critical error during image cleanup:", err);
       }
     }
 
@@ -262,9 +250,8 @@ const createMagicVideo = async (
           publicId: audio.publicId,
           resource_type: "raw",
         });
-        console.log("Stage 6: cleared - audio deleted");
       } catch (err) {
-        console.error("Non-critical error during audio cleanup:", err);
+        console.log("Non-critical error during audio cleanup:", err);
       }
     }
 
@@ -301,7 +288,6 @@ const syncStudioVideo = async ({
 }) => {
   try {
 
-    console.log("Let's go with sync studio video creation!");
 
     //1. do voice clone
     const voiceCloneResult = await voiceClone(audioPath, text);
@@ -309,7 +295,6 @@ const syncStudioVideo = async ({
       console.log("Voice cloning failed, exiting.");
       return null;
     }
-    console.log("\n\n\n\n\nStage 1: cleared - voice clone");
     await job.updateProgress({
       stage: "voice_cloned",
       percent: 20,
@@ -326,7 +311,6 @@ const syncStudioVideo = async ({
       console.log("Caption generation failed, exiting.");
       return null;
     }
-    console.log("\n\n\n\n\nStage 2: cleared - caption gen");
     await job.updateProgress({
       stage: "caption_generated",
       percent: 40,
@@ -358,7 +342,6 @@ const syncStudioVideo = async ({
       }
       return null;
     }
-    console.log("\n\n\n\n\nStage 3: cleared - lip sync");
     await job.updateProgress({
       stage: "lip_sync_completed",
       percent: 70,
@@ -376,7 +359,6 @@ const syncStudioVideo = async ({
       console.log("Adding subtitles failed, exiting.");
       return null;
     }
-    console.log("\n\n\n\n\nStage 4: cleared - subtitles added");
     await job.updateProgress({
       stage: "subtitles_added",
       percent: 90,
@@ -390,22 +372,15 @@ const syncStudioVideo = async ({
         publicId: voiceCloneResult?.publicId ?? "",
         resource_type: "raw"
       });
-      console.log("Stage 5: cleared - audio deleted");
     } catch (err) {
-      console.error("Non-critical error during cleanup:", err);
+      console.log("Non-critical error during cleanup:", err);
     }
 
     //6. return final video data
     return finalVideo;
 
   } catch (error: any) {
-    console.log("Error in syncStudioVideo:", error);
-    await job.updateProgress({
-      status: "failed",
-      error: error.message || "Unknown error during sync studio video generation",
-      userId
-    });
-    throw error;
+    return null;
   }
 
 }

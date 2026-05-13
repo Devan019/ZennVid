@@ -37,7 +37,7 @@ const voiceClone = async (audio: string, text: string, lang: string = "en") => {
 // voiceClone("https://res.cloudinary.com/dpnae0bod/raw/upload/v1772008247/zennvid/plmawml8ejvpisow7ufc.mp3", "Hello, this is a voice clone test.", "en").then(result => {
 //   console.log("Voice clone result:", result);
 // }).catch(err => {
-//   console.error("Voice clone error:", err);
+//   console.log("Voice clone error:", err);
 // });
 
 export { voiceClone };

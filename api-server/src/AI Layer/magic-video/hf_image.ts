@@ -28,7 +28,7 @@ const HFImageGen = async (prompt: string) => {
       seed: -1,
       use_pe: true,
     });
-  
+
 
     const imageUrl = (result?.data as Array<{ url?: string }> | undefined)?.[0]?.url;
 
@@ -57,7 +57,7 @@ const HFImageGen = async (prompt: string) => {
 //   HFImageGen(testPrompt).then(imageData => {
 //     console.log("Generated image data:", imageData);
 //   }).catch(error => {
-//     console.error("Error generating image:", error);
+//     console.log("Error generating image:", error);
 //   });
 // }
 

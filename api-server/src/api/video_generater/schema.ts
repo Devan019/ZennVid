@@ -11,7 +11,7 @@ export const videogeneraterZodValidation = z.object({
 })
 
 export const lipSyncZodValidation = z.object({
-  description : z.string().min(1, "Description is required"),
+  description : z.string().min(1, "Description is required").max(100, "Description must be less than 100 characters"),
   character : z.string().min(1, "Character is required"),
   style: z.nativeEnum(Styles).default(Styles.Realistic),
   language: z.string().min(1, "Voice Language is required"),

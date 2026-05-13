@@ -164,8 +164,8 @@ export interface VideoStats {
   todayVideos: TodayVideos[];
   topLanguages: TopLanguage[];
   allStyles: VideoStyle[];
-  sadtalkerVideos: VideoTypeCount[];
-  magicVideos: VideoTypeCount[];
+  sadtalkerStudioVideos: VideoTypeCount[];
+  magicStudioVideos: VideoTypeCount[];
   dailyVideo: DailyVideo[];
   monthlyVideo: MonthlyVideo[];
 }

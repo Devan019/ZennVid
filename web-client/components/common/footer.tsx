@@ -13,10 +13,46 @@ import {
   Phone,
   MapPin,
 } from "lucide-react";
+import { FRONTEND_ROUTES } from "@/constants/frontend_routes";
+import Link from "next/link";
 
 export function Footer() {
+  const productItems = [
+    {
+      label: "Magic Studio",
+      href: FRONTEND_ROUTES.MAGICSTUDIO,
+    },
+    {
+      label: "Sync Studio",
+      href: FRONTEND_ROUTES.SYNCSTUDIO,
+    },
+    {
+      label: "Anime Twin",
+      href: FRONTEND_ROUTES.ANIMETWIN,
+    },
+    {
+      label: "Feed",
+      href: FRONTEND_ROUTES.FEED,
+    },
+    {
+      label: "Openapi",
+      href: FRONTEND_ROUTES.OPENAPI,
+    },
+  ];
+
+
+  const companyItems = [
+    {
+      label: "About",
+      href: FRONTEND_ROUTES.About,
+    },
+    {
+      label: "Contact",
+      href: FRONTEND_ROUTES.Contact,
+    },
+  ];
   return (
-    <footer  className="relative min-h-screen overflow-hidden bg-black text-white">
+    <footer className="relative min-h-screen overflow-hidden bg-black text-white">
 
       {/* BACKGROUND GLOW */}
       <div
@@ -36,20 +72,15 @@ export function Footer() {
 
       {/* GRID */}
       <div className="absolute inset-0 opacity-20">
-
         <div className="absolute left-[5%] top-0 h-full w-px border-l border-dashed border-white/10" />
-
         <div className="absolute right-[5%] top-0 h-full w-px border-l border-dashed border-white/10" />
-
         <div className="absolute top-[20%] left-0 h-px w-full border-t border-dashed border-white/10" />
       </div>
 
       {/* CONTENT */}
       <div className="relative z-10 flex min-h-screen flex-col justify-between px-6 py-20 md:px-10">
-
         {/* TOP */}
         <div className="grid grid-cols-1 gap-20 lg:grid-cols-4">
-
           {/* BRAND */}
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -60,24 +91,19 @@ export function Footer() {
           >
 
             <div>
-
               <h2 className="text-3xl font-semibold uppercase tracking-tight">
-
                 Zennvid
-
               </h2>
 
               <p className="mt-6 max-w-sm text-lg leading-relaxed text-white/50">
-
                 Cinematic AI video generation
                 for creators, dreamers,
                 and impossible ideas.
-
               </p>
             </div>
 
             {/* SOCIALS */}
-            <div className="flex gap-4">
+            {/* <div className="flex gap-4">
 
               {[
                 Twitter,
@@ -112,7 +138,7 @@ export function Footer() {
                   <Icon className="h-5 w-5 text-white/70" />
                 </motion.a>
               ))}
-            </div>
+            </div> */}
           </motion.div>
 
           {/* PRODUCT */}
@@ -127,31 +153,22 @@ export function Footer() {
           >
 
             <h3 className="mb-8 text-sm uppercase tracking-[0.3em] text-white/40">
-
               Product
-
             </h3>
 
             <ul className="space-y-5 text-lg text-white/70">
-
-              {[
-                "Magic Studio",
-                "Sync Studio",
-                "Anime Twin",
-                "Feed",
-                "Pricing",
-              ].map((item) => (
-                <li key={item}>
-                  <a
-                    href="#"
+              {productItems.map((item) => (
+                <li key={item.label}>
+                  <Link
+                    href={item.href}
                     className="
-                      transition-all
-                      duration-300
-                      hover:text-white
-                    "
+          transition-all
+          duration-300
+          hover:text-white
+        "
                   >
-                    {item}
-                  </a>
+                    {item.label}
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -169,31 +186,22 @@ export function Footer() {
           >
 
             <h3 className="mb-8 text-sm uppercase tracking-[0.3em] text-white/40">
-
               Company
-
             </h3>
 
             <ul className="space-y-5 text-lg text-white/70">
-
-              {[
-                "About",
-                "Contact",
-                "Instagram",
-                "LinkedIn",
-                "Careers",
-              ].map((item) => (
-                <li key={item}>
-                  <a
-                    href="#"
+              {companyItems.map((item) => (
+                <li key={item.label}>
+                  <Link
+                    href={item.href}
                     className="
-                      transition-all
-                      duration-300
-                      hover:text-white
-                    "
+          transition-all
+          duration-300
+          hover:text-white
+        "
                   >
-                    {item}
-                  </a>
+                    {item.label}
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -214,22 +222,17 @@ export function Footer() {
             <div>
 
               <h3 className="text-sm uppercase tracking-[0.3em] text-white/40">
-
                 Stay Updated
-
               </h3>
 
               <p className="mt-6 text-lg leading-relaxed text-white/50">
-
                 Get updates about AI video,
                 cinematic tools, and future releases.
-
               </p>
             </div>
 
             {/* INPUT */}
             <div className="space-y-4">
-
               <Input
                 placeholder="Enter your email"
                 className="
@@ -286,23 +289,17 @@ export function Footer() {
         >
 
           <div className="flex items-center gap-3">
-
             <Mail className="h-5 w-5" />
-
             <span>devanchauhan012@gmail.com</span>
           </div>
 
           <div className="flex items-center gap-3">
-
             <Phone className="h-5 w-5" />
-
             <span>+91 90232 40018</span>
           </div>
 
           <div className="flex items-center gap-3">
-
             <MapPin className="h-5 w-5" />
-
             <span>Nadiad, Gujarat, India</span>
           </div>
         </motion.div>
@@ -355,13 +352,9 @@ export function Footer() {
         >
 
           <p>© 2026 Zennvid. All rights reserved.</p>
-
           <div className="flex gap-6">
-
             <a href="#">Privacy</a>
-
             <a href="#">Terms</a>
-
             <a href="#">Cookies</a>
           </div>
         </div>

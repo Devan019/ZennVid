@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 export enum VideoType {
-  MAGIC_VIDEO = "magic_video",
+  MAGIC_STUDIO_VIDEO = "magic_studio_video",
   SYNC_STUDIO_VIDEO = "sync_studio_video"
 }
 

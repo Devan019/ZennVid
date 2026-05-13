@@ -46,7 +46,6 @@ export const oauthCallback = expressAsyncHandler(async (req: Request, res: Respo
     //access token and refresh token generation and cookie setting
     return await autoSignInUserService(req, res, exitUser, true);
   } catch (error: any) {
-    console.log(error)
     if (error instanceof Error && error.message.includes('invalid_grant')) {
       return res.redirect("/oauth/login/google")
     }

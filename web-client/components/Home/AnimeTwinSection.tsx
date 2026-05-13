@@ -3,16 +3,17 @@
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { FaArrowRight } from "react-icons/fa6";
+import { useRouter } from "next/navigation";
+import { FRONTEND_ROUTES } from "@/constants/frontend_routes";
 
 export const AnimeTwinSection = () => {
+  const router = useRouter();
   return (
     <section data-theme="light" id="animetwin" className="relative min-h-screen overflow-hidden bg-[#f5f5f2] px-10 py-40 text-black">
 
       {/* TOP */}
       <div className="mb-20 flex items-center justify-between border-b border-black/10 pb-6 uppercase text-black/40">
-
         <div>03 / Anime Twin</div>
-
         <div>Identity → Anime</div>
       </div>
 
@@ -161,28 +162,22 @@ export const AnimeTwinSection = () => {
 
           {/* LABEL */}
           <div className="mb-6 uppercase tracking-[0.3em] text-black/40">
-
             AI Anime Identity Match
-
           </div>
 
           {/* HEADING */}
           <h2 className="text-[7vw] uppercase leading-[0.9] tracking-tight">
-
             ANIME
             <br />
             TWIN.
-
           </h2>
 
           {/* DESCRIPTION */}
           <p className="mt-10 max-w-xl text-xl leading-relaxed text-black/60">
-
             Transform real identities into cinematic
             anime-inspired characters with intelligent
             matching, stylized rendering, expressive
             aesthetics, and visually immersive outputs.
-
           </p>
 
           {/* META */}
@@ -214,6 +209,7 @@ export const AnimeTwinSection = () => {
           <div className="mt-14 flex items-start">
 
             <button
+              onClick={() => router.push(FRONTEND_ROUTES.ANIMETWIN)}
               className="
                 group
                 inline-flex

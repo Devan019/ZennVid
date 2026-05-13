@@ -19,6 +19,7 @@ import {
   MoreVertical,
   Trash2,
   Trash,
+  Upload,
 } from "lucide-react"
 
 export type VideoData = {
@@ -182,59 +183,185 @@ const VideoThumbnail = ({ card, onDelete, onShare, onDownload, deletingIds }: Vi
       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
 
       {/* Menu Button */}
-      <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
-        <div className="relative">
+      <div
+        className="
+    absolute
+    top-3
+    right-3
+    z-[9999]
+    opacity-0
+    transition-opacity
+    group-hover:opacity-100
+  "
+        onClick={(e) =>
+          e.stopPropagation()
+        }
+      >
+        <div className="relative z-[9999]">
           <button
             onClick={(e) => {
-              e.stopPropagation()
-              setShowMenu(!showMenu)
+              e.stopPropagation();
+
+              setShowMenu(
+                !showMenu
+              );
             }}
-            className="bg-black/20 backdrop-blur-sm rounded-full p-2 hover:bg-black/40 transition-colors"
+            className="
+        z-[9999]
+        rounded-full
+        bg-black/20
+        p-2
+        backdrop-blur-sm
+        transition-colors
+        hover:cursor-pointer
+        hover:bg-black/40
+      "
           >
-            <MoreVertical className="w-4 h-4 text-white" />
+            <MoreVertical className="h-4 w-4 text-white" />
           </button>
 
           {/* Dropdown Menu */}
           {showMenu && (
             <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="absolute top-full right-0 mt-2 bg-white  rounded-lg shadow-lg border border-gray-200  py-2 min-w-[150px] z-10"
+              initial={{
+                opacity: 0,
+                scale: 0.95,
+                y: -4,
+              }}
+              animate={{
+                opacity: 1,
+                scale: 1,
+                y: 0,
+              }}
+              transition={{
+                duration: 0.18,
+              }}
+              onClick={(e) =>
+                e.stopPropagation()
+              }
+              className="
+          absolute
+          right-0
+          top-full
+          z-[99999]
+          mt-2
+          min-w-[190px]
+          overflow-hidden
+          rounded-2xl
+          border
+          border-black/10
+          bg-white/95
+          py-2
+          shadow-2xl
+          backdrop-blur-xl
+        "
             >
               <button
-                onClick={(e) => handleMenuAction("download", e)}
-                className="w-full px-4 py-2 text-left text-sm text-gray-700  hover:bg-gray-100  flex items-center gap-2"
+                onClick={(e) =>
+                  handleMenuAction(
+                    "download",
+                    e
+                  )
+                }
+                className="
+            flex
+            w-full
+            items-center
+            gap-3
+            px-4
+            py-3
+            text-left
+            text-sm
+            text-black
+            transition-colors
+            hover:bg-black/5
+          "
               >
-                <Download className="w-4 h-4" />
-                Download
+                <Download className="h-4 w-4" />
+                Download Video
               </button>
+
               <button
-                onClick={(e) => handleMenuAction("share", e)}
-                className="w-full px-4 py-2 text-left text-sm text-gray-700  hover:bg-gray-100  flex items-center gap-2"
+                onClick={(e) =>
+                  handleMenuAction(
+                    "share",
+                    e
+                  )
+                }
+                className="
+            flex
+            w-full
+            items-center
+            gap-3
+            px-4
+            py-3
+            text-left
+            text-sm
+            text-black
+            transition-colors
+            hover:bg-black/5
+          "
               >
-                <Share2 className="w-4 h-4" />
-                Share
+                <Upload className="h-4 w-4" />
+                Upload to Feed
               </button>
+
               {(() => {
-                const isDeleting = deletingIds?.includes(card.id) || deletingIds?.includes(card.content._id as unknown as string)
+                const isDeleting =
+                  deletingIds?.includes(
+                    card.id
+                  ) ||
+                  deletingIds?.includes(
+                    card.content
+                      ._id as unknown as string
+                  );
+
                 if (isDeleting) {
                   return (
-                    <div className="w-full px-4 py-2 text-left text-sm text-gray-500 flex items-center gap-2">
+                    <div
+                      className="
+                  flex
+                  w-full
+                  items-center
+                  gap-3
+                  px-4
+                  py-3
+                  text-sm
+                  text-gray-500
+                "
+                    >
                       <Loader size={18} />
                       Deleting...
                     </div>
-                  )
+                  );
                 }
 
                 return (
                   <button
-                    onClick={(e) => handleMenuAction("delete", e)}
-                    className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50  flex items-center gap-2"
+                    onClick={(e) =>
+                      handleMenuAction(
+                        "delete",
+                        e
+                      )
+                    }
+                    className="
+                flex
+                w-full
+                items-center
+                gap-3
+                px-4
+                py-3
+                text-left
+                text-sm
+                text-red-500
+                transition-colors
+                hover:bg-red-50
+              "
                   >
-                    <Trash2 className="w-4 h-4" />
-                    Delete
+                    <Trash2 className="h-4 w-4" />
+                    Delete Video
                   </button>
-                )
+                );
               })()}
             </motion.div>
           )}
@@ -425,7 +552,7 @@ const SelectedVideoCard = ({ selected, onDelete, onShare, onDownload, deletingId
               onClick={handleShare}
               className="bg-black/50 backdrop-blur-sm rounded-lg p-3 hover:bg-black/70 transition-colors"
             >
-              <Share2 className="w-5 h-5 text-white" />
+              <Upload className="w-5 h-5 text-white" />
             </button>
 
             <button

@@ -35,7 +35,7 @@ const audioGen = async ({
     return url;
   } catch (error) {
     console.log("Audio generation error:", error);
-    return  null;
+    return null;
   }
 };
 
@@ -46,7 +46,7 @@ const audioGen = async ({
 //   }).then(url => {
 //     console.log("Generated audio URL:", url);
 //   }).catch(error => {
-//     console.error("Error generating audio:", error);
+//     console.log("Error generating audio:", error);
 //   });
 // }
 

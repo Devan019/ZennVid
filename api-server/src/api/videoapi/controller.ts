@@ -24,8 +24,6 @@ export const getVideos = expressAsyncHandler(async (req: Request, res: Response)
     const progressVideos = await getJobVideos(id);
     // await redisClient.set(`zennvid:videos:${id}`, JSON.stringify(videos), 'EX', 60*60);
 
-    console.log("Fetched videos for user:", id, "Progress Videos:", progressVideos);
-
     return formatResponse(res, 200, "Videos fetched successfully", true, {
       videos,
       progressVideos
@@ -47,7 +45,6 @@ export const deleteVideo = expressAsyncHandler(async (req: Request, res: Respons
     // await redisClient.del(`zennvid:videos:${id}`)
     return formatResponse(res, 200, "Videos deleted successfully", true);
   } catch (error) {
-    console.log(error);
     return formatResponse(res, 500, "Internal Server Error", false, { error });
   }
 })

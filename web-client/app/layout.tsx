@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { QueryClientProviderWrapper } from "@/context/queryProvider";
 import { Toaster } from "sonner";
-import { ThemeProvider } from "next-themes";
 import { UserProvider } from "@/context/UserProvider";
+import NextTopLoader from "nextjs-toploader";
 // @ts-ignore
 import "./globals.css";
 const geistSans = Geist({
@@ -31,19 +31,17 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeProvider
-          attribute="data-theme"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange={false}
-        >
+        <NextTopLoader
+          color="#6b7280"
+          height={2.5}
+          showSpinner={false}
+        />
           <QueryClientProviderWrapper>
             <UserProvider>
               {children}
             </UserProvider>
           </QueryClientProviderWrapper>
           <Toaster position="top-center" />
-        </ThemeProvider>
       </body>
     </html >
   );

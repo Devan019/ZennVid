@@ -11,21 +11,20 @@ import { deleteFromCloudinary, extractPublicId } from '../utils/cloudinary';
 //helper function to perfoem job of magic video gen
 const performMagicVideoGen = async (job: Job) => {
   try {
-    console.log('Performing magic video generation for job:', job.id, 'with data:', job.data);
 
     const {
       title, code, style, seconds, language, voice, userId
     } = job.data;
 
     if (!title || !code || !style || !seconds || !language || !voice || !userId) {
-      console.error('Missing required data for magic video generation in job:', job.id);
+      console.log('Missing required data for magic video generation in job:', job.id);
       throw new Error('Missing required data for magic video generation');
     }
 
     //check userid exists
     const user = await User.findById(userId);
     if (!user) {
-      console.error('User not found for sync studio video generation in job:', job.id, 'with userId:', userId);
+      console.log('User not found for sync studio video generation in job:', job.id, 'with userId:', userId);
       throw new Error('User not found for sync studio video generation');
     }
 
@@ -55,7 +54,7 @@ const performMagicVideoGen = async (job: Job) => {
         format: data.format,
       },
       user: userId,
-      type: VideoType.MAGIC_VIDEO,
+      type: VideoType.MAGIC_STUDIO_VIDEO,
       title: title,
       style: style,
       language: language,
@@ -71,7 +70,6 @@ const performMagicVideoGen = async (job: Job) => {
       }
     })
 
-    console.log('Magic video generation completed for job:', job.id, 'with result:', data);
     return {
       stage: "video_generated",
       percent: 100,
@@ -104,14 +102,14 @@ const performSyncStudioVideoGen = async (job: Job) => {
     } = job.data;
 
     if (!imageUrl || !audioUrl || !text || !userId || !character || !title || !style || !language || !userId) {
-      console.error('Missing required data for sync studio video generation in job:', job.id);
+      console.log('Missing required data for sync studio video generation in job:', job.id);
       throw new Error('Missing required data for sync studio video generation');
     }
 
     //check userid exists
     const user = await User.findById(userId);
     if (!user) {
-      console.error('User not found for sync studio video generation in job:', job.id, 'with userId:', userId);
+      console.log('User not found for sync studio video generation in job:', job.id, 'with userId:', userId);
       throw new Error('User not found for sync studio video generation');
     }
 
@@ -176,7 +174,7 @@ const performSyncStudioVideoGen = async (job: Job) => {
       videoUrl: data.url
     };
   } catch (error) {
-    console.error('Error in performSyncStudioVideoGen:', error);
+    console.log('Error in performSyncStudioVideoGen:', error);
     return {
       stage: "video_generated",
       percent: 100,
@@ -187,12 +185,70 @@ const performSyncStudioVideoGen = async (job: Job) => {
   }
 }
 
+const tempJob = async (job: Job) => {
+  try {
+    const { userId } = job.data;
+    if (!userId) {
+      throw new Error('Missing userId in job data');
+    }
+
+    //simulate some work
+    const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+    //stage-1 with dealy 2000s
+    await delay(2000);
+    job.updateProgress({
+      stage: "stage-1",
+      percent: 25,
+      status: "progress",
+      userId
+    });
+
+    //satge-2 with dealy 3000s
+    await delay(3000);
+    job.updateProgress({
+      stage: "stage-2",
+      percent: 70,
+      status: "progress",
+      userId
+    });
+
+    //stage-3 with dealy 1000s
+    await delay(1000);
+    job.updateProgress({
+      stage: "stage-3",
+      percent: 90,
+      status: "progress",
+      userId
+    });
+
+    //return final result after 1s delay
+    await delay(1000);
+    return {
+      stage: "completed",
+      percent: 100,
+      status: "completed",
+      userId,
+      videoUrl: "https://res.cloudinary.com/dpnae0bod/video/upload/v1778564088/zenvvidbg_weihbz.mp4"
+    };
+
+  } catch (error) {
+    console.log('Error in tempJob:', error);
+    return {
+      stage: "video_generated",
+      percent: 100,
+      status: "failed",
+      userId: 'tempUserId',
+      error: (error as Error).message || 'Video generation failed'
+    };
+  }
+}
+
 
 // worker
 const worker = new Worker(
   queueName,
   async (job: Job) => {
-    console.log('Processing job:', job.id, 'with data:', job.data);
 
     //video gen task
     switch (job.name) {
@@ -220,12 +276,10 @@ const worker = new Worker(
   }
 );
 
-worker.on('completed', (job) => {
-  console.log('Job completed:', job.id);
-});
+
 
 worker.on('failed', (job, err) => {
-  console.error('Job failed:', job?.id, 'with error:', err);
+  console.log('Job failed:', job?.id, 'with error:', err);
 });
 
 export default worker;

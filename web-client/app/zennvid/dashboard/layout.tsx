@@ -1,17 +1,12 @@
-import { AppSidebar } from "@/components/dashboard/sidebar";
-
 import {
   SidebarInset,
   SidebarProvider,
 } from "@/components/ui/sidebar";
-
 import { FRONTEND_ROUTES } from "@/constants/frontend_routes";
-
 import { QueryClientProviderWrapper } from "@/context/queryProvider";
-
 import { ThemeProvider } from "next-themes";
-
 import React from "react";
+import { DashboardSidebar } from "./components/sidebar";
 
 const layout = ({
   children,
@@ -20,9 +15,9 @@ const layout = ({
 }) => {
   const menuItems = [
     {
-      href: FRONTEND_ROUTES.MAGIC_VIDEO,
+      href: FRONTEND_ROUTES.MAGICSTUDIO,
       icon: "magic",
-      label: "Magic Video",
+      label: "Magic Studio",
       tooltip:
         "Create cinematic AI videos",
     },
@@ -37,7 +32,7 @@ const layout = ({
 
     {
       href:
-        FRONTEND_ROUTES.ANIME_MATCHER,
+        FRONTEND_ROUTES.ANIMETWIN,
       icon: "sparkles",
       label: "Anime Twin",
       tooltip:
@@ -75,7 +70,7 @@ const layout = ({
             "
           >
             {/* SIDEBAR */}
-            <AppSidebar
+            <DashboardSidebar
               menuItems={menuItems}
             />
 

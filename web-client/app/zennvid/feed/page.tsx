@@ -12,16 +12,18 @@ import {
 } from "framer-motion";
 
 import {
-  ArrowLeft,
   Sparkles,
 } from "lucide-react";
 
-import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { getFeedPosts } from "@/lib/apiProvider";
-import { VideoCard } from "@/components/feed/video-card";
+import { VideoCard } from "@/app/zennvid/feed/components/video-card";
+import { FRONTEND_ROUTES } from "@/constants/frontend_routes";
+import { useRouter } from "next/navigation";
 
 export default function page() {
+  const router = useRouter();
+
   const feedQuery = useQuery({
     queryKey: ["videoFeed"],
     queryFn: getFeedPosts,
@@ -289,71 +291,53 @@ export default function page() {
           fixed
           left-0
           top-0
-          flex
-          w-full
-          items-center
-          justify-between
           px-5
           py-5
-
+          z-[10]
           md:px-8
+          cursor-pointer
         "
       >
-        {/* LEFT */}
-        <Link
-          href="/"
-          className="
-            group
-            flex
-            items-center
-            gap-3
-          "
+        <motion.button
+        className="cursor-pointer"
+          type="button"
+          initial={{
+            opacity: 0,
+            y: -10,
+          }}
+          animate={{
+            opacity: 1,
+            y: 0,
+          }}
+          transition={{
+            duration: 0.6,
+          }}
+          whileHover={{
+            scale: 1.02,
+          }}
+          whileTap={{
+            scale: 0.98,
+          }}
+          onClick={() => {
+            router.push(
+              FRONTEND_ROUTES.HOME
+            );
+          }}
         >
-          <div
+          <span
             className="
-              flex
-              h-12
-              w-12
-              items-center
-              justify-center
-              rounded-2xl
-              border
-              border-black/10
-              bg-white/70
-              backdrop-blur-xl
-              transition-all
-              duration-300
-
-              group-hover:scale-105
-            "
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </div>
-
-          <div>
-            <div
-              className="
-                text-[11px]
-                uppercase
-                tracking-[0.25em]
-                text-black/40
-              "
-            >
-              Return
-            </div>
-
-            <div
-              className="
-                text-lg
+                text-sm
                 font-semibold
                 uppercase
-                tracking-[0.15em]
+                tracking-[0.3em]
+                text-black
+                lg:text-base
+                cursor-pointer
               "
-            >
-              Zennvid
-            </div>
-          </div>
-        </Link>
+          >
+            Zennvid
+          </span>
+        </motion.button>
 
 
       </motion.div>

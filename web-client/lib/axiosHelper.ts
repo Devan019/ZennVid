@@ -26,7 +26,6 @@ const processQueue = (error:any, token:null|boolean = null) => {
 axios_api.interceptors.response.use(
   (response) => response,
   async (error) => {
-    console.log('Axios response error: inside interceptor');
     const originalRequest = error.config;
     //if get error in api and that is 404 and message is same do retry
     if (error.response?.status === 401 && !originalRequest._retry) {
@@ -49,7 +48,6 @@ axios_api.interceptors.response.use(
       try {
         //  call refresh endpoint
         const data = await axios.post(refreshTokenRoute, {}, { withCredentials: true });
-        console.log('Token refreshed successfully:', data);
 
         // Success! Release the queue so other requests are going to retry with the new token.
         processQueue(null, true);

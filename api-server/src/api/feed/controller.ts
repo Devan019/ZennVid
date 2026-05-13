@@ -31,7 +31,6 @@ const getFeed = expressAsyncHandler(async (req: Request, res: Response) => {
     const response:ISendResponse = await getFeedsService();
     return formatResponse(res, response.status, response.message, response.success, response.data);
   } catch (error) {
-    console.log(error);
     return formatResponse(res, 500, "Internal Server Error", false, null);
   }
 });

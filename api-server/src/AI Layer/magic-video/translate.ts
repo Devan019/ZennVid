@@ -32,7 +32,7 @@ const translateService = async (
 // translateService({text: "Hello, how are you?", dest: "gujarati"}).then(result => {
 //   console.log("Translation result:", result);
 // }).catch(error => {
-//   console.error("Error in translation:", error);
+//   console.log("Error in translation:", error);
 // });
 
 export { translateService };

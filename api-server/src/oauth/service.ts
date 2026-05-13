@@ -5,7 +5,7 @@ const oauthClient = new google.auth.OAuth2(
   AUTH_GOOGLE_ID,
   AUTH_GOOGLE_SECRET,
   AUTH_GOOGLE_REDIRECT_URI
-);  
+);
 
 const oauth2 = google.oauth2({
   auth: oauthClient,
@@ -33,18 +33,18 @@ export const getTokens = async (code: string) => {
     }
     return {
       token: tokens.access_token,
-      refreshToken: tokens.refresh_token, 
+      refreshToken: tokens.refresh_token,
       idToken: tokens.id_token,
     };
   } catch (error) {
-    console.error('Error exchanging code for tokens:', error);
+    console.log('Error exchanging code for tokens:', error);
     throw error;
   }
 }
 
 export const getOAuthUser = async (idToken: any) => {
-  const data = await oauthClient.verifyIdToken({idToken});
-  return {data};
+  const data = await oauthClient.verifyIdToken({ idToken });
+  return { data };
 }
 
 export const refreshToken = async (refreshToken: string) => {

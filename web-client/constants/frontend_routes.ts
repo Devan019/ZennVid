@@ -1,13 +1,16 @@
 export const FRONTEND_ROUTES = {
   HOME: "/",
+  About: "#about",
+  Contact: "#contact",
+
   AUTH: "/auth",
 
   /**dashboard */
-  DASHBOARD: "/zennvid/dashboard#magic-video",
-  MAGIC_VIDEO: "/zennvid/dashboard#magic-video",
+  DASHBOARD: "/zennvid/dashboard#magicstudio",
+  MAGICSTUDIO: "/zennvid/dashboard#magicstudio",
   SYNCSTUDIO: "/zennvid/dashboard#syncstudio",
   YOURVIDEO: "/zennvid/dashboard#your-videos",
-  ANIME_MATCHER: "/zennvid/dashboard#anime-matcher",
+  ANIMETWIN: "/zennvid/dashboard#anime-matcher",
   ZENNVID: "/zennvid/dashboard",
 
   /**openapi */

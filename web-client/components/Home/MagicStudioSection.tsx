@@ -4,8 +4,11 @@ import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { FaArrowRight } from "react-icons/fa6";
 import { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { FRONTEND_ROUTES } from "@/constants/frontend_routes";
 
 export const MagicStudioSection = () => {
+  const router = useRouter();
   const [isPlaying, setIsPlaying] = useState(false);
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -152,24 +155,17 @@ export const MagicStudioSection = () => {
 
                   {/* BOTTOM CONTENT */}
                   <div className="absolute bottom-0 left-0 z-10 p-10">
-
                     <div className="mb-3 uppercase tracking-[0.3em] text-white/40">
-
                       Generative Cinema Engine
-
                     </div>
 
                     <h3 className="text-[3vw] uppercase tracking-tight text-white">
-
                       Magic Studio
-
                     </h3>
 
                     <p className="mt-2 max-w-md text-white/60">
-
                       Cinematic AI storytelling powered
                       by prompts, voices, and imagination.
-
                     </p>
                   </div>
                 </>
@@ -192,28 +188,22 @@ export const MagicStudioSection = () => {
 
           {/* LABEL */}
           <div className="mb-6 uppercase tracking-[0.3em] text-black/40">
-
             Generative Cinema Engine
-
           </div>
 
           {/* HEADING */}
           <h2 className="text-[7vw] uppercase leading-[0.9] tracking-tight">
-
             MAGIC
             <br />
             STUDIO.
-
           </h2>
 
           {/* DESCRIPTION */}
           <p className="mt-10 max-w-xl text-xl leading-relaxed text-black/60">
-
             Transform prompts, voices, and ideas
             into cinematic AI-generated videos with
             intelligent storytelling, motion scenes,
             visual transitions, and immersive composition.
-
           </p>
 
           {/* META */}
@@ -245,6 +235,9 @@ export const MagicStudioSection = () => {
           <div className="mt-14 flex items-start">
 
             <button
+              onClick={
+                () => router.push(FRONTEND_ROUTES.MAGICSTUDIO)
+              }
               className="
                 group
                 inline-flex

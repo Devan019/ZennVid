@@ -95,12 +95,12 @@ const populateAllFeedsService = async (
       const newLikes = usersToLike
         .filter(userId => !existingLikes.includes(userId))
         .map(userId => ({ user: userId }));
-      
+
       feed.likes.push(...newLikes);
 
       const commentCount = getRandomNumber(minComments, maxComments);
       const usersToComment = getRandomItems(allUserIds, commentCount);
-      
+
       for (const userId of usersToComment) {
         feed.comments.push({
           user: userId,
@@ -109,7 +109,7 @@ const populateAllFeedsService = async (
       }
 
       await feed.save();
-      
+
       totalLikesAdded += newLikes.length;
       totalCommentsAdded += usersToComment.length;
 
@@ -133,7 +133,7 @@ const populateAllFeedsService = async (
     };
 
   } catch (error) {
-    console.error('Error in populateAllFeedsService:', error);
+    console.log('Error in populateAllFeedsService:', error);
     return {
       status: 500,
       message: "Internal server error",
@@ -176,7 +176,7 @@ export const populateAllFeedsController = async (req: Request, res: Response) =>
     return res.status(result.status).json(result);
 
   } catch (error) {
-    console.error('Error in populateAllFeedsController:', error);
+    console.log('Error in populateAllFeedsController:', error);
     return res.status(500).json({
       status: 500,
       message: "Internal server error",

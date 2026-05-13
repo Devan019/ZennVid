@@ -22,7 +22,6 @@ const createFeedService = async(
       success: true
     }
   } catch (error) {
-    console.log(error);
     return {
       status : 500,
       message : "Internal server error",
@@ -50,7 +49,6 @@ const getFeedsService = async() => {
       success: true
     }
   } catch (error) {
-    console.log(error);
     return {
       status : 500,
       message : "Internal server error",

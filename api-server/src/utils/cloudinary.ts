@@ -45,7 +45,7 @@ export const uploadToCloudinary = async ({
     folder: folder,
   });
   return {
-    url : res.secure_url,
+    url: res.secure_url,
     publicId: res.public_id,
     format: res.format,
     resourceType: res.resource_type
@@ -81,7 +81,7 @@ export const uploadToCloudinaryWithBuffer = async ({
   folder?: string;
   format?: string;
 }): Promise<UploadApiResponse> => {
-  
+
   return new Promise((resolve, reject) => {
     const uploadStream = cloudinary.uploader.upload_stream(
       {
@@ -91,7 +91,7 @@ export const uploadToCloudinaryWithBuffer = async ({
       },
       (error: UploadApiErrorResponse | undefined, result: UploadApiResponse | undefined) => {
         if (error) {
-          console.error("Cloudinary upload error:", error);
+          console.log("Cloudinary upload error:", error);
           return reject(error);
         }
         if (!result) {

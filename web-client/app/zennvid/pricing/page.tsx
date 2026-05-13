@@ -1,13 +1,12 @@
-import { Footer } from '@/components/common/footer'
-import { Navigation } from '@/components/common/navigation'
-import PricingComponent from '@/components/Home/pricing'
+
+import PricingComponent from '@/components/common/pricing'
 import React from 'react'
+import { Footer } from 'react-day-picker'
 
 const page = () => {
   return (
-    <div className='min-h-screen relative  h-dvh'>
+    <div className='min-h-screen relative'>
       <div className='relative  w-full z-10  bg-white'>
-        <Navigation />
         <PricingComponent />
       </div>
       <Footer />

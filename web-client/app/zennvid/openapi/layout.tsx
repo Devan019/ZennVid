@@ -1,4 +1,4 @@
-import { AppSidebar } from "@/components/dashboard/sidebar";
+
 
 import {
   SidebarInset,
@@ -9,6 +9,7 @@ import { ThemeProvider } from "@/components/ui/theme-provider";
 import { FRONTEND_ROUTES } from "@/constants/frontend_routes";
 import { QueryClientProviderWrapper } from "@/context/queryProvider";
 import React from "react";
+import { AppSidebar } from "../dashboard/components/sidebar";
 
 const layout = ({
   children,

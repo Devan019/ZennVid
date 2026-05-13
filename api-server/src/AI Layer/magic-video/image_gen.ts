@@ -46,7 +46,7 @@ const imageGen = async (prompt: string) => {
 //   console.log(res);
 // })
 // .catch((err) => {
-//   console.error("Error in image generation:", err);
+//   console.log("Error in image generation:", err);
 // });
 
 export { imageGen };

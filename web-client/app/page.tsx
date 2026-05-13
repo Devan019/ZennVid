@@ -1,30 +1,18 @@
 "use client";
-
 import {
   useEffect,
   useState,
 } from "react";
-
 import { ReactLenis } from "@studio-freight/react-lenis";
-
 import { Footer } from "@/components/common/Footer";
-
 import { FullscreenMenu } from "@/components/common/FullscreenMenu";
-
 import { Navbar } from "@/components/common/Navbar";
-
 import { AnimeTwinSection } from "@/components/Home/AnimeTwinSection";
-
 import { FinalCTASection } from "@/components/Home/cta";
-
 import { AboutSection } from "@/components/Home/FeatureSection";
-
 import { HeroSection } from "@/components/Home/HeroSection";
-
 import { IntroVideo } from "@/components/Home/IntroVideo";
-
 import { MagicStudioSection } from "@/components/Home/MagicStudioSection";
-
 import { SyncStudioSection } from "@/components/Home/SyncStudioSection";
 
 const INTRO_KEY =
@@ -145,13 +133,9 @@ const Page = () => {
           />
 
           <AboutSection />
-
           <MagicStudioSection />
-
           <SyncStudioSection />
-
           <AnimeTwinSection />
-
           <FinalCTASection />
         </main>
 
