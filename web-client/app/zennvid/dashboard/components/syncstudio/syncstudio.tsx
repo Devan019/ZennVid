@@ -17,11 +17,8 @@ import {
 } from "lucide-react";
 
 import { syncStudio } from "./api";
-
 import { toast } from "sonner";
-
 import Loader from "@/components/common/Loader";
-
 import {
   Card,
   CardContent,
@@ -65,27 +62,21 @@ const VideoCreator = ({
       formData: FormData;
     }) => {
       setvideoloading(true);
-
       const data = await syncStudio({
         formData,
       });
-
       if (!data.SUCCESS) {
         return data;
       }
-
       return data;
     },
 
     onSuccess: (data) => {
       if (!data.SUCCESS) {
         toast.error(data.MESSAGE);
-
         setvideoloading(false);
-
         return;
       }
-
       const jobId =
         data?.data?.jobId ??
         data?.DATA?.jobId ??
@@ -95,20 +86,14 @@ const VideoCreator = ({
         toast.error(
           "Missing job id from video generation response"
         );
-
         setvideoloading(false);
-
         return;
       }
-
       setvideoloading(false);
-
       onGenerate?.(jobId);
     },
 
     onError: (error) => {
-
-
       setvideoloading(false);
     },
   });
@@ -249,12 +234,11 @@ const VideoCreator = ({
 
                 <div>
                   <h3 className="text-lg font-semibold">
-                    Scene Prompt
+                    Scene Title
                   </h3>
 
                   <p className="text-sm text-black/50">
-                    Define your cinematic sync
-                    scene
+                    Define your sync title
                   </p>
                 </div>
               </div>

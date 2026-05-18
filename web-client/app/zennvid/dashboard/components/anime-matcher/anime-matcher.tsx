@@ -4,12 +4,10 @@ import React, {
   useState,
   useRef,
 } from "react";
-
 import {
   motion,
   AnimatePresence,
 } from "framer-motion";
-
 import {
   Upload,
   Sparkles,
@@ -19,26 +17,17 @@ import {
   Loader2,
   ArrowRight,
 } from "lucide-react";
-
 import { useMutation } from "@tanstack/react-query";
-
 import Image from "next/image";
-
 import { toast } from "sonner";
-
 import {
   Card,
   CardContent,
 } from "@/components/ui/card";
-
 import { Button } from "@/components/ui/button";
-
 import { Badge } from "@/components/ui/badge";
-
 import { animeMatching } from "@/lib/apiProvider";
-
 import { BASE_URL } from "@/constants/backend_routes";
-
 interface AnimeMatchResult {
   id: string;
   name: string;

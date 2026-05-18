@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { deleteFileFromS3 } from "../../../utils/s3";
 
 export enum VideoType {
   MAGIC_STUDIO_VIDEO = "magic_studio_video",
@@ -11,35 +12,36 @@ const videoGeneraterSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
-  videoMetadata:{
-    publicId : {
+  videoMetadata: {
+    url: {
       type: String,
     },
-    resourceType:{
-      type: String,
-    },
-    format:{
+    key: {
       type: String,
     }
   },
-  type:{
+  type: {
     type: String,
     enum: Object.values(VideoType),
     required: true
   },
-  title : {
+  title: {
     type: String,
   },
-  style : {
+  style: {
     type: String,
   },
-  language : {
-    type: String,
-  },
-  voiceCharacter : {
+  voiceCharacter: {
     type: String,
   }
-}, {timestamps : true})
+}, { timestamps: true })
+
+//add post remove hook to delete video from s3
+videoGeneraterSchema.post('findOneAndDelete', async function (doc) {
+  if (doc.videoMetadata?.key) {
+    await deleteFileFromS3(doc.videoMetadata.key);
+  }
+})
 
 
 const Video = mongoose.models.Video ?? mongoose.model('Video', videoGeneraterSchema);

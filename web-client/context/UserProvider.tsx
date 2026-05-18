@@ -53,7 +53,6 @@ export const UserProvider = ({ children }: {
     setError(null);
     const { data } = await UserQuery.refetch();
     if (!data.SUCCESS) {
-      // toast.error(data.MESSAGE);
       setIsLoading(false);
       return;
     }

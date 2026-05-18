@@ -6,8 +6,6 @@ import { CreateNewApp, dashboardStats, GetAllApps, SendKeyToEmail } from "./open
 import { GenAudio, GenCaptions, GetVoices, Languages, Translater } from "./openapi/api/controller";
 import { checkApiKey } from "./openapi/api/checkApiKey";
 import { updateCredit } from "./pricing/controller";
-import AdminUserRouter from "./Admin/user/route";
-import StatsRouter from "./Admin/analisys/router";
 import { scriptRouter } from "../script/route";
 import FeedRouter from "./feed/route";
 import multer from "multer";
@@ -31,10 +29,6 @@ const upload = multer({ storage });
 ApiRouter.use("/script", scriptRouter);
 
 /** api  */
-
-/**admin */
-ApiRouter.use("/admin/stats",isAuthenticated, StatsRouter);
-ApiRouter.use("/admin",isAuthenticated, AdminUserRouter);
 
 /** feed */
 ApiRouter.use("/feed", FeedRouter);

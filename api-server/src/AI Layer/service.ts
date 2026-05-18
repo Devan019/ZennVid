@@ -2,17 +2,22 @@
 //get service functions for AI layer here, such as lip sync, video editing, etc.
 
 import { Job } from "bullmq";
-import { deleteFromCloudinary } from "../utils/cloudinary";
-import { generateTranscript } from "./helpers/transcript";
+import { generateTranscript } from "./helpers/assembly_trasnscript";
 import { audioGen } from "./magic-video/audio_gen";
 import { createVideo } from "./magic-video/ffmpeg";
 import { imageGen } from "./magic-video/image_gen";
-// import { HFImageGen } from "./magic-video/hf_image";
 import { scriptGen } from "./magic-video/script_gen";
-import { translateService } from "./magic-video/translate";
 import { addSubtitles } from "./sync-studio/add_subtitle";
 import { lipSync } from "./sync-studio/lip_sync";
 import { voiceClone } from "./sync-studio/voice_clone";
+import { deleteFileFromS3 } from "../utils/s3";
+import fs from "fs/promises";
+import path from "path";
+
+export interface VideoData {
+  Key: string;
+  Location: string;
+}
 
 
 const tmpCreateMagicVideo = async (
@@ -68,14 +73,15 @@ const tmpCreateMagicVideo = async (
     await new Promise(resolve => setTimeout(resolve, 10000));
     //return tmp video data
     return {
-      url: "https://res.cloudinary.com/dpnae0bod/video/upload/zennvid/x8ytcshoj7usiw0sakcs.mp4",
-      publicId: "zennvid/x8ytcshoj7usiw0sakcs",
-      resourceType: "video",
-      format: "mp4"
+      Location: "https://zennvid-ai.s3.ap-south-1.amazonaws.com/videos/41ff974b-dc57-445d-a543-c8a8cd44d30b",
+      Key: "videos/41ff974b-dc57-445d-a543-c8a8cd44d30b.mp4",
     }
 
   } catch (error) {
-    return null;
+    return {
+      Location: "",
+      Key: "",
+    }
   }
 }
 
@@ -84,158 +90,210 @@ const createMagicVideo = async (
   {
     title,
     style,
-    seconds,
-    language,
     voice,
-    code,
     job,
     userId
   }: {
     title: string;
     style: string;
-    seconds: number;
-    language: string;
     voice: string;
-    code: string;
     job: Job;
     userId: string;
   }
-) => {
+): Promise<VideoData> => {
+  console.time("createMagicVideo");
   try {
-    //1. get script
-    //max tries
+
+    if (!job || !job.id) {
+      console.log("Invalid job object, exiting.");
+      return {
+        Key: "",
+        Location: ""
+      }
+    }
+
+    //create directly to save files
+    const cwd = process.cwd();
+    const dir = path.join(cwd, "public", "magic-studio", userId, job.id);
+    const prefix = "/public/magic-studio/" + userId + "/" + job.id ;
+    const final_video_path = "/public/magic-studio/" + userId + "/" + job.id + "/final_video.mp4";
+    await fs.mkdir(dir, { recursive: true });
+
+    const WEIGHTS = {
+      SCRIPT: 10,
+      IMAGES: 40,
+      AUDIO: 20,
+      CAPTIONS: 10,
+      STITCH: 10
+    };
+
+    let currentProgress = 0;
+
+
+    // 1. Get script
     const MAX_RETRIES = 5;
     let script = null;
     let attempts = 0;
-    while (!script && attempts < MAX_RETRIES) {
-      script = await scriptGen(title, style, seconds, language);
-      attempts++;
-      if (!script) {
-      } else {
-        //sent sse to frontend
 
+    while (!script && attempts < MAX_RETRIES) {
+      script = await scriptGen(title, style);
+      attempts++;
+      if (script) {
+        currentProgress += WEIGHTS.SCRIPT;
+        // Send SSE to frontend
         await job.updateProgress({
           stage: "script_generated",
-          percent: 10,
+          percent: currentProgress,
           status: "progress",
           userId
         });
         break;
       }
     }
+
+    console.log(`Script generation attempts: ${attempts}`);
+
     if (!script) {
       console.log("Script generation failed, exiting.");
-      return null;
+      return {
+        Key: "",
+        Location: ""
+      };
     }
 
-    //2. generate images 
+
     const scenes = script.scenes ?? [];
-    const prompts = scenes.map((scene: any) => scene.prompt);
-    let completedImages = 0;
 
-    const imagePaths = await Promise.all(
-      prompts.map(async (prompt: string) => {
-        const img = await imageGen(prompt);
-        completedImages++;
-        return img;
-      })
-    );
-    await job.updateProgress({ stage: "generating_images", percent: 30, status: "progress", userId });
+    // --- PARALLEL EXECUTION: Images vs. Audio + Captions ---
 
+    // Branch A: Generate Images
+    const generateImagesTask = async () => {
+      const prompts = scenes.map((scene: any) => scene.prompt);
 
-    //3. generate audio
-    let audioData = scenes.map((scene: any) => scene.description).join("\n");
-    if (language.toLowerCase() !== "english") {
-      //translate it
-      audioData = await translateService({
-        text: audioData,
-        dest: language
-      });
-      //sent sse to frontend
+      const paths = [];
 
-      if (!audioData) {
-        console.log("Translation failed, exiting.");
-        return null;
+      for (let i = 0; i < prompts.length; i++) {
+        try {
+          const prompt = prompts[i];
+
+          console.log(`Generating image ${i + 1}/${prompts.length}`);
+          const image_path = path.join(dir, `image_${i}.jpg`);
+          const imageGenResult = await imageGen({
+            prompt,
+            filePath: image_path,
+            Location: prefix + "/image_" + i + ".jpg"
+          });
+
+          console.log(
+            `Image generated for prompt ${i + 1}:`,
+            imageGenResult
+          );
+
+          paths.push(imageGenResult);
+        } catch (error) {
+          console.log(`Error generating image ${i + 1}:`, error);
+
+          paths.push(null);
+        } 
       }
+
+      // update progress after all images are generated
+      currentProgress += WEIGHTS.IMAGES;
+
+      console.log(
+        "All images generated, updating progress to frontend:",
+        currentProgress
+      );
+
       await job.updateProgress({
-        stage: "translate_generated",
-        percent: 50,
+        stage: "images_generated",
+        percent: currentProgress,
         status: "progress",
-        userId
+        userId,
       });
-    }
 
-    const audio = await audioGen({
-      text: audioData,
-      voice
-    })
+      return paths;
+    };
 
-    if (!audio) {
+    // Branch B: Generate Audio -> Generate Captions
+    const generateAudioAndCaptionsTask = async () => {
+      // Generate Audio
+      const audioData = scenes.map((scene: any) => scene.description).join("\n");
+      const audio_path = path.join(dir, `audio.mp3`);
+      const audio = await audioGen({ text: audioData, voice, filePath: audio_path, Location: prefix + "/audio.mp3" });
+      console.log("audio is gen")
+
+      if (!audio) {
+        throw new Error("Audio generation failed");
+      }
+
+      currentProgress += WEIGHTS.AUDIO;
+      await job.updateProgress({ stage: "audio_generated", percent: currentProgress, status: "progress", userId });
+
+      // Generate Captions sequentially AFTER Audio
+      const audioUrl = cwd + audio.Location;
+      const captions = await generateTranscript({ audio: audioUrl });
+      console.log("captions are gen")
+      if (!captions || !captions.segments || captions.segments.length === 0) {
+        throw new Error("Caption generation failed");
+      }
+
+      currentProgress += WEIGHTS.CAPTIONS;
+      await job.updateProgress({ stage: "caption_generated", percent: currentProgress, status: "progress", userId });
+
+      return { audio, captions };
+    };
+
+    // Execute Branch A and Branch B concurrently
+    const [imagePaths, audioAndCaptions] = await Promise.all([
+      generateImagesTask(),
+      generateAudioAndCaptionsTask()
+    ]);
+
+    const { audio, captions } = audioAndCaptions;
+
+    // --- END PARALLEL EXECUTION ---
+
+    if (!audio.Location) {
       console.log("Audio generation failed, exiting.");
-      return null;
-    }
-    //sent sse to frontend
-    await job.updateProgress({
-      stage: "audio_generated",
-      percent: 70,
-      status: "progress",
-      userId
-    });
-
-    //4. caption generation
-    const captions = await generateTranscript({
-      audio: audio?.url,
-      language: code
-    })
-
-    if (!captions || !captions.segments || captions.segments.length === 0) {
-      console.log("Caption generation failed, exiting.");
-      return null;
+      return {
+        Key: "",
+        Location: ""
+      };
     }
 
-    await job.updateProgress({
-      stage: "caption_generated",
-      percent: 80,
-      status: "progress",
-      userId
-    });
-
-    //5. video generation
-    const finalCaptions = captions.segments.map((segment: any) => ({
-      start: segment.start,
-      end: segment.end,
-      text: segment.text,
-      id: segment.id
-    }))
-
-
+    // 5. Video generation
     const videoData = await createVideo({
-      captionsJson: JSON.stringify(finalCaptions),
-      images: imagePaths.map(img => img.url),
-      audio: audio.url
-    })
+      captionsJson: JSON.stringify(captions.segments),
+      images: imagePaths.map((img: any) =>(cwd + img.Location)),
+      audio: cwd + audio.Location,
+      finalVideoPath: final_video_path
+    });
 
     if (!videoData) {
       console.log("Video creation failed, exiting.");
-      return null;
+      return {
+        Key: "",
+        Location: ""
+      };
     }
+
+    currentProgress += WEIGHTS.STITCH;
     await job.updateProgress({
       stage: "video_stitched",
-      percent: 90,
+      percent: currentProgress,
       status: "progress",
       userId
     });
-    // 6. delete temp files (images, audio)
 
+    // 6. Delete temp files (images, audio)
     // Delete Images using Promise.all to wait for all deletions
     if (imagePaths.length > 0) {
       try {
+        //unlink local files
         await Promise.all(
-          imagePaths.map((imagePath) =>
-            deleteFromCloudinary({
-              publicId: imagePath.publicId,
-              resource_type: "image",
-            }).catch(err => console.log(`Failed to delete image ${imagePath.publicId}:`, err))
+          imagePaths.map((imagePath: any) =>
+            fs.unlink(cwd + imagePath.Location).catch(err => console.log(`Failed to delete local image ${imagePath.Location}:`, err))
           )
         );
       } catch (err) {
@@ -244,19 +302,19 @@ const createMagicVideo = async (
     }
 
     // Delete Audio
-    if (audio && audio.publicId) {
+    if (audio && audio.Key) {
       try {
-        await deleteFromCloudinary({
-          publicId: audio.publicId,
-          resource_type: "raw",
-        });
+        await fs.unlink(cwd + audio.Location).catch(err => console.log(`Failed to delete local audio ${audio.Location}:`, err));
       } catch (err) {
         console.log("Non-critical error during audio cleanup:", err);
       }
     }
-
-    //7. return data
-    return videoData;
+    console.timeEnd("createMagicVideo");
+    // 7. Return data
+    return {
+      Key: (videoData as { Key?: string }).Key ?? "",
+      Location: (videoData as { Location?: string }).Location ?? ""
+    };
 
   } catch (error: any) {
     console.log("Error in createMagicVideo:", error);
@@ -265,10 +323,10 @@ const createMagicVideo = async (
       error: error.message || "Unknown error during video generation",
       userId
     });
+    console.timeEnd("createMagicVideo");
     throw error;
   }
-}
-
+};
 
 
 
@@ -285,15 +343,20 @@ const syncStudioVideo = async ({
   text: string;
   job: any;
   userId: string;
-}) => {
+}): Promise<VideoData> => {
   try {
-
-
     //1. do voice clone
-    const voiceCloneResult = await voiceClone(audioPath, text);
+    const voiceCloneResult = await voiceClone({
+      audio: audioPath,
+      text,
+      lang: "en"
+    });
     if (!voiceCloneResult) {
       console.log("Voice cloning failed, exiting.");
-      return null;
+      return {
+        Key: "",
+        Location: ""
+      };
     }
     await job.updateProgress({
       stage: "voice_cloned",
@@ -304,12 +367,14 @@ const syncStudioVideo = async ({
 
     //2. create captions
     const captions = await generateTranscript({
-      audio: voiceCloneResult?.url ?? "",
-      language: "en"
+      audio: voiceCloneResult?.Location ?? ""
     })
     if (!captions) {
       console.log("Caption generation failed, exiting.");
-      return null;
+      return {
+        Key: "",
+        Location: ""
+      };
     }
     await job.updateProgress({
       stage: "caption_generated",
@@ -320,7 +385,10 @@ const syncStudioVideo = async ({
 
     if (!captions || !captions.segments || captions.segments.length === 0) {
       console.log("No captions generated, exiting.");
-      return null;
+      return {
+        Key: "",
+        Location: ""
+      };
     }
     const finalCaptions = captions.segments.map((segment: any) => ({
       start: segment.start,
@@ -332,15 +400,18 @@ const syncStudioVideo = async ({
     //3. create lip sync video
     const videoData = await lipSync({
       imagePath,
-      audioPath: voiceCloneResult?.url ?? ""
+      audioPath: voiceCloneResult?.Location ?? ""
     });
     // ensure videoData contains a url (lipSync may return an error object)
-    if (!videoData || typeof videoData !== "object" || !("url" in videoData)) {
+    if (!videoData || typeof videoData !== "object" ) {
       console.log("Lip sync video creation failed or returned error, exiting.");
       if (videoData && typeof videoData === "object" && "error" in videoData) {
         throw new Error((videoData as any).error);
       }
-      return null;
+      return {
+        Key: "",
+        Location: ""
+      };
     }
     await job.updateProgress({
       stage: "lip_sync_completed",
@@ -352,12 +423,15 @@ const syncStudioVideo = async ({
 
     //4. add subtitles to video 
     const finalVideo = await addSubtitles({
-      videoPath: (videoData && typeof videoData === "object" && "url" in videoData) ? (videoData as any).url : "",
+      videoPath: (videoData && typeof videoData === "object" && "Location" in videoData) ? (videoData as any).Location : "",
       captions: finalCaptions
     });
     if (!finalVideo) {
       console.log("Adding subtitles failed, exiting.");
-      return null;
+      return {
+        Key: "",
+        Location: ""
+      };
     }
     await job.updateProgress({
       stage: "subtitles_added",
@@ -368,19 +442,22 @@ const syncStudioVideo = async ({
 
     //5. remove temp data
     try {
-      await deleteFromCloudinary({
-        publicId: voiceCloneResult?.publicId ?? "",
-        resource_type: "raw"
-      });
+      await deleteFileFromS3(voiceCloneResult?.Key ?? "").catch(err => console.log(`Failed to delete audio ${voiceCloneResult?.Key}:`, err));
     } catch (err) {
       console.log("Non-critical error during cleanup:", err);
     }
-
+    console.timeEnd("sync studio");
     //6. return final video data
-    return finalVideo;
+    return {
+      Key: (finalVideo as { Key?: string }).Key ?? "",
+      Location: (finalVideo as { Location?: string }).Location ?? ""
+    };
 
   } catch (error: any) {
-    return null;
+    return {
+      Key: "",
+      Location: ""
+    };
   }
 
 }

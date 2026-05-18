@@ -12,9 +12,10 @@ import {
   HF_TOKEN10,
   LIP_SYNC_REPO, 
   LIP_SYNC_REPO_API, 
-  DURATION 
+  DURATION, 
+  video_prefix
 } from "../../env_var";
-import { uploadToCloudinary } from "../../utils/cloudinary";
+import {  uploadUrlToS3 } from "../../utils/s3";
 
 const lipSync = async ({
   imagePath,
@@ -86,16 +87,17 @@ const lipSync = async ({
           }
         } else {
           // It's a different error (e.g., bad image/audio), throw standard error
+          console.log("Error during lip sync prediction:", err);
           throw err;
         }
       }
     }
 
     if (result && result.data) {
-      const videoData = await uploadToCloudinary({
-        filePath: (result.data as Array<any>)[0].url,
-        resource_type: "raw",
-        folder: "zennvid"
+      const videoData = await uploadUrlToS3({
+        url: (result.data as Array<any>)[0].url,
+        prefix: video_prefix,
+        contentType: "video/mp4"
       });
       return videoData;
     }

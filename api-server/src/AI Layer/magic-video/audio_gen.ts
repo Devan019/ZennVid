@@ -1,13 +1,17 @@
 import { Client } from "@gradio/client";
 import { EDGE_TTS_REPO, EDGE_TTS_REPO_API, HF_TOKEN } from "../../env_var";
-import { uploadToCloudinary } from "../../utils/cloudinary";
-
+import fs from "fs/promises";
+import path from "path/win32";
 const audioGen = async ({
   text,
   voice,
+  filePath,
+  Location,
 }: {
   text: string;
   voice: string;
+  filePath: string;
+  Location: string;
 }) => {
 
   if (!HF_TOKEN || !EDGE_TTS_REPO || !EDGE_TTS_REPO_API) {
@@ -15,7 +19,7 @@ const audioGen = async ({
   }
 
   try {
-
+    console.time("Audio generation time");
     const client = await Client.connect(EDGE_TTS_REPO, {
       token: `hf_${HF_TOKEN}`
     });
@@ -26,30 +30,66 @@ const audioGen = async ({
       rate: 0,
       pitch: 0,
     });
-    //upload to cloudinary
-    const url = await uploadToCloudinary({
-      filePath: (result.data as Array<any>)[0].url,
-      resource_type: "raw",
-      folder: "zennvid"
-    })
-    return url;
+    console.log("Audio generation result:", result);
+
+    if (!result || !result.data || !(result.data as Array<any>).length) {
+      console.log("Invalid audio generation result:", result);
+      return null;
+    }
+
+    //get the first audio url from the result
+    const audioUrl = (result.data as Array<any>)[0].url;
+
+    if (!audioUrl) {
+      console.log("Audio URL not found in the result:", result);
+      return {
+        Key: "",
+        Location: "",
+      };
+    }
+    console.timeEnd("Audio generation time");
+    console.time("Audio download time");
+    //get audio buffer from the url
+    const audioResponse = await fetch(audioUrl);
+    if (!audioResponse.ok) {
+      throw new Error(`Failed to fetch audio from URL: ${audioUrl}`);
+    }
+
+    const audioBuffer = await audioResponse.arrayBuffer();
+    console.timeEnd("Audio download time");
+    console.time("Audio upload time");
+    //save audio to local disk
+    await fs.writeFile(filePath, Buffer.from(audioBuffer));
+    console.timeEnd("Audio upload time");
+    return {
+      Key: "LOCAL",
+      Location,
+    }
+
+
   } catch (error) {
     console.log("Audio generation error:", error);
     return null;
   }
 };
 
-// function main() {
-//   audioGen({
-//     text: "Hello, welcome to ZennVid!This is a sample video created with FFmpeg.Enjoy the smooth transitions and captions!",
-//     voice: "en-US-MichelleNeural"
-//   }).then(url => {
-//     console.log("Generated audio URL:", url);
-//   }).catch(error => {
-//     console.log("Error generating audio:", error);
-//   });
-// }
+// const demo = async () => {
 
-// main();
+//   const dir = path.join(process.cwd(), "public", "magic-studio", "demo_user", "demo_job");
+//   await fs.mkdir(dir, { recursive: true });
+
+//   audioGen({
+//     text: "A lady sitting on the sofa and reading a book.A lady sitting on the sofa and reading a book.A lady sitting on the sofa and reading a book.A lady sitting on the sofa and reading a book.A lady sitting on the sofa and reading a book.A lady sitting on the sofa and reading a book.A lady sitting on the sofa and reading a book.A lady sitting on the sofa and reading a book.A lady sitting on the sofa and reading a book.A lady sitting on the sofa and reading a book.",
+//     filePath: path.join(dir, "test_audio.mp3"),
+//     Location: "public/magic-studio/demo_user/demo_job/test_audio.mp3",
+//     voice: "en-US-JennyNeural"
+//   }).then((res) => {
+//     console.log(res);
+//   })
+//     .catch((err) => {
+//       console.log("Error in audio generation:", err);
+//     });
+// }
+// demo();
 
 export { audioGen };

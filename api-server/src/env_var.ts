@@ -38,7 +38,7 @@ const CLOUDINARY_API_KEY = process.env.CLOUDINARY_API_KEY;
 const CLOUDINARY_API_SECRET = process.env.CLOUDINARY_API_SECRET;
 
 //encryption secret for openapi 
-const OPENAPI_SECERT=process.env.ENCRYPTION_SECRET;
+const OPENAPI_SECERT = process.env.ENCRYPTION_SECRET;
 
 //nodemailer for email
 const SMTP_USER = process.env.SMTP_USER;
@@ -86,6 +86,9 @@ const IMAGE_PIPELINE_REPO_API = process.env.IMAGE_PIPELINE_REPO_API;
 const HF_IMAGE_GEN_REPO = process.env.IMAGE_GEN_REPO;
 const HF_IMAGE_GEN_REPO_API = process.env.IMAGE_GEN_REPO_API;
 
+//assembly ai api key
+const ASSEMBLY_AI_KEY = process.env.ASSEMBLY_AI_KEY;
+
 
 //worker of cloudflare
 const CLOUDFLARE_WORKER_URL = process.env.CLOUDFLARE_WORKER_URL;
@@ -115,11 +118,27 @@ const refreshPeroidJwt = "7d"; // 7 days
 const queueName = "video-generation";
 const syncStudioJobName = "sync-studio-video-gen";
 const magicVideoJobName = "magic-video-gen";
+const videoUploadJobName = "video-upload";
+
 
 //job time and key
 const active_job_zset = "active_job_zset";
 const active_job_data = "active_job_data"
-const active_job_time = 24 * 60 * 60 ; //24 hr
+const active_job_time = 24 * 60 * 60; //24 hr
+
+//s3 access key and secret key
+const S3_API=process.env.S3_API;
+const S3_API_TOKEN = process.env.S3_API_TOKEN;
+const S3_ACCESS_KEY = process.env.S3_ACCESS_KEY;
+const S3_SECRET_KEY = process.env.S3_SECRET_KEY;
+const S3_BUCKET_NAME = process.env.S3_BUCKET_NAME;
+const S3_REGION = "auto";
+const S3_PUBLIC_ACCESS_API = process.env.S3_PUBLIC_ACCESS_API;
+
+//s3 files prefix
+const video_prefix = "videos";
+const image_prefix = "images";
+const audio_prefix = "audios";
 
 //export all
 export {
@@ -161,7 +180,7 @@ export {
   DURATION,
   TRANSLATE_REPO,
   TRANSLATE_REPO_API,
-  EDGE_TTS_REPO,  
+  EDGE_TTS_REPO,
   EDGE_TTS_REPO_API,
   IMAGE_PIPELINE_REPO,
   IMAGE_PIPELINE_REPO_API,
@@ -180,10 +199,22 @@ export {
   queueName,
   syncStudioJobName,
   magicVideoJobName,
+  videoUploadJobName,
   active_job_time,
   active_job_data,
   active_job_zset,
   CLOUDFLARE_WORKER_KEY,
   CLOUDFLARE_WORKER_URL,
+  ASSEMBLY_AI_KEY,
+  S3_ACCESS_KEY,
+  S3_API,
+  S3_API_TOKEN,
+  S3_BUCKET_NAME,
+  S3_SECRET_KEY,
+  S3_REGION,
+  S3_PUBLIC_ACCESS_API,
+  audio_prefix,
+  video_prefix,
+  image_prefix
 }
 

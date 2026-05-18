@@ -6,9 +6,10 @@ import { uploadToCloudinary } from "../../utils/cloudinary";
 import fs from "fs";
 import { languageToCodeDataset } from "../../constants/provider";
 import { videoQueue } from "../../utils/bullmq-queue";
-import { active_job_data, active_job_time, active_job_zset, magicVideoJobName, syncStudioJobName } from "../../env_var";
+import { active_job_data, active_job_time, active_job_zset, audio_prefix, image_prefix, magicVideoJobName, syncStudioJobName } from "../../env_var";
 import { redisClient } from "../../utils/redisClient";
 import { cleanupUploadedFiles } from "./controller";
+import { uploadFileToS3 } from "../../utils/s3";
 
 
 const inProgressVideoCache = async (userId: string, job: any) => {
@@ -46,7 +47,7 @@ const inProgressVideoCache = async (userId: string, job: any) => {
 export const magicVideoCreationService = async (req: Request, res: Response, next: NextFunction) => {
   try {
 
-    const { title, style, voiceGender, voiceLanguage, seconds, language } = videogeneraterZodValidation.parse(req.body);
+    const { title, style, voiceGender, voiceLanguage} = videogeneraterZodValidation.parse(req.body);
 
     const forShortName = `${voiceLanguage}${voiceGender}`;
 
@@ -56,16 +57,10 @@ export const magicVideoCreationService = async (req: Request, res: Response, nex
       return formatResponse(res, 400, "Invalid voice name", false, null);
     }
 
-    const code = languageToCodeDataset[language.toLowerCase() as keyof typeof languageToCodeDataset];
-
-    if (!code) {
-      return formatResponse(res, 400, "Invalid language", false, null);
-    }
-
     const userId = req.user.id;
 
     const task = {
-      title, code, style, seconds, language, voice: shortName, userId
+      title, style, voice: shortName, userId
     }
 
     //add task into queue
@@ -103,7 +98,7 @@ export const syncStudioCreationVideo = async (req: Request, res: Response, next:
   let audioPath: string = "";
   try {
     //first validate the input
-    const { description, character, title, style, language } = lipSyncZodValidation.parse(req.body);
+    const { description, character, title, style } = lipSyncZodValidation.parse(req.body);
 
     if (!req.files || !(req.files as any).image || !(req.files as any).audio) {
       cleanupUploadedFiles(req.files);
@@ -113,25 +108,25 @@ export const syncStudioCreationVideo = async (req: Request, res: Response, next:
     imagePath = (req.files as any).image[0].path;
     audioPath = (req.files as any).audio[0].path;
 
-    //upload image to cloudinary
-    const uploadResult = await uploadToCloudinary({
+    //upload image to s3
+    const uploadResult = await uploadFileToS3({
       filePath: imagePath,
-      folder: "zennvid/sync-studio",
-      resource_type: "image"
+      prefix: image_prefix,
+      contentType: "image/jpeg"
     });
 
-    //upload audio to cloudinary
-    const uploadAudioResult = await uploadToCloudinary({
+    //upload audio to s3
+    const uploadAudioResult = await uploadFileToS3({
       filePath: audioPath,
-      folder: "zennvid/sync-studio",
-      resource_type: "raw"
+      prefix: audio_prefix,
+      contentType: "audio/mpeg"
     })
 
-    if (!uploadResult || !uploadResult.publicId || !uploadResult.url) {
+    if (!uploadResult || !uploadResult.Key || !uploadResult.Location) {
       return formatResponse(res, 500, "Image upload failed", false, null);
     }
 
-    if (!uploadAudioResult || !uploadAudioResult.publicId || !uploadAudioResult.url) {
+    if (!uploadAudioResult || !uploadAudioResult.Key || !uploadAudioResult.Location) {
       return formatResponse(res, 500, "Audio upload failed", false, null);
     }
 
@@ -139,11 +134,17 @@ export const syncStudioCreationVideo = async (req: Request, res: Response, next:
 
     //add to queue
     const job = await videoQueue.add(syncStudioJobName, {
-      imageUrl: uploadResult.url,
-      audioUrl: uploadAudioResult.url,
+      imageData: {
+        Key: uploadResult.Key,
+        Location: uploadResult.Location,
+      },
+      audioData: {
+        Key: uploadAudioResult.Key,
+        Location: uploadAudioResult.Location,
+      },
       text: description,
       userId: req.user.id,
-      character, title, style, language
+      character, title, style
     });
 
     const cacheResult = await inProgressVideoCache(req.user.id, job);

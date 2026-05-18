@@ -1,8 +1,17 @@
 import { Client } from "@gradio/client";
-import { HF_TOKEN, VOICE_CLONE_REPO, VOICE_CLONE_REPO_API } from "../../env_var";
-import { uploadToCloudinary } from "../../utils/cloudinary";
+import { audio_prefix, HF_TOKEN, VOICE_CLONE_REPO, VOICE_CLONE_REPO_API } from "../../env_var";
+import fs from "fs/promises";
+import { uploadUrlToS3 } from "../../utils/s3";
 
-const voiceClone = async (audio: string, text: string, lang: string = "en") => {
+const voiceClone = async ({
+  audio,
+  text,
+  lang = "en",
+}: {
+  audio: string;
+  text: string;
+  lang: string;
+}) => {
   try {
 
     if (!HF_TOKEN || !VOICE_CLONE_REPO_API || !VOICE_CLONE_REPO) {
@@ -21,16 +30,34 @@ const voiceClone = async (audio: string, text: string, lang: string = "en") => {
       language: lang,
     });
 
-    const voiceData = await uploadToCloudinary({
-      filePath: (result.data as Array<any>)[0].url,
-      resource_type: "raw",
-      folder: "zennvid"
-    })
+    const url = (result.data as Array<any>)[0].url;
 
-    return voiceData;
+    if (!url) {
+      console.log("Voice cloning failed, no URL returned:", result);
+      return {
+        Key: "",
+        Location: "",
+      };
+    }
+
+    //save to s3
+    const finalAudio = await uploadUrlToS3({
+      prefix: audio_prefix,
+      url,
+      contentType: "audio/mpeg",
+    })
+    return {
+      Key: finalAudio?.Key,
+      Location: finalAudio?.Location,
+    }
+
+
   } catch (error: any) {
     console.log("Voice cloning error:", error);
-    return null;
+    return {
+      Key: "",
+      Location: "",
+    };
   }
 }
 

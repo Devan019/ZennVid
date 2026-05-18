@@ -10,17 +10,16 @@ export interface Error {
 }
 
 //video generater
-export const magicVideo = async ({ title, style, voiceGender, voiceLanguage, seconds, language }: {
+export const magicVideo = async ({ title, style, voiceGender, voiceLanguage, language }: {
   title: string,
   style: string,
   voiceGender: string,
   voiceLanguage: string,
-  seconds: number,
   language?: string
 }) => {
   try {
     const api = await axios_api.post(`${generateVideo}`, {
-      title, style, voiceGender, voiceLanguage, seconds, language
+      title, style, voiceGender, voiceLanguage, language
     }, {
       withCredentials: true
     })

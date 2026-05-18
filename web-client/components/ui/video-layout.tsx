@@ -11,7 +11,6 @@ import {
   VolumeX,
   Maximize,
   Download,
-  Share2,
   Calendar,
   Mic,
   Globe,

@@ -2,13 +2,12 @@ import e from "express";
 import cookieParser from "cookie-parser";
 import { AuthRouter } from "./auth/route";
 import cors from "cors"
-import { TestRouter } from "./test/route";
 import { OAuthRouter } from "./oauth/route";
 import { ApiRouter } from "./api/route";
 import connectToMongo from "./utils/mongoConnection";
 import { FRONTEND_URL, IP_ADDRESS, PORT } from "./env_var";
 import JobRouter from "./sse/videogen_event";
-import worker from "./workers/videogen_worker";
+import worker from "./worker";
 
 
 // import { rateLimit } from 'express-rate-limit'
@@ -43,7 +42,6 @@ app.use(e.static("public"));
 app.use(cookieParser());
 app.use(cors(corsOptions));
 app.use("/auth", AuthRouter);
-app.use("/test", TestRouter);
 app.use("/oauth", OAuthRouter);
 app.use("/api", ApiRouter);
 app.use("/jobstatus", JobRouter);
@@ -53,16 +51,13 @@ const startServer = async () => {
     console.log(`Server is running on port http://${IP_ADDRESS}:${PORT}`);
   });
 
+  // // //mongo connection
   await connectToMongo();
 
-  //run worker
-  worker.run()
-    .catch((err) => {
-      console.log("Error starting worker:", err);
-    })
-    .then(() => {
-      console.log("Worker started successfully");
-    })
+  // //run worker
+  await worker.run();
+  console.log("✅ Worker started and ready to process jobs...");
+
 }
 
 startServer()

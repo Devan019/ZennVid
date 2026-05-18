@@ -1,6 +1,6 @@
 import { Client } from "@gradio/client";
 import { HF_IMAGE_GEN_REPO, HF_IMAGE_GEN_REPO_API, HF_TOKEN } from "../../env_var";
-import { uploadToCloudinaryWithBuffer } from "../../utils/cloudinary";
+import { streamUploadWithBuffer } from "../../utils/cloudinary";
 import axios from "axios";
 
 const downloadImageAsBuffer = async (url: string) => {
@@ -39,7 +39,7 @@ const HFImageGen = async (prompt: string) => {
     const imageBuffer = await downloadImageAsBuffer(imageUrl);
 
     //upload to cloudinary
-    const imageData = await uploadToCloudinaryWithBuffer({
+    const imageData = await streamUploadWithBuffer({
       buffer: imageBuffer,
       resource_type: "image",
       folder: "zennvid",

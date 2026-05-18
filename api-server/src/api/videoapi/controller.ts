@@ -4,6 +4,7 @@ import { formatResponse } from "../../utils/formateResponse";
 
 import VideoGenerater from "../video_generater/models/VideoSave";
 import { getJobVideos } from "../video_generater/service";
+import { deleteFileFromS3 } from "../../utils/s3";
 // import redisClient from "../../utils/redisClient";
 
 export const getVideos = expressAsyncHandler(async (req: Request, res: Response) => {
@@ -41,7 +42,7 @@ export const deleteVideo = expressAsyncHandler(async (req: Request, res: Respons
       return formatResponse(res, 400, "User Not found", false, null);
     }
 
-    await VideoGenerater.findByIdAndDelete({ _id: videoId })
+    await VideoGenerater.findByIdAndDelete({videoId});
     // await redisClient.del(`zennvid:videos:${id}`)
     return formatResponse(res, 200, "Videos deleted successfully", true);
   } catch (error) {

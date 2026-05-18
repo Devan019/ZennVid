@@ -51,9 +51,7 @@ interface ApiVideo {
   videoUrl?: string;
 
   videoMetadata?: {
-    publicId: string;
-    resourceType: string;
-    format: string;
+    url: string;
   };
 }
 
@@ -430,13 +428,7 @@ const VideoGallery = () => {
       completedVids.map((video) => ({
         ...video,
 
-        videoUrl:
-          video.videoUrl ||
-          (video.videoMetadata
-            ? getCloudinaryUrl(
-              video.videoMetadata
-            )
-            : ""),
+        videoUrl: video.videoMetadata?.url || "",
 
         created_at:
           video.created_at ||
