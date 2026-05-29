@@ -13,6 +13,7 @@ import { RefreshToken } from "./model/RefreshToken";
 import { sha256Hex } from "../utils/cyrpto";
 import jwt from "jsonwebtoken";
 import { User } from "./model/User";
+import { v4 as uuidv4 } from "uuid";
 
 interface CacheUser {
   email: string,
@@ -41,9 +42,13 @@ export const autoSignInUserService = async (req: Request, res: Response, user: a
     const access_token = generateJWTtoken(payload, ACCESS_KEY, accessPeroidJwt);
     SetCookie(res, "access_token", access_token, accessPeroid); // 5 minutes - in miliseconds
 
+    //create new session id
+    const sessionId = uuidv4();
+
     //gen refresh token and cookie
     const refresh_token = generateJWTtoken({
       id: user._id.toString(),
+      sessionId
     }, REFRESH_KEY, refreshPeroidJwt);
     SetCookie(res, "refresh_token", refresh_token, refreshPeroid); // 7 days - in miliseconds
 
@@ -51,24 +56,13 @@ export const autoSignInUserService = async (req: Request, res: Response, user: a
     //hashed the refresh token before saving to db for security
     const hashedRefreshToken = await sha256Hex(refresh_token);
 
-    //if there is already a token for the user then update it, else create new
-    let existingToken = await RefreshToken.findOne({ user: user._id });
-
-    if (existingToken) {
-      //update token and exp
-      existingToken.token = hashedRefreshToken;
-      existingToken.expiresAt = new Date(Date.now() + refreshPeroid);
-      await existingToken.save();
-    } else {
-
-      //create new token
-      await RefreshToken.create({
-        user: user._id,
-        token: hashedRefreshToken,
-        expiresAt: new Date(Date.now() + refreshPeroid) // 7 days
-      })
-      
-    }
+    //create new token
+    await RefreshToken.create({
+      sessionId,
+      user: user._id,
+      token: hashedRefreshToken,
+      expiresAt: new Date(Date.now() + refreshPeroid) // 7 days
+    })
 
     //if ouath then redirect to frontend with token in cookie, if credentials then send response with token in cookie
     if (isOauth) {
@@ -172,9 +166,10 @@ export const logout = expressAsyncHandler(async (req: Request, res: Response, ne
 
     //id
     const userId = (decoed as any).id;
+    const sessionId = (decoed as any).sessionId;
 
     //delete refresh token from db
-    await RefreshToken.deleteMany({ user: userId });
+    await RefreshToken.deleteOne({ user: userId, token: await sha256Hex(refresh_token), sessionId });
 
     res.clearCookie("access_token", {
       httpOnly: true,
@@ -205,27 +200,31 @@ export const CreateAdmin = expressAsyncHandler(async (req: Request, res: Respons
 })
 
 export const revokeToken = expressAsyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-
   try {
-    //1.get refresh token from cookie
+    // 1. Get refresh token from cookie
     const { refresh_token } = req.cookies;
 
-    //2. if no refresh token then unauthorized
     if (!refresh_token) {
       return formatResponse(res, 401, "Unauthorized", false, null);
     }
 
-    // 3. Verify Refresh Token math
+    // 2. Verify Refresh Token math
     const decodedRefresh = jwt.verify(refresh_token, REFRESH_KEY ?? "") as any;
-    const { id } = decodedRefresh;
+    const { id, sessionId } = decodedRefresh;
 
     if (!id) return formatResponse(res, 401, "Unauthorized", false, null);
 
-    // 4. Check DB (Note: Make sure your schema uses 'user' depending on what you named it earlier!)
-    const tokenRecord = await RefreshToken.findOne({ user: id });
+    // 3. Hash the incoming token BEFORE querying the database
+    const hashedIncoming = await sha256Hex(refresh_token);
+
+    // 4. Check DB for this SPECIFIC session
+    const tokenRecord = await RefreshToken.findOne({
+      user: id,
+      sessionId: sessionId
+    });
 
     if (!tokenRecord) {
-      //delete cookies just in case
+      // If we don't find the token, it means it's either expired, logged out, or invalid.
       res.clearCookie("access_token", {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
@@ -239,13 +238,10 @@ export const revokeToken = expressAsyncHandler(async (req: Request, res: Respons
       return formatResponse(res, 401, "Unauthorized", false, null);
     }
 
-    // 5. Hash & Compare
-    const hashedIncoming = await sha256Hex(refresh_token);
-
-    //hacker req
+    //session is same but token is diff, means stolen token
     if (tokenRecord.token !== hashedIncoming) {
-      //clear all thing and do logout
-      await RefreshToken.deleteMany({ user: id });
+      //delete session from db to revoke all tokens of that session
+      await RefreshToken.deleteOne({ user: id, sessionId: sessionId });
 
       //clear cookies
       res.clearCookie("access_token", {
@@ -253,18 +249,16 @@ export const revokeToken = expressAsyncHandler(async (req: Request, res: Respons
         secure: process.env.NODE_ENV === "production",
         sameSite: "strict"
       });
-
       res.clearCookie("refresh_token", {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "strict"
       });
-
       return formatResponse(res, 401, "Unauthorized", false, null);
     }
 
 
-    // 6. user details
+    // 5. User details
     const userDetails = await User.findById(id).select("-password").lean();
     const userDoc = Array.isArray(userDetails) ? userDetails[0] : userDetails;
 
@@ -272,7 +266,7 @@ export const revokeToken = expressAsyncHandler(async (req: Request, res: Respons
       return formatResponse(res, 404, "User not found", false, null);
     }
 
-    // 7. Create the clean payload 
+    // 6. Create the clean payload 
     const payload = {
       id: String(userDoc._id),
       email: userDoc.email,
@@ -283,33 +277,28 @@ export const revokeToken = expressAsyncHandler(async (req: Request, res: Respons
       profilePicture: userDoc.profilePicture
     };
 
-    // 8. Generate NEW Access Token
+    // 7. Generate NEW Access Token
     const newAccessToken = jwt.sign(payload, ACCESS_KEY ?? "", { expiresIn: accessPeroidJwt });
-    SetCookie(res, "access_token", newAccessToken, accessPeroid); // 5 minutes - in miliseconds
+    SetCookie(res, "access_token", newAccessToken, accessPeroid);
 
-    //create new refresh token with same exp as old one
-    //calculte remaing time for refresh token
+    // 8. Generate NEW Refresh Token
     const remainingTime = tokenRecord.expiresAt.getTime() - Date.now();
+    const newRefreshToken = jwt.sign({ id, sessionId }, REFRESH_KEY ?? "", { expiresIn: `${remainingTime}ms` });
+    SetCookie(res, "refresh_token", newRefreshToken, remainingTime);
 
-    const newRefreshToken = jwt.sign({ id }, REFRESH_KEY ?? "", { expiresIn: `${remainingTime}ms` });
-    SetCookie(res, "refresh_token", newRefreshToken, remainingTime); // in miliseconds
-
-    //update in db
+    // 9. Update the CURRENT session's token in DB
     const hashedNewRefreshToken = await sha256Hex(newRefreshToken);
     tokenRecord.token = hashedNewRefreshToken;
     await tokenRecord.save();
 
-    //set cookie
+    // 10. Attach to request
     req.cookies.access_token = newAccessToken;
     req.cookies.refresh_token = newRefreshToken;
-
-    // 9. Attach to request
     req.user = payload;
 
     return formatResponse(res, 200, "Token refreshed successfully", true, null);
 
   } catch (refreshError) {
-    // Catch if the refresh token itself is expired or tampered with
     return formatResponse(res, 401, "Session expired. Please log in again.", false, null);
   }
-})
+});

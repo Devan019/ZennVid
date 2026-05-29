@@ -6,6 +6,10 @@ const RefreshTokenSchema = new Schema({
     required: true,
     index: true
   },
+  sessionId : {
+    type: String,
+    required: true,
+  },
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",

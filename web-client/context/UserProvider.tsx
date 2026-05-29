@@ -2,8 +2,7 @@
 
 import { getUser, logoutUser, resetUserApi } from "./api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createContext, useCallback, useContext, useEffect, useState } from "react";
-import { toast } from "sonner";
+import { createContext, useCallback, useContext} from "react";
 
 export type User = {
   username: string;
@@ -17,13 +16,9 @@ export type User = {
 }
 interface UserContextType {
   user: User | null;
-  setUser: (user: User | null) => void;
   isAuthenticated: boolean;
-  setIsAuthenticated: (isAuthenticated: boolean) => void;
   isLoading: boolean;
-  setIsLoading: (isLoading: boolean) => void;
   error: string | null;
-  setError: (error: string | null) => void;
   logout: () => void;
   resetUser: () => void;
 }
@@ -35,88 +30,55 @@ export const userContext = createContext<UserContextType | null>(null);
 export const UserProvider = ({ children }: {
   children: React.ReactNode;
 }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
-
-  const UserQuery = useQuery({
+  //1. Fetch user data using useQuery
+  const { data, isLoading, error: queryError } = useQuery({
     queryKey: ['getUser'],
-    queryFn: getUser,
-    enabled: false,
+    queryFn: getUser
   })
 
-  async function fetchUser() {
-    setIsLoading(true);
-    setError(null);
-    const { data } = await UserQuery.refetch();
-    if (!data.SUCCESS) {
-      setIsLoading(false);
-      return;
-    }
-    if (data?.DATA) { 
-      setUser(data.DATA.user);
-      setIsAuthenticated(true);
-    } else {
-      setIsAuthenticated(false);
-    }
-    setIsLoading(false);
-  }
+  // 2. Derive your state directly from the query cache
+  const user = data?.SUCCESS && data?.DATA ? data.DATA.user : null;
+  const isAuthenticated = !!user;
+  const error = queryError ? String(queryError) : null;
 
-  useEffect(() => {
-    if (!user && !isAuthenticated) {
-      fetchUser();
-    }
-  }, [user]);
 
-  const resetUser = async() => {
-    setUser(null);
-    setIsAuthenticated(false);
-
-    //reset user
+  const resetUser = async () => {
     await resetUserApi();
-    
-    //remove cache
-    queryClient.removeQueries({ queryKey: ['getUser'] })
-
-    //call fetch user to update state
-    await fetchUser();
-
-  }
+    // Invalidate forces all tabs looking at 'getUser' to refetch next time they are focused
+    queryClient.invalidateQueries({ queryKey: ['getUser'] }); 
+  };
 
   const doLogout = useMutation({
     mutationFn: async () => {
-      setIsLoading(true);
-      setError(null);
-      const data = await logoutUser();
-      setIsAuthenticated(false);
-      setUser(null);
-      setIsLoading(false);
-      return data;
+      const res = await logoutUser();
+      return res;
     },
-    onSuccess: (data: any) => {
-      if (!data.SUCCESS) {
-        // toast.error(data.MESSAGE);
-        return;
-      }
-      setUser(null);
-      setIsAuthenticated(false);
-    },
-    onError: (error: any) => {
-      setError(error.message || "Failed to logout");
-    },
+    onSuccess: (res: any) => {
+      if (!res.SUCCESS) return;
+      // Clear the cache instantly. This forces 'user' to become null.
+      queryClient.setQueryData(['getUser'], null); 
+      // Also invalidate so other tabs know the data is gone
+      queryClient.invalidateQueries({ queryKey: ['getUser'] });
+      window.location.href = '/';
+    }
   });
 
 
   const logout = useCallback(() => {
     doLogout.mutate();
-    window.location.href = '/';
   }, [doLogout]);
 
   return (
-    <userContext.Provider value={{ user, setUser, isAuthenticated, setIsAuthenticated, isLoading, setIsLoading, error, setError, logout, resetUser }}>
+   <userContext.Provider value={{ 
+      user, 
+      isAuthenticated, 
+      isLoading, 
+      error, 
+      logout, 
+      resetUser 
+    }}>
       {children}
     </userContext.Provider>
   );

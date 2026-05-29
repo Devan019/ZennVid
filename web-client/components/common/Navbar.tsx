@@ -19,7 +19,7 @@ interface URLS {
 
 export const Navbar = ({ setMenuOpen }: NavbarProps) => {
   const router = useRouter();
-  const { user, isAuthenticated } = useUser();
+  const { user, isAuthenticated, logout, isLoading } = useUser();
 
   const [isDarkSection, setIsDarkSection] = useState(false);
 
@@ -76,6 +76,40 @@ export const Navbar = ({ setMenuOpen }: NavbarProps) => {
   const borderColor = isDarkSection
     ? "bg-white"
     : "bg-black";
+
+    if(isLoading){
+      return (
+        <motion.nav
+          initial={{ y: -100 }}
+          animate={{ y: 0 }}
+          transition={{
+            duration: 1,
+            ease: [0.22, 1, 0.36, 1],
+          }}
+          className="
+            fixed
+            top-0
+            left-0
+            z-50
+            flex
+            w-full
+            items-center
+            justify-between
+            px-6
+            py-8
+            md:px-10
+            transition-colors
+            duration-500
+          "
+        >
+          <div className="h-6 w-24 animate-pulse rounded bg-gray-300" />
+          <div className="flex items-center gap-8">
+            <div className="h-6 w-16 animate-pulse rounded bg-gray-300" />
+          </div>
+        </motion.nav>
+      )
+    }
+  
 
   return (
     <motion.nav
@@ -219,6 +253,45 @@ export const Navbar = ({ setMenuOpen }: NavbarProps) => {
               </AvatarFallback>
             </Avatar>
           </motion.div>
+        )}
+
+        {/* logout button */}
+        {isAuthenticated && (
+          <motion.button
+            whileHover={{
+              scale: 1.04,
+            }}
+            whileTap={{
+              scale: 0.96,
+            }}
+            transition={{
+              type: "spring",
+              stiffness: 300,
+              damping: 20,
+            }}
+            onClick={logout}
+            className={`
+              hidden
+              md:flex
+              items-center
+              justify-center
+              rounded-full
+              px-6
+              py-3
+              text-[11px]
+              font-medium
+              uppercase
+              tracking-[0.22em]
+              transition-all
+              duration-500
+              ${isDarkSection
+                ? "bg-white text-black hover:bg-white/90"
+                : "bg-black text-white hover:bg-black/90"
+              }
+            `}
+          >
+            Logout
+          </motion.button>
         )}
 
         {/* MENU BUTTON */}

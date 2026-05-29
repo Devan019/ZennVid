@@ -42,7 +42,7 @@ export const deleteVideo = expressAsyncHandler(async (req: Request, res: Respons
       return formatResponse(res, 400, "User Not found", false, null);
     }
 
-    await VideoGenerater.findByIdAndDelete({videoId});
+    await VideoGenerater.findOneAndDelete({_id : videoId, user: id});
     // await redisClient.del(`zennvid:videos:${id}`)
     return formatResponse(res, 200, "Videos deleted successfully", true);
   } catch (error) {

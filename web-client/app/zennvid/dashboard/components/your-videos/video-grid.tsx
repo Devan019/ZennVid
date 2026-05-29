@@ -129,6 +129,7 @@ export const VideoCard = ({
         "
       >
         <video
+          preload="metadata"
           ref={videoRef}
           className="
             h-full

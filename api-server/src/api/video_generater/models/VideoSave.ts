@@ -39,6 +39,7 @@ const videoGeneraterSchema = new mongoose.Schema({
 //add post remove hook to delete video from s3
 videoGeneraterSchema.post('findOneAndDelete', async function (doc) {
   if (doc.videoMetadata?.key) {
+    console.log(`Deleting video from S3 with key: ${doc.videoMetadata.key}`);
     await deleteFileFromS3(doc.videoMetadata.key);
   }
 })

@@ -12,6 +12,8 @@ import {
   SlidersHorizontal,
   Sparkles,
   Info,
+  Trash2,
+  X,
 } from "lucide-react";
 import {
   VideoData,
@@ -31,11 +33,11 @@ import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { FaSignsPost } from "react-icons/fa6";
 import Modal from "@/components/common/Modal";
-import { getCloudinaryUrl } from "@/lib/getPublicUrl";
 import { jobStatus } from "@/constants/backend_routes";
 import Loader from "@/components/common/Loader";
 import VideoPreviewDialog from "../magic-video/downloadVideo";
 import { ProgressVideoCard } from "./progress-video-card";
+import { AnimatePresence, motion } from "framer-motion";
 
 interface ApiVideo {
   _id: string;
@@ -85,40 +87,18 @@ const VideoGallery = () => {
     thumbnail: string;
   }
 
-  const [videoCards, setVideoCards] =
-    useState<VideoCardType[]>([]);
+  const [videoCards, setVideoCards] = useState<VideoCardType[]>([]);
+  const [allVideos, setAllVideos] = useState<VideoCardType[]>([]);
+  const [progressVideos, setProgressVideos] = useState<Map<string, ProgressVideo>>(new Map());
+  const [query, setQuery] = useState("");
+  const [filterType, setFilterType] = useState("all");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
+  const [activeVideo, setActiveVideo] = useState<VideoData | null>(null);
+  const [isOpen, setisOpen] = useState(false);
+  const [completedVideoUrl, setCompletedVideoUrl] = useState("");
 
-  const [allVideos, setAllVideos] =
-    useState<VideoCardType[]>([]);
-
-  const [
-    progressVideos,
-    setProgressVideos,
-  ] = useState<
-    Map<string, ProgressVideo>
-  >(new Map());
-
-  const [query, setQuery] =
-    useState("");
-
-  const [filterType, setFilterType] =
-    useState("all");
-
-  const [
-    debouncedQuery,
-    setDebouncedQuery,
-  ] = useState("");
-
-  const [activeVideo, setActiveVideo] =
-    useState<VideoData | null>(null);
-
-  const [isOpen, setisOpen] =
-    useState(false);
-
-  const [
-    completedVideoUrl,
-    setCompletedVideoUrl,
-  ] = useState("");
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [videoToDelete, setVideoToDelete] = useState<string | null>(null);
 
   const [
     showCompletionDialog,
@@ -492,69 +472,56 @@ const VideoGallery = () => {
     }
   }, [videoQuery.data]);
 
-  const handleVideoDelete = (
-    id: string
-  ) => {
-    setDeletingIds((prev) =>
-      Array.from(
-        new Set([...prev, id])
-      )
-    );
+  // 1. Triggered when the user clicks "Delete" on a video card
+  const initiateDelete = (id: string) => {
+    setVideoToDelete(id);
+    setShowDeleteModal(true);
+  };
 
+  // 2. Triggered when the user clicks "Cancel" in the modal or clicks outside
+  const cancelDelete = () => {
+    setShowDeleteModal(false);
+    setVideoToDelete(null);
+  };
+
+  // 3. Triggered when the user clicks "Delete" inside the modal confirmation
+  const confirmDelete = () => {
+    if (!videoToDelete) return;
+
+    const id = videoToDelete;
+
+    // Close modal immediately for better UX
+    setShowDeleteModal(false);
+    setVideoToDelete(null);
+
+    // Start loading state for that specific video
+    setDeletingIds((prev) => Array.from(new Set([...prev, id])));
+
+    // Run your existing mutation logic
     deleteMutation.mutate(id, {
       onSuccess: (data: any) => {
         if (!data.SUCCESS) {
-          toast.error(
-            data.MESSAGE
-          );
-
-          setDeletingIds((prev) =>
-            prev.filter(
-              (x) => x !== id
-            )
-          );
-
+          toast.error(data.MESSAGE);
+          setDeletingIds((prev) => prev.filter((x) => x !== id));
           return;
         }
 
-        setAllVideos(
-          (prevVideos) =>
-            prevVideos.filter(
-              (video) =>
-                video?.id !== id
-            )
+        setAllVideos((prevVideos) =>
+          prevVideos.filter((video) => video?.id !== id)
         );
 
         setVideoCards((prev) =>
-          prev.filter(
-            (video) =>
-              video?.id !== id
-          )
+          prev.filter((video) => video?.id !== id)
         );
 
-        toast.success?.(
-          "Deleted video"
-        );
-
+        toast.success("Deleted video");
         videoQuery.refetch();
 
-        setDeletingIds((prev) =>
-          prev.filter(
-            (x) => x !== id
-          )
-        );
+        setDeletingIds((prev) => prev.filter((x) => x !== id));
       },
-
       onError: () => {
-        toast.error(
-          "Failed to delete video"
-        );
-
-        setDeletingIds((prev) =>
-          prev.filter(
-            (x) => x !== id
-          )
-        );
+        toast.error("Failed to delete video");
+        setDeletingIds((prev) => prev.filter((x) => x !== id));
       },
     });
   };
@@ -569,13 +536,11 @@ const VideoGallery = () => {
 
   const handleVideoDownload =
     async (video: VideoData) => {
+      console.log("Downloading video:", video);
       try {
         const response =
           await fetch(
-            video.videoUrl,
-            {
-              mode: "cors",
-            }
+            video.videoUrl
           );
 
         const blob =
@@ -1033,7 +998,7 @@ const VideoGallery = () => {
               <VideoLayoutGrid
                 cards={videoCards}
                 onDelete={
-                  handleVideoDelete
+                  initiateDelete
                 }
                 onShare={
                   handleVideoShare
@@ -1048,6 +1013,126 @@ const VideoGallery = () => {
             </div>
           )}
       </div>
+      <AnimatePresence>
+        {showDeleteModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="
+              fixed
+              inset-0
+              z-[999]
+              flex
+              items-center
+              justify-center
+              bg-black/50
+              p-4
+              backdrop-blur-sm
+            "
+            onClick={cancelDelete}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              transition={{ duration: 0.2 }}
+              onClick={(e) => e.stopPropagation()}
+              className="
+                w-full
+                max-w-md
+                rounded-3xl
+                border
+                border-white/10
+                bg-white
+                p-7
+                shadow-2xl
+              "
+            >
+              <div className="flex items-start justify-between">
+                <div
+                  className="
+                    flex
+                    h-14
+                    w-14
+                    items-center
+                    justify-center
+                    rounded-2xl
+                    bg-red-100
+                  "
+                >
+                  <Trash2 className="h-7 w-7 text-red-500" />
+                </div>
+
+                <button
+                  onClick={cancelDelete}
+                  className="
+                    flex
+                    h-10
+                    w-10
+                    items-center
+                    justify-center
+                    rounded-full
+                    transition-colors
+                    hover:bg-black/5
+                  "
+                >
+                  <X className="h-5 w-5 text-black/60" />
+                </button>
+              </div>
+
+              <div className="mt-6">
+                <h2 className="text-2xl font-semibold text-black">
+                  Delete Video?
+                </h2>
+                <p className="mt-3 text-sm leading-relaxed text-black/60">
+                  Are you sure you want to delete this video? This action
+                  cannot be undone.
+                </p>
+              </div>
+
+              <div className="mt-8 flex items-center gap-3">
+                <button
+                  onClick={cancelDelete}
+                  className="
+                    flex-1
+                    rounded-2xl
+                    border
+                    border-black/10
+                    px-5
+                    py-3
+                    text-sm
+                    font-medium
+                    text-black
+                    transition-all
+                    hover:bg-black/5
+                  "
+                >
+                  Cancel
+                </button>
+
+                <button
+                  onClick={confirmDelete}
+                  className="
+                    flex-1
+                    rounded-2xl
+                    bg-red-500
+                    px-5
+                    py-3
+                    text-sm
+                    font-medium
+                    text-white
+                    transition-all
+                    hover:bg-red-600
+                  "
+                >
+                  Delete
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 };
