@@ -11,6 +11,7 @@ import FeedRouter from "./feed/route";
 import multer from "multer";
 import path from "path";
 import { animeMatching } from "./anime/controller";
+import { checkSyncStudioRateLimit, checkMagicStudioRateLimit } from "../utils/rate-limiting";
 
 export const ApiRouter = Router();
 
@@ -40,10 +41,10 @@ ApiRouter.post("/update-credit", isAuthenticated, updateCredit);
 
 /**videoapi */
 /** prompt to video gen */
-ApiRouter.post("/magic-video",isAuthenticated ,magicVideo);
+ApiRouter.post("/magic-video",isAuthenticated, checkMagicStudioRateLimit ,magicVideo);
 ApiRouter.get("/videos", isAuthenticated, getVideos);
 /** sadtalker */
-ApiRouter.post("/syncstudio-video", isAuthenticated, upload.fields([{name: "image", maxCount: 1}, {name: "audio", maxCount: 1}]), syncStudio);
+ApiRouter.post("/syncstudio-video", isAuthenticated,checkSyncStudioRateLimit, upload.fields([{name: "image", maxCount: 1}, {name: "audio", maxCount: 1}]), syncStudio);
 /** delete */
 ApiRouter.delete("/videos/:videoId", isAuthenticated, deleteVideo);
 

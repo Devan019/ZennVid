@@ -1,9 +1,8 @@
 import { Job, Worker } from "bullmq";
 import { magicVideoJobName, queueName, syncStudioJobName, videoUploadJobName } from "../env_var";
 import { magicStudioTask } from "./tasks/magic_studio";
-import { syncStudioTask } from "./tasks/sync_studio";
+import { syncStudioTask, tmpTask } from "./tasks/sync_studio";
 import { redisClient } from "../utils/redisClient";
-import { videoSaveTask } from "./tasks/video_save";
 
 
 
@@ -19,11 +18,7 @@ const worker = new Worker(
         return await magicStudioTask(job);
       case syncStudioJobName:
         //call sync studio api
-        return await syncStudioTask(job);
-      case videoUploadJobName:
-        //call video upload api
-        // return await videoUploadTask(job);
-        return await videoSaveTask(job);
+        return await tmpTask(job);
       default:
         throw new Error(`Unhandled job type: ${job.name}`);
     }

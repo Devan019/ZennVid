@@ -107,48 +107,54 @@ const syncStudioTask = async (job: Job) => {
   }
 }
 
-// const tmpTask = async (job: Job) => {
-//   try {
-//     const {userId} = job.data;
+const tmpTask = async (job: Job) => {
+  try {
+    const {userId, audioData, imageData} = job.data;
     
-//     //delay function for testing
-//     const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+    //delay function for testing
+    const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-//     await delay(3000);
-//     //10% job progress
-//     await job.updateProgress({
-//       stage: "script_generated",
-//       percent : 10,
-//       status: "progress",
-//       userId 
-//     }); 
+    await delay(1000);
+    //10% job progress
+    await job.updateProgress({
+      stage: "script_generated",
+      percent : 10,
+      status: "progress",
+      userId 
+    }); 
 
-//     await delay(9000);
-//     await job.updateProgress({
-//       stage : "video_pipline",
-//       percent: 60,
-//       status: "progress",
-//       userId
-//     })
+    await delay(9000);
+    await job.updateProgress({
+      stage : "video_pipline",
+      percent: 60,
+      status: "progress",
+      userId
+    })
 
-//     await delay(3000);
-//     return {
-//       videoUrl: "https://zennvid-ai.s3.ap-south-1.amazonaws.com/videos/db7c35bf-f3ac-4414-a9e4-88411dc65cab",
-//       stage: "video_generated",
-//       percent: 100,
-//       status: "completed",
-//       userId
-//     }
-//   } catch (error) {
-//     console.log('Error in tmpTask:', error);
-//     return {
-//       Key: "",
-//       Location: "",
-//       error: (error as Error).message || 'Video generation failed',
-//       percent: 100,
-//       status: "failed",
-//     }
-//   }
-// }
+    await delay(20000);
 
-export {syncStudioTask}
+    //delete uploaded image and audio 
+    await deleteFileFromS3(imageData.Key, S3_PRIVATE_BUCKET!).catch(err => console.log(`Failed to delete image ${imageData.Key}:`, err));
+
+    await deleteFileFromS3(audioData.Key, S3_PRIVATE_BUCKET!).catch(err => console.log(`Failed to delete audio ${audioData.Key}:`, err));
+
+    return {
+      videoUrl: "https://zennvid-ai.s3.ap-south-1.amazonaws.com/videos/db7c35bf-f3ac-4414-a9e4-88411dc65cab",
+      stage: "video_generated",
+      percent: 100,
+      status: "completed",
+      userId
+    }
+  } catch (error) {
+    console.log('Error in tmpTask:', error);
+    return {
+      Key: "",
+      Location: "",
+      error: (error as Error).message || 'Video generation failed',
+      percent: 100,
+      status: "failed",
+    }
+  }
+}
+
+export {syncStudioTask, tmpTask};

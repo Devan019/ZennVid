@@ -4,6 +4,7 @@ import { formatResponse } from "../../utils/formateResponse";
 import { magicVideoCreationService, syncStudioCreationVideo } from "./service";
 import fs from "fs";
 import VideoGenerater from "./models/VideoSave";
+import {videoQueue} from "../../utils/bullmq-queue"
 
 export interface scriptModule {
   prompt: string,
@@ -39,6 +40,14 @@ export const magicVideo = expressAsyncHandler(async (req: Request, res: Response
     if (req.user.credits < 20) {
       return formatResponse(res, 400, "Not enough credits", false, null);
     }
+
+    //check job in queue, if already is working then just return "at a time 1 video can be generated, please wait"
+    const job = await videoQueue.getActive().then(jobs => jobs.find(j => j.data.userId === req.user.id));
+    if (job) {
+      return formatResponse(res, 400, "A video is already being generated, please wait", false, null);
+    }
+
+
     return await magicVideoCreationService(req, res, next);
   } catch (error) {
     return formatResponse(res, 500, "Internal server error", false, error);
@@ -51,6 +60,15 @@ export const syncStudio = expressAsyncHandler(async (req: Request, res: Response
       cleanupUploadedFiles(req.files);
       return formatResponse(res, 400, "Not enough credits", false, null);
     }
+
+    //check job in queue, if already is working then just return "at a time 1 video can be generated, please wait"
+    const job = await videoQueue.getActive().then(jobs => jobs.find(j => j.data.userId === req.user.id));
+    if (job) {
+      //first cleanup the uploaded files
+      cleanupUploadedFiles(req.files);
+      return formatResponse(res, 400, "A video is already being generated, please wait", false, null);
+    }
+
     return await syncStudioCreationVideo(req, res, next);
   } catch (error) {
     return formatResponse(res, 500, "Internal server error", false, error);
