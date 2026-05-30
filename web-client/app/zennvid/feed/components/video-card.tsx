@@ -35,12 +35,10 @@ export interface IFeed {
 
   video: {
     _id: string;
-    videoUrl: string;
 
     videoMetadata?: {
-      publicId: string;
-      resourceType: string;
-      format: string;
+      key: string;
+      url: string;
     };
 
     type: string;
@@ -269,8 +267,7 @@ export function VideoCard({
           >
             <video
               src={
-                feed?.video
-                  ?.videoUrl
+                feed?.video?.videoMetadata?.url
               }
               ref={videoRef}
               className="

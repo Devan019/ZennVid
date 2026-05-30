@@ -1,5 +1,5 @@
 import { Client } from "@gradio/client";
-import { audio_prefix, HF_TOKEN, VOICE_CLONE_REPO, VOICE_CLONE_REPO_API } from "../../env_var";
+import { audio_prefix, HF_TOKEN, S3_PRIVATE_BUCKET, VOICE_CLONE_REPO, VOICE_CLONE_REPO_API } from "../../env_var";
 import fs from "fs/promises";
 import { uploadUrlToS3 } from "../../utils/s3";
 
@@ -45,6 +45,7 @@ const voiceClone = async ({
       prefix: audio_prefix,
       url,
       contentType: "audio/mpeg",
+      Bucket: S3_PRIVATE_BUCKET!
     })
     return {
       Key: finalAudio?.Key,

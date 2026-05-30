@@ -6,7 +6,7 @@ import { uploadToCloudinary } from "../../utils/cloudinary";
 import fs from "fs";
 import { languageToCodeDataset } from "../../constants/provider";
 import { videoQueue } from "../../utils/bullmq-queue";
-import { active_job_data, active_job_time, active_job_zset, audio_prefix, image_prefix, magicVideoJobName, syncStudioJobName } from "../../env_var";
+import { active_job_data, active_job_time, active_job_zset, audio_prefix, image_prefix, magicVideoJobName, S3_PRIVATE_BUCKET, syncStudioJobName } from "../../env_var";
 import { redisClient } from "../../utils/redisClient";
 import { cleanupUploadedFiles } from "./controller";
 import { uploadFileToS3 } from "../../utils/s3";
@@ -112,14 +112,16 @@ export const syncStudioCreationVideo = async (req: Request, res: Response, next:
     const uploadResult = await uploadFileToS3({
       filePath: imagePath,
       prefix: image_prefix,
-      contentType: "image/jpeg"
+      contentType: "image/jpeg",
+      Bucket: S3_PRIVATE_BUCKET!
     });
 
     //upload audio to s3
     const uploadAudioResult = await uploadFileToS3({
       filePath: audioPath,
       prefix: audio_prefix,
-      contentType: "audio/mpeg"
+      contentType: "audio/mpeg",
+      Bucket: S3_PRIVATE_BUCKET!
     })
 
     if (!uploadResult || !uploadResult.Key || !uploadResult.Location) {

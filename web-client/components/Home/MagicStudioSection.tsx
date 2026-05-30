@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { FRONTEND_ROUTES } from "@/constants/frontend_routes";
 
 export const MagicStudioSection = () => {
+  const videoUrl = "https://cdn.zennvid.tech/media/magic_video.mp4";
   const router = useRouter();
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -82,7 +83,7 @@ export const MagicStudioSection = () => {
                 `}
               >
                 <source
-                  src="https://res.cloudinary.com/dpnae0bod/video/upload/v1778478670/zennvid/arkdth7uddlusktwtpnm.mp4"
+                  src={videoUrl}
                   type="video/mp4"
                 />
               </video>

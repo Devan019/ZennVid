@@ -328,6 +328,9 @@ const VideoGallery = () => {
     },
 
     queryKey: ["videos"],
+    staleTime: 55 * 60 * 1000, //auto refetch after 55 min
+    refetchInterval: 55 * 60 * 1000, //auto call after 55 min
+    refetchOnWindowFocus: false,
   });
 
   const deleteMutation = useMutation({
@@ -530,7 +533,6 @@ const VideoGallery = () => {
     video: VideoData
   ) => {
     setActiveVideo(video);
-
     setisOpen(true);
   };
 
@@ -591,68 +593,76 @@ const VideoGallery = () => {
       </div>
 
       <button
+        disabled={feedPostMutation.isPending}
         onClick={() => {
           feedPostMutation.mutate(
             {
-              userId:
-                user?._id as string,
-
-              videoId:
-                activeVideo?._id as string,
+              userId: user?._id as string,
+              videoId: activeVideo?._id as string,
             },
 
             {
-              onSuccess: (
-                data: any
-              ) => {
+              onSuccess: (data: any) => {
                 if (!data.SUCCESS) {
-                  toast.error(
-                    data.MESSAGE
-                  );
-
+                  toast.error(data.MESSAGE);
                   return;
                 }
 
-                toast.success(
-                  "Posted to feed"
-                );
+                toast.success("Posted to feed");
               },
 
               onError: () => {
-                toast.error(
-                  "Failed to post to feed"
-                );
+                toast.error("Failed to post to feed");
               },
 
               onSettled: () => {
                 setisOpen(false);
-
-                setActiveVideo(
-                  null
-                );
+                setActiveVideo(null);
               },
             }
           );
         }}
         className="
-          flex
-          items-center
-          gap-3
-          rounded-2xl
-          bg-black
-          px-6
-          py-4
-          text-sm
-          uppercase
-          tracking-[0.2em]
-          text-white
-          transition-all
-          hover:opacity-90
-        "
+    flex
+    items-center
+    justify-center
+    gap-3
+    rounded-2xl
+    bg-black
+    px-6
+    py-4
+    text-sm
+    uppercase
+    tracking-[0.2em]
+    text-white
+    transition-all
+    hover:opacity-90
+    disabled:cursor-not-allowed
+    disabled:opacity-50
+  "
       >
-        POST TO FEED
+        {feedPostMutation.isPending ? (
+          <>
+            <div
+              className="
+          h-4
+          w-4
+          animate-spin
+          rounded-full
+          border-2
+          border-white
+          border-t-transparent
+        "
+            />
 
-        <FaSignsPost />
+            Posting...
+          </>
+        ) : (
+          <>
+            POST TO FEED
+            <FaSignsPost />
+          </>
+        )}
       </button>
     </div>
   );

@@ -22,6 +22,9 @@ export const IntroVideo = ({
   setIntroFinished,
   setIntroReady,
 }: IntroVideoProps) => {
+  
+  const videoUrl = "https://cdn.zennvid.tech/media/zenvvid_bg.mp4";
+  
   return (
     <AnimatePresence>
       {!introFinished && (
@@ -53,7 +56,7 @@ export const IntroVideo = ({
             autoPlay
             muted
             playsInline
-            preload="auto"
+            preload="metadata"
             onCanPlayThrough={() =>
               setIntroReady(true)
             }
@@ -69,7 +72,7 @@ export const IntroVideo = ({
             "
           >
             <source
-              src="https://res.cloudinary.com/dpnae0bod/video/upload/v1778564088/zenvvidbg_weihbz.mp4"
+              src={videoUrl}
               type="video/mp4"
             />
           </video>

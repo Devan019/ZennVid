@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { FRONTEND_ROUTES } from "@/constants/frontend_routes";
 
 export const SyncStudioSection = () => {
+  const videoUrl = "https://cdn.zennvid.tech/media/sync_video.mp4";
   const router = useRouter();
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -172,7 +173,7 @@ export const SyncStudioSection = () => {
                 `}
               >
                 <source
-                  src="https://res.cloudinary.com/dpnae0bod/video/upload/v1778479406/zennvid/eob5lygksgittq1hmmla.mp4"
+                  src={videoUrl}
                   type="video/mp4"
                 />
               </video>

@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { deleteFileFromS3 } from "../../../utils/s3";
+import { S3_PRIVATE_BUCKET, S3_PUBLIC_BUCKET } from "../../../env_var";
 
 export enum VideoType {
   MAGIC_STUDIO_VIDEO = "magic_studio_video",
@@ -40,7 +41,12 @@ const videoGeneraterSchema = new mongoose.Schema({
 videoGeneraterSchema.post('findOneAndDelete', async function (doc) {
   if (doc.videoMetadata?.key) {
     console.log(`Deleting video from S3 with key: ${doc.videoMetadata.key}`);
-    await deleteFileFromS3(doc.videoMetadata.key);
+
+    //delete from private bucket
+    await deleteFileFromS3(doc.videoMetadata.key, S3_PRIVATE_BUCKET!).catch(err => console.log(`Failed to delete video ${doc.videoMetadata.key}:`, err));
+
+    //delete from public bucket
+    await deleteFileFromS3(doc.videoMetadata.key, S3_PUBLIC_BUCKET!).catch(err => console.log(`Failed to delete video ${doc.videoMetadata.key} from public bucket:`, err));
   }
 })
 

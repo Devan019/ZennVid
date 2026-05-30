@@ -3,6 +3,7 @@ import { User } from "../../auth/model/User";
 import { syncStudioVideo } from "../../AI Layer/service";
 import Video, { VideoType } from "../../api/video_generater/models/VideoSave";
 import { deleteFileFromS3 } from "../../utils/s3";
+import { S3_PRIVATE_BUCKET } from "../../env_var";
 
 const syncStudioTask = async (job: Job) => {
   try {
@@ -49,10 +50,10 @@ const syncStudioTask = async (job: Job) => {
 
     //delete uploaded image and audio from cloudinary
     // image
-    await deleteFileFromS3(imageData.Key);
+    await deleteFileFromS3(imageData.Key, S3_PRIVATE_BUCKET!).catch(err => console.log(`Failed to delete image ${imageData.Key}:`, err));
 
     // //audio
-    await deleteFileFromS3(audioData.Key);
+    await deleteFileFromS3(audioData.Key, S3_PRIVATE_BUCKET!).catch(err => console.log(`Failed to delete audio ${audioData.Key}:`, err));
 
     if (!data || !data.Location || !data.Key) {
       //sent sse to frontend to notify video gen failed

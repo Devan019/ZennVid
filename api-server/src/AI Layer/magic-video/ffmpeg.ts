@@ -5,7 +5,7 @@ import os from "os";
 import { v4 as uuidv4 } from "uuid";
 import dotenv from "dotenv";
 import { uploadFileToS3 } from "../../utils/s3";
-import { video_prefix } from "../../env_var";
+import { S3_PRIVATE_BUCKET, video_prefix } from "../../env_var";
 
 
 dotenv.config();
@@ -174,6 +174,7 @@ export const createVideo = async ({
               filePath: videoPath,
               prefix: video_prefix,
               contentType: "video/mp4",
+              Bucket: S3_PRIVATE_BUCKET!
             });
 
             if (!res) {

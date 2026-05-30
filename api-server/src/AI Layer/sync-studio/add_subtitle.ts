@@ -3,7 +3,7 @@ import path from "path";
 import os from "os";
 import ffmpeg from "fluent-ffmpeg";
 import { uploadFileToS3 } from "../../utils/s3";
-import { video_prefix } from "../../env_var";
+import { S3_PRIVATE_BUCKET, video_prefix } from "../../env_var";
 
 interface Caption {
   id: number;
@@ -80,7 +80,8 @@ export const addSubtitles = async ({
     const videoData = await uploadFileToS3({
       filePath: outputPath,
       prefix: video_prefix,
-      contentType: "video/mp4"
+      contentType: "video/mp4",
+      Bucket: S3_PRIVATE_BUCKET!
     });
 
     return videoData;

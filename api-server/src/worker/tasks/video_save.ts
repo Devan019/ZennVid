@@ -1,7 +1,7 @@
 import { Job } from "bullmq";
 import fs from "fs";
 import { uploadFileToS3 } from "../../utils/s3";
-import { video_prefix } from "../../env_var";
+import { S3_PRIVATE_BUCKET, video_prefix } from "../../env_var";
 import Video from "../../api/video_generater/models/VideoSave";
 
 //helper fun to delete file from local storage
@@ -30,6 +30,7 @@ const videoSaveTask = async (job: Job) => {
       filePath: videoPath,
       prefix: video_prefix,
       contentType: "video/mp4",
+      Bucket: S3_PRIVATE_BUCKET!
     })
 
     if(!res){

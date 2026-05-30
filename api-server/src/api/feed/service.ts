@@ -1,37 +1,72 @@
-import Feed from "./feed";
+import {  moveKeyToPublicS3 } from "../../utils/s3";
+import Video from "../video_generater/models/VideoSave";
+import Feed from "./model";
 
-const createFeedService = async(
+const createFeedService = async (
   {
     userId,
     videoId,
-  } : {
+  }: {
     userId: string,
     videoId: string,
   }
 ) => {
-  
+
   try {
+    //update url at video model 
+    const fvideo = await Feed.findOne({ video: videoId });
+    if(fvideo){
+      return {
+        status: 200,
+        message: "Video already exists in feed",
+        data: null,
+        success: false
+      }
+    }
+
+    const video = await Video.findById(videoId);
+
+    if (!video) {
+      return {
+        status: 404,
+        message: "Video not found",
+        data: null,
+        success: false
+      }
+    }
+
+    //move to public
+    const uploadPublic = await moveKeyToPublicS3({
+      key: video.videoMetadata.key,
+      contentType: "video/mp4"
+    })
+
+    //update video
+    video.videoMetadata.url = uploadPublic?.Location ?? video.videoMetadata.url;
+    await video.save();
+
+    //create feed
     const feed = await Feed.create({
       user: userId,
       video: videoId,
     });
     return {
-      status : 201,
-      message : "Feed created successfully",
-      data : feed,
+      status: 201,
+      message: "Feed created successfully",
+      data: feed,
       success: true
     }
   } catch (error) {
     return {
-      status : 500,
-      message : "Internal server error",
-      data : error,
+      status: 500,
+      message: "Internal server error",
+      data: error,
       success: false
     }
   }
 }
 
-const getFeedsService = async() => {
+const getFeedsService = async () => {
   try {
     const feeds = await Feed.find({})
       .populate('user', 'username profilePicture')
@@ -40,7 +75,7 @@ const getFeedsService = async() => {
         select: 'type title style language voiceCharacter videoMetadata',
       })
       .populate('comments.user', 'username profilePicture')
-      // .populate('video.videoMetadata', 'publicId formate resourceType')
+      .populate('video.videoMetadata', 'url')
       .sort({ createdAt: -1 });
     return {
       status: 200,
@@ -50,18 +85,18 @@ const getFeedsService = async() => {
     }
   } catch (error) {
     return {
-      status : 500,
-      message : "Internal server error",
-      data : error,
+      status: 500,
+      message: "Internal server error",
+      data: error,
       success: false
     }
   }
 }
 
-const deletedFeedService = async(
+const deletedFeedService = async (
   {
     feedId
-  } : {
+  }: {
     feedId: string
   }
 ) => {
@@ -83,27 +118,27 @@ const deletedFeedService = async(
     }
   } catch (error) {
     return {
-      status : 500,
-      message : "Internal server error",
-      data : error,
+      status: 500,
+      message: "Internal server error",
+      data: error,
       success: false
     }
   }
 }
 
-const LikeCountUpdateService = async(
+const LikeCountUpdateService = async (
   {
     feedId,
     userId,
-  } :{ 
+  }: {
     feedId: string,
     userId: string,
   }
-)  => {
+) => {
   try {
     const feed = await Feed.findById(feedId);
 
-    if(!feed){
+    if (!feed) {
       return {
         status: 404,
         message: "Feed not found",
@@ -112,12 +147,12 @@ const LikeCountUpdateService = async(
       }
     }
 
-    const isLiked = feed.likes.includes(userId as any);
+    const isLiked = feed.likes.find((like: any) => like.user.toString() === userId);
 
-    if(isLiked){
-      feed.likes = feed.likes.filter((likeId:string) => likeId.toString() !== userId);
+    if (isLiked) {
+      feed.likes = feed.likes.filter((like: any) => like.user.toString() !== userId);
     } else {
-      feed.likes = [...feed.likes,{
+      feed.likes = [...feed.likes, {
         user: userId
       }];
     }
@@ -128,7 +163,7 @@ const LikeCountUpdateService = async(
       status: 200,
       message: isLiked ? "Like removed successfully" : "Like added successfully",
       data: {
-        likeCount : feed.likes.length,
+        likeCount: feed.likes.length,
         isLiked: !isLiked
       },
       success: true
@@ -144,12 +179,12 @@ const LikeCountUpdateService = async(
   }
 }
 
-const feedCommentService = async(
+const feedCommentService = async (
   {
     feedId,
     userId,
     content,
-  } : {
+  }: {
     feedId: string,
     userId: string,
     content: string,
@@ -158,7 +193,7 @@ const feedCommentService = async(
   try {
     const feed = await Feed.findById(feedId);
 
-    if(!feed){
+    if (!feed) {
       return {
         status: 404,
         message: "Feed not found",
@@ -178,7 +213,7 @@ const feedCommentService = async(
     return {
       status: 200,
       message: "Comment added successfully",
-      data:{
+      data: {
         _id: feed.comments[feed.comments.length - 1]._id,
         content: content,
         createdAt: feed.comments[feed.comments.length - 1].createdAt,
@@ -198,17 +233,17 @@ const feedCommentService = async(
   }
 }
 
-const feedCommentDeleteService = async(
+const feedCommentDeleteService = async (
   {
     commentId,
-  } : {
+  }: {
     commentId: string,
   }
 ) => {
   try {
     const feed = await Feed.findOne({ 'comments._id': commentId });
 
-    if(!feed){
+    if (!feed) {
       return {
         status: 404,
         message: "Comment not found",
@@ -217,7 +252,7 @@ const feedCommentDeleteService = async(
       }
     }
 
-    feed.comments = feed.comments.filter((comment:any) => comment._id.toString() !== commentId);
+    feed.comments = feed.comments.filter((comment: any) => comment._id.toString() !== commentId);
 
     await feed.save();
 

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import Feed from "../api/feed/feed";
+import Feed from "../api/feed/model";
 import { User } from "../auth/model/User";
 import expressAsyncHandler from "../utils/expressAsync";
 

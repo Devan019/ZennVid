@@ -13,6 +13,7 @@ import { voiceClone } from "./sync-studio/voice_clone";
 import { deleteFileFromS3 } from "../utils/s3";
 import fs from "fs/promises";
 import path from "path";
+import { S3_PRIVATE_BUCKET } from "../env_var";
 
 export interface VideoData {
   Key: string;
@@ -442,7 +443,7 @@ const syncStudioVideo = async ({
 
     //5. remove temp data
     try {
-      await deleteFileFromS3(voiceCloneResult?.Key ?? "").catch(err => console.log(`Failed to delete audio ${voiceCloneResult?.Key}:`, err));
+      await deleteFileFromS3(voiceCloneResult?.Key ?? "", S3_PRIVATE_BUCKET!).catch(err => console.log(`Failed to delete audio ${voiceCloneResult?.Key}:`, err));
     } catch (err) {
       console.log("Non-critical error during cleanup:", err);
     }

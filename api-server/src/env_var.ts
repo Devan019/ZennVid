@@ -131,9 +131,10 @@ const S3_API=process.env.S3_API;
 const S3_API_TOKEN = process.env.S3_API_TOKEN;
 const S3_ACCESS_KEY = process.env.S3_ACCESS_KEY;
 const S3_SECRET_KEY = process.env.S3_SECRET_KEY;
-const S3_BUCKET_NAME = process.env.S3_BUCKET_NAME;
+const S3_PUBLIC_BUCKET = process.env.S3_PUBLIC_BUCKET;
+const S3_PRIVATE_BUCKET = process.env.S3_PRIVATE_BUCKET;
 const S3_REGION = "auto";
-const S3_PUBLIC_ACCESS_API = process.env.S3_PUBLIC_ACCESS_API;
+const  S3_CDN = process.env.S3_CDN;
 
 //s3 files prefix
 const video_prefix = "videos";
@@ -209,10 +210,11 @@ export {
   S3_ACCESS_KEY,
   S3_API,
   S3_API_TOKEN,
-  S3_BUCKET_NAME,
+  S3_PUBLIC_BUCKET,
+  S3_PRIVATE_BUCKET,
   S3_SECRET_KEY,
   S3_REGION,
-  S3_PUBLIC_ACCESS_API,
+  S3_CDN,
   audio_prefix,
   video_prefix,
   image_prefix

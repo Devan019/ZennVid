@@ -13,7 +13,8 @@ import {
   LIP_SYNC_REPO, 
   LIP_SYNC_REPO_API, 
   DURATION, 
-  video_prefix
+  video_prefix,
+  S3_PRIVATE_BUCKET
 } from "../../env_var";
 import {  uploadUrlToS3 } from "../../utils/s3";
 
@@ -97,7 +98,8 @@ const lipSync = async ({
       const videoData = await uploadUrlToS3({
         url: (result.data as Array<any>)[0].url,
         prefix: video_prefix,
-        contentType: "video/mp4"
+        contentType: "video/mp4",
+        Bucket: S3_PRIVATE_BUCKET!
       });
       return videoData;
     }
