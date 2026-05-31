@@ -1,46 +1,24 @@
 "use client";
 
-import {
-  useState,
-  useEffect,
-  useRef,
-} from "react";
-
-import {
-  motion,
-  AnimatePresence,
-} from "framer-motion";
-
-import {
-  Sparkles,
-} from "lucide-react";
-
+import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Sparkles } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { getFeedPosts } from "@/lib/apiProvider";
 import { VideoCard } from "@/app/zennvid/feed/components/video-card";
 import { FRONTEND_ROUTES } from "@/constants/frontend_routes";
 import { useRouter } from "next/navigation";
 
-export default function page() {
+export default function Page() {
   const router = useRouter();
-
   const feedQuery = useQuery({
     queryKey: ["videoFeed"],
     queryFn: getFeedPosts,
   });
-
-  const [currentIndex, setCurrentIndex] =
-    useState(0);
-
-  const [direction, setDirection] =
-    useState(0);
-
-  const scrollRef =
-    useRef<HTMLDivElement>(null);
-
-  const [posts, setPosts] = useState<
-    any[]
-  >([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [direction, setDirection] = useState(0);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [posts, setPosts] = useState<any[]>([]);
 
   async function fetchFeedVideos() {
     if (
@@ -299,7 +277,7 @@ export default function page() {
         "
       >
         <motion.button
-        className="cursor-pointer"
+          className="cursor-pointer"
           type="button"
           initial={{
             opacity: 0,

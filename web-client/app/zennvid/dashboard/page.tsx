@@ -1,10 +1,7 @@
 "use client";
 
 import React from "react";
-import {
-  motion,
-  AnimatePresence,
-} from "framer-motion";
+import { motion, AnimatePresence} from "framer-motion";
 import { toast } from "sonner";
 import { useDashboardTabs } from "./hooks/useDashboardTabs";
 import PageHeader from "./components/PageHeader";
@@ -12,11 +9,7 @@ import DashboardBackground from "./components/DashboardBackground";
 import { FeatureRenderer } from "./components/FeatureRenderer";
 
 export default function DashboardPage() {
-  const {
-    activeTab,
-    pageMeta,
-    showVideoGallery,
-  } = useDashboardTabs();
+  const {activeTab, pageMeta, showVideoGallery } = useDashboardTabs();
 
   const startVideoMonitor = () => {
     toast.success(

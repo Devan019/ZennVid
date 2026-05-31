@@ -3,8 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "next-themes";
-
-
 const TerminalLoader = ({ completed, setCompleted, isVideoLoading, steps, progress, setProgress, progressPercent, currentStage }: {
   completed: boolean;
   setCompleted: (completed: boolean) => void;
@@ -19,12 +17,9 @@ const TerminalLoader = ({ completed, setCompleted, isVideoLoading, steps, progre
   progressPercent: number;
   currentStage: string;
 }) => {
-  const { resolvedTheme } = useTheme();
-
   const [terminalLines, setTerminalLines] = useState<string[]>([]);
   const lastStageRef = useRef<string>('');
   const completionLoggedRef = useRef(false);
-
   useEffect(() => {
     if (!currentStage) {
       return;

@@ -16,7 +16,6 @@ export default function VideoPreviewDialog({
   videoUrl: string;
 }) {
   const [downloading, setDownloading] = useState(false);
-
   const handleDownload = async () => {
     setDownloading(true);
     try {

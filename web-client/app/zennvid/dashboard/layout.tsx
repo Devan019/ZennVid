@@ -1,7 +1,4 @@
-import {
-  SidebarInset,
-  SidebarProvider,
-} from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider} from "@/components/ui/sidebar";
 import { FRONTEND_ROUTES } from "@/constants/frontend_routes";
 import { QueryClientProviderWrapper } from "@/context/queryProvider";
 import { ThemeProvider } from "next-themes";
@@ -58,16 +55,7 @@ const layout = ({
         <SidebarProvider>
           {/* ROOT */}
           <div
-            className="
-              grid
-              min-h-screen
-              w-full
-              overflow-hidden
-              bg-[#F4F1EA]
-
-              lg:grid-cols-[340px_1fr]
-              3xl:grid-cols-[420px_1fr]
-            "
+            className=" grid min-h-screen w-full overflow-hidden bg-[#F4F1EA] lg:grid-cols-[340px_1fr] 3xl:grid-cols-[420px_1fr]"
           >
             {/* SIDEBAR */}
             <DashboardSidebar
@@ -76,36 +64,15 @@ const layout = ({
 
             {/* CONTENT */}
             <SidebarInset
-              className="
-                relative
-                w-full
-                overflow-x-hidden
-                bg-[#F4F1EA]
-              "
+              className=" relative w-full overflow-x-hidden bg-[#F4F1EA]"
             >
               {/* BACKGROUND */}
               <div
-                className="
-                  pointer-events-none
-                  fixed
-                  inset-0
-                  z-0
-                  overflow-hidden
-                "
+                className=" pointer-events-none fixed inset-0 z-0 overflow-hidden "
               >
                 {/* GLOW */}
                 <div
-                  className="
-                    absolute
-                    left-1/2
-                    top-[10%]
-                    h-[500px]
-                    w-[500px]
-                    -translate-x-1/2
-                    rounded-full
-                    bg-black/[0.03]
-                    blur-[120px]
-                  "
+                  className=" absolute left-1/2 top-[10%] h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-black/[0.03] blur-[120px]"
                 />
 
                 {/* GRID */}
@@ -122,17 +89,7 @@ const layout = ({
 
               {/* PAGE */}
               <main
-                className="
-                  relative
-                  z-10
-                  min-h-screen
-                  px-4
-                  py-20
-                  sm:px-6
-                  lg:px-10
-                  xl:px-14
-                  3xl:px-16
-                "
+                className=" relative z-10 min-h-screen px-4 py-20 sm:px-6 lg:px-10 xl:px-14 3xl:px-16"
               >
                 {children}
               </main>

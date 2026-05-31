@@ -54,7 +54,7 @@ export default function PricingComponent() {
 
   const { isAuthenticated } = useUser()
   const [rzpInstance, setRzpInstance] = useState<any>(null);
-  const { user, setUser } = useUser();
+  const { user, resetUser } = useUser();
 
   const creditMutation = useMutation({
     mutationKey: ['update-credits'],
@@ -67,7 +67,8 @@ export default function PricingComponent() {
       toast.success(data.MESSAGE);
       // redirect('/dashboard')
       if (user) {
-        setUser({ ...user, credits: data.DATA.credits })
+        // setUser({ ...user, credits: data.DATA.credits })
+        resetUser();
       }
     },
   })

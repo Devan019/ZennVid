@@ -33,7 +33,7 @@ const SocialProviders: React.FC<SocialProvidersProps> = ({
       setIsLoading(true);
 
       const socialProvider = socialProviders.find(
-        (p) => p.name === provider
+        (p) => p.name === (provider as unknown as string)
       );
 
       switch (provider) {

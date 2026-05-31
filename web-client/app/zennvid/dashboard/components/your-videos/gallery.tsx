@@ -1,34 +1,12 @@
 /* eslint-disable @next/next/no-html-link-for-pages */
 "use client";
 
-import {
-  useEffect,
-  useState,
-  useRef,
-} from "react";
-import {
-  VideoIcon,
-  Search,
-  SlidersHorizontal,
-  Sparkles,
-  Info,
-  Trash2,
-  X,
-} from "lucide-react";
-import {
-  VideoData,
-  VideoLayoutGrid,
-} from "@/components/ui/video-layout";
+import { useEffect, useState, useRef} from "react";
+import { VideoIcon, Search, SlidersHorizontal, Sparkles, Info, Trash2, X } from "lucide-react";
+import { VideoData, VideoLayoutGrid } from "@/components/ui/video-layout";
 import { useUser } from "@/context/UserProvider";
-import {
-  deleteVideo,
-  feedCreate,
-  getUserVideos,
-} from "@/lib/apiProvider";
-import {
-  useMutation,
-  useQuery,
-} from "@tanstack/react-query";
+import { deleteVideo, feedCreate, getUserVideos} from "@/lib/apiProvider";
+import { useMutation, useQuery} from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { FaSignsPost } from "react-icons/fa6";
@@ -96,26 +74,12 @@ const VideoGallery = () => {
   const [activeVideo, setActiveVideo] = useState<VideoData | null>(null);
   const [isOpen, setisOpen] = useState(false);
   const [completedVideoUrl, setCompletedVideoUrl] = useState("");
-
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [videoToDelete, setVideoToDelete] = useState<string | null>(null);
-
-  const [
-    showCompletionDialog,
-    setShowCompletionDialog,
-  ] = useState(false);
-
-  const [deletingIds, setDeletingIds] =
-    useState<string[]>([]);
-
-  const [
-    connectingJobIds,
-    setConnectingJobIds,
-  ] = useState<string[]>([]);
-
-  const sseConnectionsRef = useRef(
-    new Map<string, EventSource>()
-  );
+  const [showCompletionDialog, setShowCompletionDialog] = useState(false);
+  const [deletingIds, setDeletingIds] = useState<string[]>([]);
+  const [connectingJobIds, setConnectingJobIds] = useState<string[]>([]);
+  const sseConnectionsRef = useRef(new Map<string, EventSource>());
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -129,56 +93,26 @@ const VideoGallery = () => {
     const filtered =
       allVideos.filter((vid) => {
         const video = vid.content;
+        const matchesSearch = video.title.toLowerCase().includes(debouncedQuery.toLowerCase());
 
-        const matchesSearch =
-          video.title
-            .toLowerCase()
-            .includes(
-              debouncedQuery.toLowerCase()
-            );
+        const matchesType = filterType === "all" ? true : video.type === filterType;
 
-        const matchesType =
-          filterType === "all"
-            ? true
-            : video.type === filterType;
-
-        return (
-          matchesSearch &&
-          matchesType
-        );
+        return matchesSearch && matchesType;
       });
 
     setVideoCards(filtered);
-  }, [
-    debouncedQuery,
-    filterType,
-    allVideos,
-  ]);
+  }, [debouncedQuery, filterType, allVideos]);
 
-  const { user, resetUser } =
-    useUser();
+  const { user, resetUser } = useUser();
 
-  const connectSseForProgress = (
-    jobId: string
-  ) => {
-    if (
-      sseConnectionsRef.current.has(
-        jobId
-      )
-    ) {
+  const connectSseForProgress = (jobId: string) => {
+    if (sseConnectionsRef.current.has(jobId)) {
       return;
     }
 
-    setConnectingJobIds((prev) =>
-      Array.from(
-        new Set([...prev, jobId])
-      )
-    );
+    setConnectingJobIds((prev) => Array.from(new Set([...prev, jobId])));
 
-    const eventSource =
-      new EventSource(
-        `${jobStatus}/${jobId}`
-      );
+    const eventSource = new EventSource(`${jobStatus}/${jobId}`);
 
     eventSource.onopen = () => {
       setConnectingJobIds((prev) =>
@@ -188,17 +122,12 @@ const VideoGallery = () => {
       );
     };
 
-    eventSource.onmessage = (
-      event
-    ) => {
-      const data = JSON.parse(
-        event.data
-      );
+    eventSource.onmessage = (event) => {
+      const data = JSON.parse(event.data);
 
       if (data.status === "progress") {
         setProgressVideos((prev) => {
-          const updated =
-            new Map(prev);
+          const updated = new Map(prev);
 
           updated.set(jobId, {
             ...updated.get(jobId)!,
@@ -214,45 +143,24 @@ const VideoGallery = () => {
       }
 
       if (data.status === "completed") {
-        const videoUrl =
-          data.result?.videoUrl ??
-          data.videoUrl ??
-          "";
+        const videoUrl = data.result?.videoUrl ?? data.videoUrl ?? "";
 
         if (videoUrl) {
-          setCompletedVideoUrl(
-            videoUrl
-          );
-
-          setShowCompletionDialog(
-            true
-          );
+          setCompletedVideoUrl(videoUrl);
+          setShowCompletionDialog(true);
         }
 
         setProgressVideos((prev) => {
-          const updated =
-            new Map(prev);
-
+          const updated = new Map(prev);
           updated.delete(jobId);
-
           return updated;
         });
 
-        setConnectingJobIds((prev) =>
-          prev.filter(
-            (id) => id !== jobId
-          )
-        );
-
+        setConnectingJobIds((prev) => prev.filter((id) => id !== jobId));
         resetUser();
-
         videoQuery.refetch();
-
         eventSource.close();
-
-        sseConnectionsRef.current.delete(
-          jobId
-        );
+        sseConnectionsRef.current.delete(jobId);
       }
 
       if (data.status === "failed") {
@@ -262,11 +170,8 @@ const VideoGallery = () => {
         );
 
         setProgressVideos((prev) => {
-          const updated =
-            new Map(prev);
-
+          const updated = new Map(prev);
           updated.delete(jobId);
-
           return updated;
         });
 
@@ -275,9 +180,7 @@ const VideoGallery = () => {
             (id) => id !== jobId
           )
         );
-
         eventSource.close();
-
         sseConnectionsRef.current.delete(
           jobId
         );
@@ -285,48 +188,24 @@ const VideoGallery = () => {
     };
 
     eventSource.onerror = () => {
-      setConnectingJobIds((prev) =>
-        prev.filter(
-          (id) => id !== jobId
-        )
-      );
-
+      setConnectingJobIds((prev) => prev.filter((id) => id !== jobId));
       eventSource.close();
-
-      sseConnectionsRef.current.delete(
-        jobId
-      );
+      sseConnectionsRef.current.delete(jobId);
     };
-
-    sseConnectionsRef.current.set(
-      jobId,
-      eventSource
-    );
+    sseConnectionsRef.current.set(jobId, eventSource);
   };
 
-  const disconnectRemovedProgressJobs =
-    (activeJobIds: Set<string>) => {
-      for (const [
-        jobId,
-        eventSource,
-      ] of sseConnectionsRef.current.entries()) {
-        if (
-          !activeJobIds.has(jobId)
-        ) {
-          eventSource.close();
-
-          sseConnectionsRef.current.delete(
-            jobId
-          );
-        }
+  const disconnectRemovedProgressJobs = (activeJobIds: Set<string>) => {
+    for (const [jobId, eventSource] of sseConnectionsRef.current.entries()) {
+      if (!activeJobIds.has(jobId)) {
+        eventSource.close();
+        sseConnectionsRef.current.delete(jobId);
       }
-    };
+    }
+  };
 
   const videoQuery = useQuery({
-    queryFn: async () => {
-      return await getUserVideos();
-    },
-
+    queryFn: async () => await getUserVideos(),
     queryKey: ["videos"],
     staleTime: 55 * 60 * 1000, //auto refetch after 55 min
     refetchInterval: 55 * 60 * 1000, //auto call after 55 min
@@ -335,31 +214,12 @@ const VideoGallery = () => {
 
   const deleteMutation = useMutation({
     mutationKey: ["deleteVideo"],
-
-    mutationFn: async (
-      id: string
-    ) => {
-      return await deleteVideo({
-        id,
-      });
-    },
+    mutationFn: async (id: string) => await deleteVideo({ id }),
   });
 
   const feedPostMutation = useMutation({
     mutationKey: ["feedPost"],
-
-    mutationFn: async ({
-      userId,
-      videoId,
-    }: {
-      userId: string;
-      videoId: string;
-    }) => {
-      return await feedCreate({
-        userId,
-        videoId,
-      });
-    },
+    mutationFn: async ({ userId, videoId }: { userId: string; videoId: string }) => await feedCreate({ userId, videoId }),
   });
 
   function processVideos(
@@ -367,67 +227,31 @@ const VideoGallery = () => {
   ) {
     if (data.SUCCESS === false) {
       toast.error(data.MESSAGE);
-
       return;
     }
-
-    const progressVids =
-      data.DATA?.progressVideos || [];
-
-    const progressMap =
-      new Map<
-        string,
-        ProgressVideo
-      >();
-
-    const activeJobIds =
-      new Set<string>();
-
+    const progressVids = data.DATA?.progressVideos || [];
+    const progressMap = new Map<string,ProgressVideo>();
+    const activeJobIds = new Set<string>();
+    
     progressVids.forEach((pv) => {
-      progressMap.set(
-        pv.jobId,
-        pv
-      );
-
-      activeJobIds.add(
-        pv.jobId
-      );
-
-      connectSseForProgress(
-        pv.jobId
-      );
+      progressMap.set(pv.jobId,pv);
+      activeJobIds.add(pv.jobId);
+      connectSseForProgress(pv.jobId);
     });
 
-    disconnectRemovedProgressJobs(
-      activeJobIds
-    );
-
+    disconnectRemovedProgressJobs(activeJobIds);
     setProgressVideos(progressMap);
 
-    const completedVids =
-      data.DATA?.videos || [];
+    const completedVids = data.DATA?.videos || [];
 
     const normalizedVideos: VideoData[] =
       completedVids.map((video) => ({
         ...video,
-
         videoUrl: video.videoMetadata?.url || "",
-
-        created_at:
-          video.created_at ||
-          video.createdAt ||
-          new Date().toISOString(),
-
-        style:
-          video.style || "default",
-
-        language:
-          video.language ||
-          "unknown",
-
-        voiceCharacter:
-          video.voiceCharacter ||
-          "unknown",
+        created_at: video.created_at || new Date().toISOString(),
+        style: video.style || "default",
+        language:video.language ||"english",
+        voiceCharacter: video.voiceCharacter || "unknown",
       }));
 
     const mappedVideos =
@@ -437,19 +261,12 @@ const VideoGallery = () => {
           index: number
         ) => ({
           id: String(video._id),
-
           content: video,
-
-          className:
-            getGridClassName(),
-
-          thumbnail:
-            video.thumbnail ?? "",
+          className: getGridClassName(),
+          thumbnail: video.thumbnail ?? "",
         })
       );
-
     setVideoCards(mappedVideos);
-
     setAllVideos(mappedVideos);
   }
 
@@ -460,9 +277,7 @@ const VideoGallery = () => {
           eventSource.close();
         }
       );
-
       sseConnectionsRef.current.clear();
-
       setConnectingJobIds([]);
     };
   }, []);
@@ -529,9 +344,7 @@ const VideoGallery = () => {
     });
   };
 
-  const handleVideoShare = (
-    video: VideoData
-  ) => {
+  const handleVideoShare = (video: VideoData) => {
     setActiveVideo(video);
     setisOpen(true);
   };
@@ -540,34 +353,17 @@ const VideoGallery = () => {
     async (video: VideoData) => {
       console.log("Downloading video:", video);
       try {
-        const response =
-          await fetch(
-            video.videoUrl
-          );
+        const response =await fetch( video.videoUrl);
+        const blob = await response.blob();
 
-        const blob =
-          await response.blob();
+        const url = URL.createObjectURL(blob);
 
-        const url =
-          URL.createObjectURL(blob);
-
-        const link =
-          document.createElement("a");
-
+        const link = document.createElement("a");
         link.href = url;
-
         link.download = `${video.title}.mp4`;
-
-        document.body.appendChild(
-          link
-        );
-
+        document.body.appendChild(link);
         link.click();
-
-        document.body.removeChild(
-          link
-        );
-
+        document.body.removeChild(link);
         URL.revokeObjectURL(url);
       } catch (err: any) {
         toast.error(
@@ -622,38 +418,11 @@ const VideoGallery = () => {
             }
           );
         }}
-        className="
-    flex
-    items-center
-    justify-center
-    gap-3
-    rounded-2xl
-    bg-black
-    px-6
-    py-4
-    text-sm
-    uppercase
-    tracking-[0.2em]
-    text-white
-    transition-all
-    hover:opacity-90
-    disabled:cursor-not-allowed
-    disabled:opacity-50
-  "
+        className="flex items-center justify-center gap-3 rounded-2xl bg-black px-6 py-4 text-sm uppercase tracking-[0.2em] text-white transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
       >
         {feedPostMutation.isPending ? (
           <>
-            <div
-              className="
-          h-4
-          w-4
-          animate-spin
-          rounded-full
-          border-2
-          border-white
-          border-t-transparent
-        "
-            />
+            <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
 
             Posting...
           </>
@@ -669,15 +438,7 @@ const VideoGallery = () => {
 
   if (videoQuery.isLoading) {
     return (
-      <div
-        className="
-          flex
-          min-h-[70vh]
-          flex-col
-          items-center
-          justify-center
-        "
-      >
+      <div className="flex min-h-[70vh] flex-col items-center justify-center">
         <Loader size={52} />
 
         <h2 className="mt-8 text-3xl font-semibold text-black">
@@ -718,69 +479,24 @@ const VideoGallery = () => {
         {ShareModal}
       </Modal>
 
-      <div
-        className="
-          mx-auto
-          flex
-          w-full
-          max-w-[1700px]
-          flex-col
-          gap-8
-        "
-      >
+      <div className="mx-auto flex w-full max-w-[1700px] flex-col gap-8">
 
         {/* CREATOR TIP */}
-        <div
-          className="
-    flex
-    items-start
-    gap-3
-    rounded-2xl
-    border
-    border-amber-200/60
-    bg-amber-50/80
-    p-4
-  "
-        >
-          <div
-            className="
-      flex
-      h-9
-      w-9
-      shrink-0
-      items-center
-      justify-center
-      rounded-full
-      bg-amber-100
-    "
-          >
+        <div className="flex items-start gap-3 rounded-2xl border border-amber-200/60 bg-amber-50/80 p-4">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-amber-100">
             <Sparkles className="h-4 w-4 text-amber-700" />
           </div>
 
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <p
-                className="
-          text-[11px]
-          font-semibold
-          uppercase
-          tracking-[0.18em]
-          text-amber-700
-        "
-              >
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-amber-700">
                 Creator Tip
               </p>
 
               <Info className="h-3.5 w-3.5 text-amber-600" />
             </div>
 
-            <p
-              className="
-        text-sm
-        leading-relaxed
-        text-amber-900/80
-      "
-            >
+            <p className="text-sm leading-relaxed text-amber-900/80">
               Upload your best cinematic videos to the public feed
               to showcase your creativity and inspire the Zennvid
               community.
@@ -790,102 +506,19 @@ const VideoGallery = () => {
 
 
         {/* FILTERS */}
-        <div
-          className="
-            flex
-            flex-col
-            gap-4
-            rounded-[28px]
-            border
-            border-black/10
-            bg-white/70
-            p-5
-            backdrop-blur-xl
-
-            lg:flex-row
-            lg:items-center
-            lg:justify-between
-          "
-        >
+        <div className="flex flex-col gap-4 rounded-[28px] border border-black/10 bg-white/70 p-5 backdrop-blur-xl lg:flex-row lg:items-center lg:justify-between">
           {/* SEARCH */}
           <div className="relative w-full lg:max-w-xl">
-            <Search
-              className="
-                absolute
-                left-4
-                top-1/2
-                h-4
-                w-4
-                -translate-y-1/2
-                text-black/40
-              "
-            />
+            <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-black/40" />
 
-            <Input
-              type="text"
-              placeholder="Search cinematic videos..."
-              value={query}
-              onChange={(e) =>
-                setQuery(
-                  e.target.value
-                )
-              }
-              className="
-                h-14
-                rounded-2xl
-                border-black/10
-                bg-[#F8F6F1]
-                pl-12
-                text-black
-                placeholder:text-black/40
-                focus-visible:ring-0
-              "
-            />
+            <Input type="text" placeholder="Search cinematic videos..." value={query} onChange={(e) => setQuery(e.target.value)} className="h-14 rounded-2xl border-black/10 bg-[#F8F6F1] pl-12 text-black placeholder:text-black/40 focus-visible:ring-0" />
           </div>
 
           {/* FILTER */}
           <div className="relative">
-            <SlidersHorizontal
-              className="
-                pointer-events-none
-                absolute
-                left-4
-                top-1/2
-                z-10
-                h-4
-                w-4
-                -translate-y-1/2
-                text-black/40
-              "
-            />
+            <SlidersHorizontal className="pointer-events-none absolute left-4 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-black/40" />
 
-            <select
-              name="filter"
-              title="filter"
-              value={filterType}
-              onChange={(e) =>
-                setFilterType(
-                  e.target.value
-                )
-              }
-              className="
-                h-14
-                w-full
-                rounded-2xl
-                border
-                border-black/10
-                bg-[#F8F6F1]
-                pl-12
-                pr-10
-                text-sm
-                uppercase
-                tracking-[0.15em]
-                text-black
-                outline-none
-
-                lg:w-[240px]
-              "
-            >
+            <select name="filter" title="filter" value={filterType} onChange={(e) => setFilterType(e.target.value)} className="h-14 w-full rounded-2xl border border-black/10 bg-[#F8F6F1] pl-12 pr-10 text-sm uppercase tracking-[0.15em] text-black outline-none lg:w-[240px]">
               <option value="all">
                 All Types
               </option>
@@ -913,16 +546,7 @@ const VideoGallery = () => {
                 </h2>
               </div>
 
-              <div
-                className="
-                grid
-                grid-cols-1
-                gap-5
-
-                md:grid-cols-2
-                xl:grid-cols-3
-              "
-              >
+              <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
                 {Array.from(
                   progressVideos.entries()
                 ).map(
@@ -949,79 +573,28 @@ const VideoGallery = () => {
           )}
 
         {/* EMPTY */}
-        {!videoCards.length &&
-          !progressVideos.size && (
-            <div
-              className="
-                flex
-                min-h-[420px]
-                flex-col
-                items-center
-                justify-center
-                rounded-[32px]
-                border
-                border-black/10
-                bg-white/70
-                text-center
-              "
-            >
-              <div
-                className="
-                  flex
-                  h-24
-                  w-24
-                  items-center
-                  justify-center
-                  rounded-full
-                  border
-                  border-black/10
-                  bg-[#F8F6F1]
-                "
-              >
-                <VideoIcon className="h-10 w-10 text-black/40" />
-              </div>
-
-              <h2 className="mt-8 text-3xl font-semibold text-black">
-                No Videos Yet
-              </h2>
-
-              <p className="mt-3 max-w-md text-black/50">
-                Your generated videos
-                will appear here once
-                created.
-              </p>
+        {!videoCards.length && !progressVideos.size && (
+          <div className="flex min-h-[420px] flex-col items-center justify-center rounded-[32px] border border-black/10 bg-white/70 text-center">
+            <div className="flex h-24 w-24 items-center justify-center rounded-full border border-black/10 bg-[#F8F6F1]">
+              <VideoIcon className="h-10 w-10 text-black/40" />
             </div>
-          )}
+
+            <h2 className="mt-8 text-3xl font-semibold text-black">No Videos Yet</h2>
+
+            <p className="mt-3 max-w-md text-black/50">
+              Your generated videos will appear here once created.
+            </p>
+          </div>
+        )}
 
         {/* VIDEOS */}
-        {videoCards &&
-          videoCards.length >
-          0 && (
-            <div className="space-y-6">
-              {progressVideos.size >
-                0 && (
-                  <h2 className="text-2xl font-semibold text-black">
-                    Completed Videos
-                  </h2>
-                )}
+        {videoCards && videoCards.length > 0 && (
+          <div className="space-y-6">
+            {progressVideos.size > 0 && <h2 className="text-2xl font-semibold text-black">Completed Videos</h2>}
 
-              <VideoLayoutGrid
-                cards={videoCards}
-                onDelete={
-                  initiateDelete
-                }
-                onShare={
-                  handleVideoShare
-                }
-                onDownload={
-                  handleVideoDownload
-                }
-                deletingIds={
-                  deletingIds
-                }
-              />
-            </div>
-          )}
+            <VideoLayoutGrid cards={videoCards} onDelete={initiateDelete} onShare={handleVideoShare} onDownload={handleVideoDownload} deletingIds={deletingIds} />
+          </div>
+        )}
       </div>
       <AnimatePresence>
         {showDeleteModal && (
@@ -1029,17 +602,7 @@ const VideoGallery = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="
-              fixed
-              inset-0
-              z-[999]
-              flex
-              items-center
-              justify-center
-              bg-black/50
-              p-4
-              backdrop-blur-sm
-            "
+            className="fixed inset-0 z-[999] flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
             onClick={cancelDelete}
           >
             <motion.div
@@ -1048,45 +611,14 @@ const VideoGallery = () => {
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
               transition={{ duration: 0.2 }}
               onClick={(e) => e.stopPropagation()}
-              className="
-                w-full
-                max-w-md
-                rounded-3xl
-                border
-                border-white/10
-                bg-white
-                p-7
-                shadow-2xl
-              "
+              className="w-full max-w-md rounded-3xl border border-white/10 bg-white p-7 shadow-2xl"
             >
               <div className="flex items-start justify-between">
-                <div
-                  className="
-                    flex
-                    h-14
-                    w-14
-                    items-center
-                    justify-center
-                    rounded-2xl
-                    bg-red-100
-                  "
-                >
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-red-100">
                   <Trash2 className="h-7 w-7 text-red-500" />
                 </div>
 
-                <button
-                  onClick={cancelDelete}
-                  className="
-                    flex
-                    h-10
-                    w-10
-                    items-center
-                    justify-center
-                    rounded-full
-                    transition-colors
-                    hover:bg-black/5
-                  "
-                >
+                <button onClick={cancelDelete} className="flex h-10 w-10 items-center justify-center rounded-full transition-colors hover:bg-black/5">
                   <X className="h-5 w-5 text-black/60" />
                 </button>
               </div>
@@ -1102,40 +634,11 @@ const VideoGallery = () => {
               </div>
 
               <div className="mt-8 flex items-center gap-3">
-                <button
-                  onClick={cancelDelete}
-                  className="
-                    flex-1
-                    rounded-2xl
-                    border
-                    border-black/10
-                    px-5
-                    py-3
-                    text-sm
-                    font-medium
-                    text-black
-                    transition-all
-                    hover:bg-black/5
-                  "
-                >
+                <button onClick={cancelDelete} className="flex-1 rounded-2xl border border-black/10 px-5 py-3 text-sm font-medium text-black transition-all hover:bg-black/5">
                   Cancel
                 </button>
 
-                <button
-                  onClick={confirmDelete}
-                  className="
-                    flex-1
-                    rounded-2xl
-                    bg-red-500
-                    px-5
-                    py-3
-                    text-sm
-                    font-medium
-                    text-white
-                    transition-all
-                    hover:bg-red-600
-                  "
-                >
+                <button onClick={confirmDelete} className="flex-1 rounded-2xl bg-red-500 px-5 py-3 text-sm font-medium text-white transition-all hover:bg-red-600">
                   Delete
                 </button>
               </div>

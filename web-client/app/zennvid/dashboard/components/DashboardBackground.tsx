@@ -3,27 +3,11 @@
 const DashboardBackground: React.FC = () => {
   return (
     <div
-      className="
-        pointer-events-none
-        absolute
-        inset-0
-        z-0
-        overflow-hidden
-      "
+      className=" pointer-events-none absolute inset-0 z-0 overflow-hidden"
     >
       {/* GRADIENT BLUR */}
       <div
-        className="
-          absolute
-          left-1/2
-          top-0
-          h-[500px]
-          w-[500px]
-          -translate-x-1/2
-          rounded-full
-          bg-black/[0.03]
-          blur-[120px]
-        "
+        className=" absolute left-1/2 top-0 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-black/[0.03] blur-[120px]"
       />
 
       {/* GRID */}
