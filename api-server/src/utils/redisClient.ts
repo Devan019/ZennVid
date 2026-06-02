@@ -19,7 +19,7 @@ const redisClient = new Redis(REDIS_URL, {
 });
 
 redisClient.on('connect', () => {
-  console.log('✅ Connected to Upstash Redis');
+  console.log('✅ Connected to Redis');
 }).on('error', (err) => {
   console.log('❌ Redis connection error:', err);
 });

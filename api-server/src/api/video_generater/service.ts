@@ -2,9 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { lipSyncZodValidation, videogeneraterZodValidation } from "./schema";
 import { getShortVoiceName } from "../../utils/Voicemappping";
 import { formatResponse } from "../../utils/formateResponse";
-import { uploadToCloudinary } from "../../utils/cloudinary";
 import fs from "fs";
-import { languageToCodeDataset } from "../../constants/provider";
 import { videoQueue } from "../../utils/bullmq-queue";
 import { active_job_data, active_job_time, active_job_zset, audio_prefix, image_prefix, magicVideoJobName, S3_PRIVATE_BUCKET, syncStudioJobName } from "../../env_var";
 import { redisClient } from "../../utils/redisClient";
@@ -48,25 +46,23 @@ export const magicVideoCreationService = async (req: Request, res: Response, nex
   try {
 
     const { title, style, voiceGender, voiceLanguage} = videogeneraterZodValidation.parse(req.body);
-
     const forShortName = `${voiceLanguage}${voiceGender}`;
-
     const shortName = getShortVoiceName(forShortName);
-
     if (!shortName) {
       return formatResponse(res, 400, "Invalid voice name", false, null);
     }
-
     const userId = req.user.id;
-
     const task = {
       title, style, voice: shortName, userId
     }
+
 
     //add task into queue
     const job = await videoQueue.add(magicVideoJobName, {
       ...task
     });
+
+
 
     if (!job) {
       return formatResponse(res, 500, "Failed to add job to queue", false, null);
@@ -98,7 +94,7 @@ export const syncStudioCreationVideo = async (req: Request, res: Response, next:
   let audioPath: string = "";
   try {
     //first validate the input
-    const { description, character, title, style } = lipSyncZodValidation.parse(req.body);
+    const { description, character, title, style, isVoiceCloning } = lipSyncZodValidation.parse(req.body);
 
     if (!req.files || !(req.files as any).image || !(req.files as any).audio) {
       cleanupUploadedFiles(req.files);
@@ -146,7 +142,7 @@ export const syncStudioCreationVideo = async (req: Request, res: Response, next:
       },
       text: description,
       userId: req.user.id,
-      character, title, style
+      character, title, style, isVoiceCloning
     });
 
     const cacheResult = await inProgressVideoCache(req.user.id, job);
@@ -160,6 +156,7 @@ export const syncStudioCreationVideo = async (req: Request, res: Response, next:
     });
 
   } catch (error) {
+    console.log('Error occurred while generating sync studio video:', error);
     return formatResponse(res, 500, "Internal Server Error", false, null);
   } finally {
     if (fs.existsSync(imagePath)) {

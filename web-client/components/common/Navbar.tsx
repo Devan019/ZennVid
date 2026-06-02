@@ -7,6 +7,7 @@ import { FRONTEND_ROUTES } from "@/constants/frontend_routes";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useEffect, useState } from "react";
+import { Sparkles } from "lucide-react";
 
 interface NavbarProps {
   setMenuOpen: (val: boolean) => void;
@@ -56,13 +57,13 @@ export const Navbar = ({ setMenuOpen }: NavbarProps) => {
       label: "Dashboard",
     },
     {
-      url: FRONTEND_ROUTES.OPENAPI,
-      label: "OpenAPI",
-    },
-    {
       url: FRONTEND_ROUTES.FEED,
       label: "Feed",
     },
+    {
+      url: FRONTEND_ROUTES.PRICING,
+      label: "pricing"
+    }
   ];
 
   const textColor = isDarkSection
@@ -77,16 +78,16 @@ export const Navbar = ({ setMenuOpen }: NavbarProps) => {
     ? "bg-white"
     : "bg-black";
 
-    if(isLoading){
-      return (
-        <motion.nav
-          initial={{ y: -100 }}
-          animate={{ y: 0 }}
-          transition={{
-            duration: 1,
-            ease: [0.22, 1, 0.36, 1],
-          }}
-          className="
+  if (isLoading) {
+    return (
+      <motion.nav
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        transition={{
+          duration: 1,
+          ease: [0.22, 1, 0.36, 1],
+        }}
+        className="
             fixed
             top-0
             left-0
@@ -101,15 +102,15 @@ export const Navbar = ({ setMenuOpen }: NavbarProps) => {
             transition-colors
             duration-500
           "
-        >
-          <div className="h-6 w-24 animate-pulse rounded bg-gray-300" />
-          <div className="flex items-center gap-8">
-            <div className="h-6 w-16 animate-pulse rounded bg-gray-300" />
-          </div>
-        </motion.nav>
-      )
-    }
-  
+      >
+        <div className="h-6 w-24 animate-pulse rounded bg-gray-300" />
+        <div className="flex items-center gap-8">
+          <div className="h-6 w-16 animate-pulse rounded bg-gray-300" />
+        </div>
+      </motion.nav>
+    )
+  }
+
 
   return (
     <motion.nav
@@ -203,37 +204,45 @@ export const Navbar = ({ setMenuOpen }: NavbarProps) => {
           </div>
         )}
 
-        {/* USER AVATAR */}
+        {/* USER + CREDITS */}
         {isAuthenticated && user && (
           <motion.div
             whileHover={{
-              scale: 1.08,
-              rotate: 2,
+              scale: 1.04,
             }}
             whileTap={{
-              scale: 0.95,
+              scale: 0.97,
             }}
             transition={{
               type: "spring",
               stiffness: 300,
               damping: 20,
             }}
+            className={`
+      flex items-center gap-3 rounded-full border px-2 py-2 pr-4 backdrop-blur-xl
+      transition-all duration-500
+      ${isDarkSection
+                ? "border-white/15 bg-white/5"
+                : "border-black/10 bg-white/80"
+              }
+    `}
           >
+            {/* AVATAR */}
             <Avatar
               className={`
-                size-10
-                cursor-pointer
-                overflow-hidden
-                border
-                bg-white
-                shadow-xl
-                transition-colors
-                duration-500
-                ${isDarkSection
+        size-10
+        cursor-pointer
+        overflow-hidden
+        border
+        bg-white
+        shadow-xl
+        transition-colors
+        duration-500
+        ${isDarkSection
                   ? "border-white/20"
                   : "border-black/10"
                 }
-              `}
+      `}
             >
               <AvatarImage
                 draggable={false}
@@ -243,15 +252,45 @@ export const Navbar = ({ setMenuOpen }: NavbarProps) => {
 
               <AvatarFallback
                 className="
-                  bg-black
-                  text-white
-                  font-semibold
-                  uppercase
-                "
+          bg-black
+          text-white
+          font-semibold
+          uppercase
+        "
               >
                 {user.username?.[0] || "U"}
               </AvatarFallback>
             </Avatar>
+
+            {/* CREDITS */}
+            <div className="flex flex-col">
+              <span
+                className={`text-[10px] uppercase tracking-[0.18em] ${isDarkSection
+                    ? "text-white/50"
+                    : "text-black/40"
+                  }`}
+              >
+                Credits
+              </span>
+
+              <div className="flex items-center gap-1.5">
+                <Sparkles
+                  className={`h-3.5 w-3.5 ${isDarkSection
+                      ? "text-yellow-300"
+                      : "text-amber-500"
+                    }`}
+                />
+
+                <span
+                  className={`text-sm font-semibold ${isDarkSection
+                      ? "text-white"
+                      : "text-black"
+                    }`}
+                >
+                  {user.credits ?? 0}
+                </span>
+              </div>
+            </div>
           </motion.div>
         )}
 
@@ -326,6 +365,49 @@ export const Navbar = ({ setMenuOpen }: NavbarProps) => {
           />
         </button>
 
+        {/* pricing link */}
+        {!isAuthenticated && (
+          <div
+            className="
+              hidden
+              items-center
+              gap-6
+              md:flex
+            "
+          >
+            <Link
+              href={FRONTEND_ROUTES.PRICING}
+              className={`
+                  group
+                  relative
+                  overflow-hidden
+                  text-[11px]
+                  uppercase
+                  tracking-[0.25em]
+                  transition-all
+                  duration-300
+                  ${subTextColor}
+                `}
+            >
+              pricing
+              <span
+                className={`
+                    absolute
+                    bottom-0
+                    left-0
+                    h-px
+                    w-0
+                    transition-all
+                    duration-500
+                    group-hover:w-full
+                    ${borderColor}
+                  `}
+              />
+            </Link>
+
+          </div>
+        )}
+
         {/* GET STARTED BUTTON */}
         {!isAuthenticated && <motion.button
           whileHover={{
@@ -362,6 +444,8 @@ export const Navbar = ({ setMenuOpen }: NavbarProps) => {
         >
           Get Started
         </motion.button>}
+
+
       </div>
     </motion.nav>
   );

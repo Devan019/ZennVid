@@ -3,7 +3,6 @@ import { formatResponse } from "./utils/formateResponse";
 import expressAsyncHandler from "./utils/expressAsync";
 import jwt from "jsonwebtoken";
 import { ACCESS_KEY } from "./env_var";
-import { UserRole } from "./constants/provider";
 
 declare global {
   namespace Express {
@@ -15,7 +14,6 @@ declare global {
         username: string;
         credits : number;
         profilePicture : string;
-        role : UserRole;
       }
     }
   }

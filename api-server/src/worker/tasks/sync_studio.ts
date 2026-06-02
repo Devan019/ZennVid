@@ -12,7 +12,7 @@ const syncStudioTask = async (job: Job) => {
       audioData,
       text,
       userId,
-      character, title, style
+      character, title, style, isVoiceCloning
     } = job.data;
 
     if (!imageData || !audioData || !text || !userId || !character || !title || !style || !userId) {
@@ -45,7 +45,8 @@ const syncStudioTask = async (job: Job) => {
       userId,
       imagePath: imageData.Location,
       audioPath: audioData.Location,
-      text
+      text,
+      isVoiceCloning
     });
 
     //delete uploaded image and audio from cloudinary

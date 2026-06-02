@@ -157,7 +157,7 @@ export function AppSidebar({ menuItems }: { menuItems: { href: string; icon: str
                 )}
 
                 {/* CREDITS */}
-                {user && user.role === "user" && (<motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="mt-5 flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-4"><motion.div className="h-2 w-2 rounded-full bg-green-400" animate={{ scale: [1, 1.3, 1] }} transition={{ duration: 2, repeat: Infinity }} /><span className="text-sm font-medium text-white/80">{user.credits} Credits</span></motion.div>)}
+                {user  && (<motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="mt-5 flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-4"><motion.div className="h-2 w-2 rounded-full bg-green-400" animate={{ scale: [1, 1.3, 1] }} transition={{ duration: 2, repeat: Infinity }} /><span className="text-sm font-medium text-white/80">{user.credits} Credits</span></motion.div>)}
               </SidebarMenu>
             </motion.div>
           </SidebarGroup>

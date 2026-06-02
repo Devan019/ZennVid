@@ -3,7 +3,7 @@ import expressAsyncHandler from "../utils/expressAsync";
 import { getGoogleAuthUrl, getOAuthUser, getTokens } from "./service";
 import { formatResponse } from "../utils/formateResponse";
 import { User } from "../auth/model/User";
-import { Provider, UserRole } from "../constants/provider"
+import { Provider } from "../constants/provider"
 import { autoSignInUserService } from "../auth/controller";
 
 
@@ -37,7 +37,6 @@ export const oauthCallback = expressAsyncHandler(async (req: Request, res: Respo
         username: name,
         provider: Provider.GOOGLE,
         profilePicture: picture,
-        role : UserRole.USER
       });
       await newUser.save();
       exitUser = newUser;

@@ -19,6 +19,7 @@ import {
   Trash2,
   Trash,
   Upload,
+  X,
 } from "lucide-react"
 
 export type VideoData = {
@@ -71,7 +72,7 @@ export const VideoLayoutGrid = ({ cards, onDelete, onShare, onDownload, deleting
   }
 
   return (
-    <div className="w-full min-h-screen p-6 md:p-10 ml-36">
+    <div className="w-full min-h-screen ">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900  mb-2">Your Video Gallery</h1>
@@ -86,10 +87,21 @@ export const VideoLayoutGrid = ({ cards, onDelete, onShare, onDownload, deleting
               <motion.div
                 onClick={() => handleClick(card)}
                 className={cn(
-                  "relative overflow-hidden cursor-pointer group",
+                  "relative overflow-hidden cursor-pointer group transition-all duration-300",
+
                   selected?.id === card.id
-                    ? "fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 h-1/2 w-1/2 z-50 rounded-2xl"
-                    : "rounded-xl aspect-video bg-gray-100 ",
+                    ? `
+      fixed left-1/2 top-1/2 z-50
+      w-[90vw] max-w-5xl
+      aspect-video
+      -translate-x-1/2 -translate-y-1/2
+      rounded-[32px]
+      overflow-hidden
+      shadow-2xl
+    `
+                    : selected
+                      ? "rounded-xl aspect-video bg-gray-100 scale-90 opacity-40 blur-[1px]"
+                      : "rounded-xl aspect-video bg-gray-100 hover:scale-[1.02]"
                 )}
                 layoutId={`card-${card.id}`}
                 transition={{ duration: 0.3, ease: "easeInOut" }}
@@ -182,190 +194,7 @@ const VideoThumbnail = ({ card, onDelete, onShare, onDownload, deletingIds }: Vi
       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
 
       {/* Menu Button */}
-      <div
-        className="
-    absolute
-    top-3
-    right-3
-    z-[9999]
-    opacity-0
-    transition-opacity
-    group-hover:opacity-100
-  "
-        onClick={(e) =>
-          e.stopPropagation()
-        }
-      >
-        <div className="relative z-[9999]">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-
-              setShowMenu(
-                !showMenu
-              );
-            }}
-            className="
-        z-[9999]
-        rounded-full
-        bg-black/20
-        p-2
-        backdrop-blur-sm
-        transition-colors
-        hover:cursor-pointer
-        hover:bg-black/40
-      "
-          >
-            <MoreVertical className="h-4 w-4 text-white" />
-          </button>
-
-          {/* Dropdown Menu */}
-          {showMenu && (
-            <motion.div
-              initial={{
-                opacity: 0,
-                scale: 0.95,
-                y: -4,
-              }}
-              animate={{
-                opacity: 1,
-                scale: 1,
-                y: 0,
-              }}
-              transition={{
-                duration: 0.18,
-              }}
-              onClick={(e) =>
-                e.stopPropagation()
-              }
-              className="
-          absolute
-          right-0
-          top-full
-          z-[99999]
-          mt-2
-          min-w-[190px]
-          overflow-hidden
-          rounded-2xl
-          border
-          border-black/10
-          bg-white/95
-          py-2
-          shadow-2xl
-          backdrop-blur-xl
-        "
-            >
-              <button
-                onClick={(e) =>
-                  handleMenuAction(
-                    "download",
-                    e
-                  )
-                }
-                className="
-            flex
-            w-full
-            items-center
-            gap-3
-            px-4
-            py-3
-            text-left
-            text-sm
-            text-black
-            transition-colors
-            hover:bg-black/5
-          "
-              >
-                <Download className="h-4 w-4" />
-                Download Video
-              </button>
-
-              <button
-                onClick={(e) =>
-                  handleMenuAction(
-                    "share",
-                    e
-                  )
-                }
-                className="
-            flex
-            w-full
-            items-center
-            gap-3
-            px-4
-            py-3
-            text-left
-            text-sm
-            text-black
-            transition-colors
-            hover:bg-black/5
-          "
-              >
-                <Upload className="h-4 w-4" />
-                Upload to Feed
-              </button>
-
-              {(() => {
-                const isDeleting =
-                  deletingIds?.includes(
-                    card.id
-                  ) ||
-                  deletingIds?.includes(
-                    card.content
-                      ._id as unknown as string
-                  );
-
-                if (isDeleting) {
-                  return (
-                    <div
-                      className="
-                  flex
-                  w-full
-                  items-center
-                  gap-3
-                  px-4
-                  py-3
-                  text-sm
-                  text-gray-500
-                "
-                    >
-                      <Loader size={18} />
-                      Deleting...
-                    </div>
-                  );
-                }
-
-                return (
-                  <button
-                    onClick={(e) =>
-                      handleMenuAction(
-                        "delete",
-                        e
-                      )
-                    }
-                    className="
-                flex
-                w-full
-                items-center
-                gap-3
-                px-4
-                py-3
-                text-left
-                text-sm
-                text-red-500
-                transition-colors
-                hover:bg-red-50
-              "
-                  >
-                    <Trash2 className="h-4 w-4" />
-                    Delete Video
-                  </button>
-                );
-              })()}
-            </motion.div>
-          )}
-        </div>
-      </div>
+      
 
       {/* Play button */}
       <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
@@ -396,11 +225,27 @@ interface SelectedVideoCardProps {
   deletingIds?: string[]
 }
 
-const SelectedVideoCard = ({ selected, onDelete, onShare, onDownload, deletingIds }: SelectedVideoCardProps) => {
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [isMuted, setIsMuted] = useState(false)
-  const [showControls, setShowControls] = useState(true)
-  const videoRef = useRef<HTMLVideoElement>(null)
+const SelectedVideoCard = ({
+  selected,
+  onDelete,
+  onShare,
+  onDownload,
+  deletingIds,
+  onClose,
+}: SelectedVideoCardProps & {
+  onClose: () => void
+}) => {
+  const [isPlaying, setIsPlaying] =
+    useState(false)
+
+  const [isMuted, setIsMuted] =
+    useState(false)
+
+  const [showControls, setShowControls] =
+    useState(true)
+
+  const videoRef =
+    useRef<HTMLVideoElement>(null)
 
   const togglePlay = () => {
     if (videoRef.current) {
@@ -409,6 +254,7 @@ const SelectedVideoCard = ({ selected, onDelete, onShare, onDownload, deletingId
       } else {
         videoRef.current.play()
       }
+
       setIsPlaying(!isPlaying)
     }
   }
@@ -436,129 +282,214 @@ const SelectedVideoCard = ({ selected, onDelete, onShare, onDownload, deletingId
     onDelete?.(selected.id)
   }
 
+  const isDeleting =
+    deletingIds?.includes(selected.id) ||
+    deletingIds?.includes(
+      selected.content._id as unknown as string
+    )
+
   return (
-    <div className="relative w-full h-full bg-black rounded-2xl overflow-hidden">
+    <div onClick={(e) => e.stopPropagation()} className="relative h-full w-full overflow-hidden rounded-[32px] bg-black">
+      {/* VIDEO */}
       <video
         ref={videoRef}
-        className="w-full h-full object-contain"
+        className="h-full w-full object-contain"
         onClick={handleVideoClick}
         onPlay={() => setIsPlaying(true)}
         onPause={() => setIsPlaying(false)}
         controls={false}
       >
-        <source src={selected.content.videoUrl} type="video/mp4" />
+        <source
+          src={selected.content.videoUrl}
+          type="video/mp4"
+        />
       </video>
 
-      {/* Close / Delete button */}
-      <div className="absolute top-4 right-4 z-20">
-        {(() => {
-          const isDeleting = deletingIds?.includes(selected.id) || deletingIds?.includes(selected.content._id as unknown as string)
-          if (isDeleting) {
-            return (
-              <div className="bg-black/50 backdrop-blur-sm rounded-full p-2">
-                <Loader size={20} />
-              </div>
-            )
-          }
-
-          return (
-            <button
-              onClick={handleDelete}
-              className="bg-black/50 backdrop-blur-sm rounded-full p-2 hover:bg-black/70 transition-colors z-20 hover:cursor-pointer"
-            >
-              <Trash className="w-5 h-5 text-red-500" />
-            </button>
-          )
-        })()}
-      </div>
-
-      {/* Custom Controls */}
+      {/* OVERLAY */}
       <motion.div
         className="absolute inset-0 flex flex-col justify-between p-6"
         initial={{ opacity: 0 }}
-        animate={{ opacity: showControls ? 1 : 0 }}
-        onMouseEnter={() => setShowControls(true)}
-        onMouseLeave={() => setShowControls(false)}
+        animate={{
+          opacity: showControls ? 1 : 0,
+        }}
+        onMouseEnter={() =>
+          setShowControls(true)
+        }
+        onMouseLeave={() =>
+          setShowControls(false)
+        }
       >
-        {/* Top bar */}
-        <div className="flex justify-between items-start">
-          <div className="bg-black/50 backdrop-blur-sm rounded-lg p-3 max-w-md">
-            <h2 className="text-white text-xl font-bold mb-2">{selected.content.title}</h2>
-            <div className="grid grid-cols-2 gap-4 text-sm">
+        {/* TOP */}
+        <div className="flex items-start justify-between">
+          {/* INFO */}
+          <div className="max-w-md rounded-2xl bg-black/40 p-4 backdrop-blur-xl">
+            <h2 className="mb-3 text-2xl font-bold text-white">
+              {selected.content.title}
+            </h2>
+
+            <div className="grid grid-cols-2 gap-3 text-sm">
               <div className="flex items-center gap-2 text-white/80">
-                <Palette className="w-4 h-4" />
-                <span className="capitalize">{selected.content.style}</span>
+                <Palette className="h-4 w-4" />
+
+                <span className="capitalize">
+                  {selected.content.style}
+                </span>
               </div>
+
               <div className="flex items-center gap-2 text-white/80">
-                <Globe className="w-4 h-4" />
-                <span className="capitalize">{selected.content.language}</span>
+                <Globe className="h-4 w-4" />
+
+                <span className="capitalize">
+                  {selected.content.language}
+                </span>
               </div>
+
               <div className="flex items-center gap-2 text-white/80">
-                <Mic className="w-4 h-4" />
-                <span>{selected.content.voiceCharacter}</span>
+                <Mic className="h-4 w-4" />
+
+                <span>
+                  {
+                    selected.content
+                      .voiceCharacter
+                  }
+                </span>
               </div>
+
               <div className="flex items-center gap-2 text-white/80">
-                <Calendar className="w-4 h-4" />
-                <span>{new Date(selected.content.created_at).toLocaleDateString()}</span>
+                <Calendar className="h-4 w-4" />
+
+                <span>
+                  {new Date(
+                    selected.content.created_at
+                  ).toLocaleDateString()}
+                </span>
               </div>
             </div>
           </div>
+
+          {/* CLOSE BUTTON */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation()
+              onClose()
+            }}
+            className="
+            z-[9999]
+              flex h-12 w-12 items-center justify-center
+              rounded-full bg-black/50 backdrop-blur-xl
+              transition-all hover:scale-105 hover:bg-black/70
+            "
+          >
+            <X className="h-5 w-5 text-white" />
+          </button>
         </div>
 
-        {/* Center play button */}
+        {/* CENTER PLAY */}
         {!isPlaying && (
           <div className="flex items-center justify-center">
             <button
               onClick={togglePlay}
-              className="bg-white/20 backdrop-blur-sm rounded-full p-6 hover:bg-white/30 transition-colors"
+              className="
+                rounded-full bg-white/20 p-7
+                backdrop-blur-xl transition-all
+                hover:scale-105 hover:bg-white/30
+              "
             >
-              <Play className="w-12 h-12 text-white fill-white" />
+              <Play className="h-14 w-14 fill-white text-white" />
             </button>
           </div>
         )}
 
-        {/* Bottom controls */}
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-4">
+        {/* BOTTOM */}
+        <div className="flex items-end justify-between">
+          {/* LEFT */}
+          <div className="flex items-center gap-3">
+            {/* DELETE */}
+            {isDeleting ? (
+              <div className="rounded-xl bg-red-500/20 p-3 backdrop-blur-xl">
+                <Loader size={20} />
+              </div>
+            ) : (
+              <button
+                onClick={handleDelete}
+                className="
+                  rounded-xl bg-red-500/20 p-3
+                  backdrop-blur-xl transition-all
+                  hover:bg-red-500/30
+                "
+              >
+                <Trash className="h-5 w-5 text-red-400" />
+              </button>
+            )}
+
+            {/* PLAY */}
             <button
               onClick={togglePlay}
-              className="bg-black/50 backdrop-blur-sm rounded-lg p-3 hover:bg-black/70 transition-colors"
+              className="
+                rounded-xl bg-black/50 p-3
+                backdrop-blur-xl transition-all
+                hover:bg-black/70
+              "
             >
               {isPlaying ? (
-                <Pause className="w-5 h-5 text-white" />
+                <Pause className="h-5 w-5 text-white" />
               ) : (
-                <Play className="w-5 h-5 text-white fill-white" />
+                <Play className="h-5 w-5 fill-white text-white" />
               )}
             </button>
 
+            {/* MUTE */}
             <button
               onClick={toggleMute}
-              className="bg-black/50 backdrop-blur-sm rounded-lg p-3 hover:bg-black/70 transition-colors"
+              className="
+                rounded-xl bg-black/50 p-3
+                backdrop-blur-xl transition-all
+                hover:bg-black/70
+              "
             >
-              {isMuted ? <VolumeX className="w-5 h-5 text-white" /> : <Volume2 className="w-5 h-5 text-white" />}
+              {isMuted ? (
+                <VolumeX className="h-5 w-5 text-white" />
+              ) : (
+                <Volume2 className="h-5 w-5 text-white" />
+              )}
             </button>
           </div>
 
-          <div className="flex items-center gap-4">
+          {/* RIGHT */}
+          <div className="flex items-center gap-3">
             <button
               onClick={handleDownload}
-              className="bg-black/50 backdrop-blur-sm rounded-lg p-3 hover:bg-black/70 transition-colors"
+              className="
+                rounded-xl bg-black/50 p-3
+                backdrop-blur-xl transition-all
+                hover:bg-black/70
+              "
             >
-              <Download className="w-5 h-5 text-white" />
+              <Download className="h-5 w-5 text-white" />
             </button>
 
             <button
               onClick={handleShare}
-              className="bg-black/50 backdrop-blur-sm rounded-lg p-3 hover:bg-black/70 transition-colors"
+              className="
+                rounded-xl bg-black/50 p-3
+                backdrop-blur-xl transition-all
+                hover:bg-black/70
+              "
             >
-              <Upload className="w-5 h-5 text-white" />
+              <Upload className="h-5 w-5 text-white" />
             </button>
 
             <button
-              onClick={() => videoRef.current?.requestFullscreen()}
-              className="bg-black/50 backdrop-blur-sm rounded-lg p-3 hover:bg-black/70 transition-colors"
+              onClick={() =>
+                videoRef.current?.requestFullscreen()
+              }
+              className="
+                rounded-xl bg-black/50 p-3
+                backdrop-blur-xl transition-all
+                hover:bg-black/70
+              "
             >
-              <Maximize className="w-5 h-5 text-white" />
+              <Maximize className="h-5 w-5 text-white" />
             </button>
           </div>
         </div>

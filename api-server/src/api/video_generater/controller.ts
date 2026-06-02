@@ -71,6 +71,7 @@ export const syncStudio = expressAsyncHandler(async (req: Request, res: Response
 
     return await syncStudioCreationVideo(req, res, next);
   } catch (error) {
+    console.log('Error occurred in syncStudio controller:', error);
     return formatResponse(res, 500, "Internal server error", false, error);
   }
 });

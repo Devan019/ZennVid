@@ -3,8 +3,7 @@ import { DashboardTab, PageMeta } from "../types";
 export const TAB_ORDER: DashboardTab[] = [
   "magic-video",
   "syncstudio",
-  "your-videos",
-  "anime-matcher",
+  "your-videos"
 ];
 
 export const normalizeHash = (hash: string) =>
@@ -34,15 +33,6 @@ export const getPageMeta = (
         description:
           "Create realistic synced performances with cinematic facial motion and dialogue alignment.",
       };
-
-    case "anime-matcher":
-      return {
-        eyebrow: "ANIME IDENTITY",
-        title: "Anime Twin",
-        description:
-          "Discover your anime-inspired cinematic identity using generative AI.",
-      };
-
     case "your-videos":
       return {
         eyebrow: "VIDEO LIBRARY",

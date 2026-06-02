@@ -5,3 +5,7 @@ export const creditZodValidation = z.object({
   paymentId : z.string({message: "payment id is required"}),
   amount : z.number({message : "transcation is required"})
 })
+
+export const orderZodValidation = z.object({
+  planId : z.string({message: "plan id is required"})
+})

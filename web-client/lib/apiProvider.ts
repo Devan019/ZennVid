@@ -1,5 +1,4 @@
-import { ADMIN_USER, ANIME_MATCHING, FEED, generateVideo, getVideos, OPENAPI_STATS, UPDATE_CREDITS } from "@/constants/backend_routes";
-import { getCloudinaryUrl } from "./getPublicUrl";
+import { CREATE_ORDER, FEED, generateVideo, getVideos } from "@/constants/backend_routes";
 import axios_api from "./axiosHelper";
 
 export interface Error {
@@ -46,7 +45,6 @@ export const getUserVideos = async () => {
       ...data,
       DATA: data.DATA.map((video: any) => ({
         ...video,
-        videoUrl: getCloudinaryUrl(video.videoMetadata),
       })),
     };
   } catch (error) {
@@ -68,51 +66,6 @@ export const deleteVideo = async ({ id }: { id: string }) => {
   }
 }
 
-
-/** get stats */
-
-export const Stats = async () => {
-  try {
-    const api = await axios_api.get(`${OPENAPI_STATS}`, { withCredentials: true })
-    return api.data;
-  } catch (error) {
-    const err = error as Error;
-    return err.response?.data;
-  }
-}
-
-/** credits update */
-export const updateCredits = async ({ credits, paymentId, amount }: {
-  credits: number,
-  paymentId: string,
-  amount: number
-}) => {
-  try {
-    const api = await axios_api.post(`${UPDATE_CREDITS}`, { credits, paymentId, amount }, { withCredentials: true })
-    return api.data;
-  } catch (error) {
-    const err = error as Error;
-    return err.response?.data;
-  }
-}
-
-
-/** user update */
-export const updateUser = async (
-  { userId, username, credits }: {
-    userId: string,
-    username: string,
-    credits: number
-  }
-) => {
-  try {
-    const api = await axios_api.put(`${ADMIN_USER}/${userId}`, { username, credits }, { withCredentials: true });
-    return api.data;
-  } catch (error) {
-    const err = error as Error;
-    return err.response?.data;
-  }
-}
 
 /** create feed post */
 export const feedCreate = async ({ userId, videoId }: { userId: string, videoId: string }) => {
@@ -140,7 +93,7 @@ export const getFeedPosts = async () => {
         ...feed,
         video: {
           ...feed.video,
-          videoUrl: feed?.video?.videoUrl || getCloudinaryUrl(feed?.video?.videoMetadata),
+          videoUrl: feed?.video?.videoUrl
         },
       })),
     };
@@ -194,13 +147,13 @@ export const feedCommentDelete = async ({ commentId }: { commentId: string }) =>
 }
 
 
-
-/**anime matching */
-export const animeMatching = async ({ formData }: { formData: FormData }) => {
+/** create order */
+export const createOrder = async ({planId}: {planId: string}) => {
   try {
-    const api = await axios_api.post(`${ANIME_MATCHING}`, formData, { withCredentials: true });
+    const api = await axios_api.post(`${CREATE_ORDER}`, { planId }, { withCredentials: true })
     return api.data;
-  } catch (error) {
+
+  }catch (error) {
     const err = error as Error;
     return err.response?.data;
   }

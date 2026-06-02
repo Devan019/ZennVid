@@ -3,7 +3,6 @@ export type DashboardTab =
   | "magic-video"
   | "syncstudio"
   | "your-videos"
-  | "anime-matcher";
 
 export interface PageMeta {
   eyebrow: string;

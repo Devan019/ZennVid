@@ -1,7 +1,6 @@
 import { Client } from "@gradio/client";
 import { EDGE_TTS_REPO, EDGE_TTS_REPO_API, HF_TOKEN } from "../../env_var";
 import fs from "fs/promises";
-import path from "path/win32";
 const audioGen = async ({
   text,
   voice,
@@ -19,7 +18,6 @@ const audioGen = async ({
   }
 
   try {
-    console.time("Audio generation time");
     const client = await Client.connect(EDGE_TTS_REPO, {
       token: `hf_${HF_TOKEN}`
     });
@@ -30,7 +28,6 @@ const audioGen = async ({
       rate: 0,
       pitch: 0,
     });
-    console.log("Audio generation result:", result);
 
     if (!result || !result.data || !(result.data as Array<any>).length) {
       console.log("Invalid audio generation result:", result);
@@ -47,8 +44,6 @@ const audioGen = async ({
         Location: "",
       };
     }
-    console.timeEnd("Audio generation time");
-    console.time("Audio download time");
     //get audio buffer from the url
     const audioResponse = await fetch(audioUrl);
     if (!audioResponse.ok) {
@@ -56,11 +51,8 @@ const audioGen = async ({
     }
 
     const audioBuffer = await audioResponse.arrayBuffer();
-    console.timeEnd("Audio download time");
-    console.time("Audio upload time");
     //save audio to local disk
     await fs.writeFile(filePath, Buffer.from(audioBuffer));
-    console.timeEnd("Audio upload time");
     return {
       Key: "LOCAL",
       Location,

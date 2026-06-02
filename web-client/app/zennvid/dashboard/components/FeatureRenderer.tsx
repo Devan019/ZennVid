@@ -3,7 +3,6 @@
 import { DashboardTab } from "../types";
 import MagicVideoFeature from "../features/magic-video";
 import SyncStudioFeature from "../features/sync-studio";
-import AnimeTwinFeature from "../features/anime-twin";
 import YourVideosFeature from "../features/your-videos";
 
 interface FeatureRendererProps {
@@ -32,13 +31,6 @@ export const FeatureRenderer: React.FC<
     case "your-videos":
       return (
         <YourVideosFeature
-          onGenerate={onGenerate}
-        />
-      );
-
-    case "anime-matcher":
-      return (
-        <AnimeTwinFeature
           onGenerate={onGenerate}
         />
       );

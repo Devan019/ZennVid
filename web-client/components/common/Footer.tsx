@@ -27,16 +27,8 @@ export function Footer() {
       href: FRONTEND_ROUTES.SYNCSTUDIO,
     },
     {
-      label: "Anime Twin",
-      href: FRONTEND_ROUTES.ANIMETWIN,
-    },
-    {
       label: "Feed",
       href: FRONTEND_ROUTES.FEED,
-    },
-    {
-      label: "Openapi",
-      href: FRONTEND_ROUTES.OPENAPI,
     },
   ];
 

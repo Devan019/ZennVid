@@ -1,7 +1,9 @@
 export const FRONTEND_ROUTES = {
   HOME: "/",
-  About: "#about",
+  About: "/#about",
   Contact: "#contact",
+  HomeMagic : "#magicstudio",
+  HomeSync : "#syncstudio",
 
   AUTH: "/auth",
 
@@ -10,27 +12,10 @@ export const FRONTEND_ROUTES = {
   MAGICSTUDIO: "/zennvid/dashboard#magicstudio",
   SYNCSTUDIO: "/zennvid/dashboard#syncstudio",
   YOURVIDEO: "/zennvid/dashboard#your-videos",
-  ANIMETWIN: "/zennvid/dashboard#anime-matcher",
   ZENNVID: "/zennvid/dashboard",
-
-  /**openapi */
-  OPENAPI: "/zennvid/openapi",
-  APPS: "/zennvid/openapi#apps",
-  CAPTION: "/zennvid/openapi#caption-gen",
-  TRANSLATE: "/zennvid/openapi#text-translate",
-  IMAGE: "/zennvid/openapi#image",
-  TEXT_AUDIO: "/zennvid/openapi#audio-gen",
 
   /**pricing */
   PRICING: "/zennvid/pricing",
-
-  /**admin */
-  ADMIN: "/zennvid/admin/transcation",
-  DEVELOPER_STATS: "/zennvid/admin/developer",
-  USER_STATS: "/zennvid/admin/users",
-  TRANSCATION_STATS: "/zennvid/admin/transcation",
-  VIDEO_STATS: "/zennvid/admin/video",
-  USER_ACCOUNTS: "/zennvid/admin/user-accounts",
 
   /**feed */
   FEED: "/zennvid/feed",

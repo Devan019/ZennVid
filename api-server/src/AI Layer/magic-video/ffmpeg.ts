@@ -28,7 +28,6 @@ export const createVideo = async ({
   audio: string;
   finalVideoPath: string;
 }) => {
-  console.time('ffmpegRenderTime')
   try {
     // 1. Parse Captions
     let captions: Caption[];

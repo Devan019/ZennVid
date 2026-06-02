@@ -3,17 +3,12 @@
 
 import { Job } from "bullmq";
 import { generateTranscript } from "./helpers/assembly_trasnscript";
-import { audioGen } from "./magic-video/audio_gen";
-import { createVideo } from "./magic-video/ffmpeg";
-import { imageGen } from "./magic-video/image_gen";
-import { scriptGen } from "./magic-video/script_gen";
-import { addSubtitles } from "./sync-studio/add_subtitle";
-import { lipSync } from "./sync-studio/lip_sync";
-import { voiceClone } from "./sync-studio/voice_clone";
 import { deleteFileFromS3 } from "../utils/s3";
 import fs from "fs/promises";
 import path from "path";
 import { S3_PRIVATE_BUCKET } from "../env_var";
+import { scriptGen, audioGen, createVideo, imageGen } from "./magic-video";
+import { addSubtitles, lipSync, voiceClone } from "./sync-studio";
 
 export interface VideoData {
   Key: string;
@@ -116,7 +111,7 @@ const createMagicVideo = async (
     //create directly to save files
     const cwd = process.cwd();
     const dir = path.join(cwd, "public", "magic-studio", userId, job.id);
-    const prefix = "/public/magic-studio/" + userId + "/" + job.id ;
+    const prefix = "/public/magic-studio/" + userId + "/" + job.id;
     const final_video_path = "/public/magic-studio/" + userId + "/" + job.id + "/final_video.mp4";
     await fs.mkdir(dir, { recursive: true });
 
@@ -130,6 +125,12 @@ const createMagicVideo = async (
 
     let currentProgress = 0;
 
+    await job.updateProgress({
+      stage: "video_gen_started",
+      percent: 5,
+      status: "progress",
+      userId
+    });
 
     // 1. Get script
     const MAX_RETRIES = 5;
@@ -185,26 +186,16 @@ const createMagicVideo = async (
             Location: prefix + "/image_" + i + ".jpg"
           });
 
-          console.log(
-            `Image generated for prompt ${i + 1}:`,
-            imageGenResult
-          );
-
           paths.push(imageGenResult);
         } catch (error) {
           console.log(`Error generating image ${i + 1}:`, error);
 
           paths.push(null);
-        } 
+        }
       }
 
       // update progress after all images are generated
       currentProgress += WEIGHTS.IMAGES;
-
-      console.log(
-        "All images generated, updating progress to frontend:",
-        currentProgress
-      );
 
       await job.updateProgress({
         stage: "images_generated",
@@ -266,7 +257,7 @@ const createMagicVideo = async (
     // 5. Video generation
     const videoData = await createVideo({
       captionsJson: JSON.stringify(captions.segments),
-      images: imagePaths.map((img: any) =>(cwd + img.Location)),
+      images: imagePaths.map((img: any) => (cwd + img.Location)),
       audio: cwd + audio.Location,
       finalVideoPath: final_video_path
     });
@@ -311,6 +302,10 @@ const createMagicVideo = async (
       }
     }
     console.timeEnd("createMagicVideo");
+
+    //delete dir
+    await fs.rmdir(dir).catch(err => console.log(`Failed to delete temp directory ${dir}:`, err));
+
     // 7. Return data
     return {
       Key: (videoData as { Key?: string }).Key ?? "",
@@ -337,46 +332,67 @@ const syncStudioVideo = async ({
   audioPath,
   text,
   job,
-  userId
+  userId,
+  isVoiceCloning
 }: {
   imagePath: string;
   audioPath: string;
   text: string;
   job: any;
   userId: string;
+  isVoiceCloning: boolean;
 }): Promise<VideoData> => {
   try {
-    //1. do voice clone
-    const voiceCloneResult = await voiceClone({
-      audio: audioPath,
-      text,
-      lang: "en"
-    });
-    if (!voiceCloneResult) {
-      console.log("Voice cloning failed, exiting.");
-      return {
-        Key: "",
-        Location: ""
-      };
-    }
+
+    let finalAudioPath = audioPath;
+    let voiceCloneResult: any = null;
+
     await job.updateProgress({
-      stage: "voice_cloned",
-      percent: 20,
+      stage: "video_gen_started",
+      percent: 5,
       status: "progress",
       userId
     });
 
-    //2. create captions
-    const captions = await generateTranscript({
-      audio: voiceCloneResult?.Location ?? ""
-    })
+    // 1. Voice Clone (ONLY IF ENABLED)
+    if (isVoiceCloning) {
+      voiceCloneResult = await voiceClone({
+        audio: audioPath,
+        text,
+        lang: "en"
+      });
+
+      if (!voiceCloneResult) {
+        console.log("Voice cloning failed, exiting.");
+
+        return {
+          Key: "",
+          Location: ""
+        };
+      }
+
+      finalAudioPath = voiceCloneResult?.Location ?? "";
+
+      await job.updateProgress({
+        stage: "voice_cloned",
+        percent: 20,
+        status: "progress",
+        userId
+      });
+    }
+
+    // 2. Generate Captions
+    const captions = await generateTranscript({ audio: finalAudioPath });
+
     if (!captions) {
       console.log("Caption generation failed, exiting.");
+
       return {
         Key: "",
         Location: ""
       };
     }
+
     await job.updateProgress({
       stage: "caption_generated",
       percent: 40,
@@ -384,36 +400,60 @@ const syncStudioVideo = async ({
       userId
     });
 
-    if (!captions || !captions.segments || captions.segments.length === 0) {
-      console.log("No captions generated, exiting.");
+    if (
+      !captions?.segments ||
+      captions.segments.length === 0
+    ) {
+      console.log(
+        "No captions generated, exiting."
+      );
+
       return {
         Key: "",
         Location: ""
       };
     }
-    const finalCaptions = captions.segments.map((segment: any) => ({
-      start: segment.start,
-      end: segment.end,
-      text: segment.text,
-      id: segment.id
-    }))
 
-    //3. create lip sync video
+    const finalCaptions =
+      captions.segments.map(
+        (segment: any) => ({
+          start: segment.start,
+          end: segment.end,
+          text: segment.text,
+          id: segment.id
+        })
+      );
+
+    // 3. Create Lip Sync Video
     const videoData = await lipSync({
       imagePath,
-      audioPath: voiceCloneResult?.Location ?? ""
+      audioPath: finalAudioPath
     });
-    // ensure videoData contains a url (lipSync may return an error object)
-    if (!videoData || typeof videoData !== "object" ) {
-      console.log("Lip sync video creation failed or returned error, exiting.");
-      if (videoData && typeof videoData === "object" && "error" in videoData) {
-        throw new Error((videoData as any).error);
+
+    if (
+      !videoData ||
+      typeof videoData !== "object"
+    ) {
+      console.log(
+        "Lip sync video creation failed."
+      );
+
+      if (
+        videoData &&
+        typeof videoData === "object" &&
+        "error" in videoData
+      ) {
+        throw new Error(
+          (videoData as any).error
+        );
       }
+
       return {
         Key: "",
         Location: ""
       };
     }
+
     await job.updateProgress({
       stage: "lip_sync_completed",
       percent: 70,
@@ -421,19 +461,21 @@ const syncStudioVideo = async ({
       userId
     });
 
-
-    //4. add subtitles to video 
+    // 4. Add Subtitles
     const finalVideo = await addSubtitles({
-      videoPath: (videoData && typeof videoData === "object" && "Location" in videoData) ? (videoData as any).Location : "",
+      videoPath: "Location" in videoData ? (videoData as any).Location : "",
       captions: finalCaptions
     });
+
     if (!finalVideo) {
-      console.log("Adding subtitles failed, exiting.");
+      console.log("Adding subtitles failed.");
+
       return {
         Key: "",
         Location: ""
       };
     }
+
     await job.updateProgress({
       stage: "subtitles_added",
       percent: 90,
@@ -441,29 +483,63 @@ const syncStudioVideo = async ({
       userId
     });
 
-    //5. remove temp data
-    try {
-      await deleteFileFromS3(voiceCloneResult?.Key ?? "", S3_PRIVATE_BUCKET!).catch(err => console.log(`Failed to delete audio ${voiceCloneResult?.Key}:`, err));
-    } catch (err) {
-      console.log("Non-critical error during cleanup:", err);
+    // 5. Cleanup Voice Clone Audio
+    if (isVoiceCloning && voiceCloneResult?.Key) {
+      try {
+        await deleteFileFromS3(voiceCloneResult.Key, S3_PRIVATE_BUCKET!);
+      } catch (err) {
+        console.log(
+          "Cleanup failed:",
+          err
+        );
+      }
     }
-    console.timeEnd("sync studio");
-    //6. return final video data
+
+    console.timeEnd(
+      "sync studio"
+    );
+
+    // 6. Return Final Video
     return {
-      Key: (finalVideo as { Key?: string }).Key ?? "",
-      Location: (finalVideo as { Location?: string }).Location ?? ""
+      Key:
+        (finalVideo as {
+          Key?: string;
+        }).Key ?? "",
+
+      Location:
+        (finalVideo as {
+          Location?: string;
+        }).Location ?? ""
     };
 
   } catch (error: any) {
+    console.log(
+      "syncStudioVideo error:",
+      error
+    );
+
     return {
       Key: "",
       Location: ""
     };
   }
-
-}
-
+};
 
 
+// findAnimeTwin({
+//   imagePath: process.cwd() + "/public/tryout/bapu.jpg",
+//   job: {
+//     data: {
+//       userId: "demo_user"
+//     },
+//     id: "1"
+//   }
+// })
+// .catch((error) => {
+//   console.log("Error in findAnimeTwin:", error);
+// })
+// .then((result) => {
+//   console.log("Anime twin result:", result);
+// })
 
 export { createMagicVideo, syncStudioVideo, tmpCreateMagicVideo };

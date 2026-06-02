@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { Mic, Upload, User, Sparkles, ArrowRight, AudioLines, ImageIcon } from "lucide-react";
+import { Upload, User, Sparkles, ArrowRight, AudioLines, ImageIcon } from "lucide-react";
 import { syncStudio } from "./api";
 import { toast } from "sonner";
 import Loader from "@/components/common/Loader";
@@ -18,12 +18,13 @@ const VideoCreator = ({
   onGenerate,
 }: SyncStudioProps) => {
   const [title, setTitle] = useState("");
-  const [speech, setSpeech] = useState("");
   const [characterName, setCharacterName] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [videoloading, setvideoloading] = useState(false);
+  const [isVoiceCloning, setIsVoiceCloning] = useState(false);
+  const [voiceClonePrompt, setVoiceClonePrompt] = useState("");
 
   const syncStudioMutation = useMutation({
     mutationKey: ["syncStudio"],
@@ -67,25 +68,37 @@ const VideoCreator = ({
   });
 
   const handleSubmit = async () => {
-    if (!title || !speech || !characterName || !imageFile || !audioFile) {
-      alert("Please fill all fields and upload image and audio files");
+    if (!title || !characterName || !imageFile) {
+      toast.error("Please fill all required fields");
       return;
+    }
+
+    if (isVoiceCloning) {
+      if (!voiceClonePrompt) {
+        toast.error("Please enter voice clone prompt");
+        return;
+      }
+    } else {
+      if (!audioFile) {
+        toast.error("Please add speech and upload audio");
+        return;
+      }
     }
     setIsSubmitting(true);
     try {
       const formData = new FormData();
-      formData.append("description", speech);
+      formData.append("description", isVoiceCloning ? voiceClonePrompt : title);
       formData.append("character", characterName);
       formData.append("title", title);
       formData.append("style", "realistic");
       formData.append("language", "english");
+      formData.append("isVoiceCloning", String(isVoiceCloning));
       formData.append("image", imageFile as Blob);
       formData.append("audio", audioFile as Blob);
 
       await syncStudioMutation.mutateAsync({ formData });
 
       setTitle("");
-      setSpeech("");
       setCharacterName("");
       setImageFile(null);
       setAudioFile(null);
@@ -155,57 +168,84 @@ const VideoCreator = ({
         <div className="grid gap-6 xl:grid-cols-2">
           {/* LEFT */}
           <div className="space-y-6">
-            {/* SPEECH */}
             <motion.div variants={itemVariants}>
               <Card className="rounded-[28px] border border-black/10 bg-white/70 text-black shadow-none">
-                <CardContent className="p-6 md:p-10">
-                  <div className="mb-6 flex items-center gap-3">
-                    <Mic className="h-5 w-5 text-black" />
-
+                <CardContent className="flex flex-col gap-5 p-6 md:p-8">
+                  <div className="flex items-center justify-between">
                     <div>
                       <h3 className="text-lg font-semibold">
-                        Dialogue Script
+                        Voice Cloning
                       </h3>
 
                       <p className="text-sm text-black/50">
-                        Add cinematic speech for
-                        lip sync
+                        Generate synced voice using AI voice cloning
                       </p>
                     </div>
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setIsVoiceCloning((prev) => !prev)
+                      }
+                      className={`relative h-8 w-16 rounded-full transition-all duration-300 ${isVoiceCloning
+                        ? "bg-black"
+                        : "bg-black/15"
+                        }`}
+                    >
+                      <div
+                        className={`absolute top-1 h-6 w-6 rounded-full bg-white transition-all duration-300 ${isVoiceCloning
+                          ? "left-9"
+                          : "left-1"
+                          }`}
+                      />
+                    </button>
                   </div>
 
-                  <textarea value={speech} onChange={(e) => e.target.value.length <= 100 && setSpeech(e.target.value)} placeholder="Welcome to the future of cinematic AI storytelling..." className="min-h-[180px] w-full resize-none rounded-3xl border border-black/10 bg-[#F7F5F0] p-5 text-black placeholder:text-black/30 outline-none transition-all focus:border-black" />
-
-                  <div
-                    className="
-                      mt-4
-                      flex
-                      items-center
-                      justify-between
-                    "
-                  >
-                    <div className="text-sm text-black/40">
-                      Maximum 100 characters
-                    </div>
-
-                    <div
-                      className={`
-                        text-sm
-                        font-medium
-
-                        ${speech.length >=
-                          100
-                          ? "text-red-500"
-                          : "text-black/50"
-                        }
-                      `}
-                    >
-                      {speech.length}/100
-                    </div>
+                  <div className="rounded-2xl bg-[#F7F5F0] px-4 py-3 text-sm text-black/60">
+                    {isVoiceCloning
+                      ? "Voice cloning enabled — prompt based generation mode active."
+                      : "Standard dialogue + uploaded audio mode active."}
                   </div>
                 </CardContent>
               </Card>
             </motion.div>
+            {/* SPEECH */}
+            {isVoiceCloning && <motion.div variants={itemVariants}>
+              <Card className="rounded-[28px] border border-black/10 bg-white/70 text-black shadow-none">
+                <CardContent className="p-6 md:p-10">
+
+                  <>
+                    <textarea
+                      value={voiceClonePrompt}
+                      onChange={(e) =>
+                        e.target.value.length <= 100 &&
+                        setVoiceClonePrompt(
+                          e.target.value
+                        )
+                      }
+                      placeholder="Generate a deep cinematic narrator voice introducing futuristic AI technology..."
+                      className="min-h-[180px] w-full resize-none rounded-3xl border border-black/10 bg-[#F7F5F0] p-5 text-black placeholder:text-black/30 outline-none transition-all focus:border-black"
+                    />
+
+                    <div className="mt-4 flex items-center justify-between">
+                      <div className="text-sm text-black/40">
+                        Maximum 100 characters
+                      </div>
+
+                      <div
+                        className={`text-sm font-medium ${voiceClonePrompt.length >= 100
+                          ? "text-red-500"
+                          : "text-black/50"
+                          }`}
+                      >
+                        {voiceClonePrompt.length}/100
+                      </div>
+                    </div>
+                  </>
+
+                </CardContent>
+              </Card>
+            </motion.div>}
 
             {/* CHARACTER */}
             <motion.div variants={itemVariants}>

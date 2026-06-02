@@ -1,5 +1,5 @@
 import fs from "fs/promises";
-import { CLOUDFLARE_WORKER_KEY, CLOUDFLARE_WORKER_URL,  } from "../../env_var";
+import { CLOUDFLARE_TXT2IMG, CLOUDFLARE_WORKER_KEY } from "../../env_var";
 
 const imageGen = async ({
   prompt,
@@ -11,9 +11,8 @@ const imageGen = async ({
   Location?: string;
 }) => {
   try {
-    console.time("Image generation time");
     // call cloudflare worker
-    const res = await fetch(CLOUDFLARE_WORKER_URL!, {
+    const res = await fetch(CLOUDFLARE_TXT2IMG!, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${CLOUDFLARE_WORKER_KEY}`,
@@ -22,11 +21,9 @@ const imageGen = async ({
       body: JSON.stringify({ prompt }),
     });
 
-    console.timeEnd("Image generation time");
     if (!res.ok) {
       throw new Error("Failed to generate image");
     }
-    console.time("Image upload time");
 
     // blob -> buffer 
     const buffer = Buffer.from(await res.arrayBuffer());
@@ -35,7 +32,6 @@ const imageGen = async ({
     await fs.writeFile(filePath, buffer);
     //save image to local disk
     
-    console.timeEnd("Image upload time");
     return {
       Key: "LOCAL",
       Location,

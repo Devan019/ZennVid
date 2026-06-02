@@ -1,6 +1,6 @@
 import { User } from "./model/User";
 import { getOtp } from "../utils/OptGenerater";
-import { Provider, UserRole } from "../constants/provider";
+import { Provider } from "../constants/provider";
 import { ACCESS_KEY } from "../env_var";
 import jwt from "jsonwebtoken"
 import { sendMail } from "../utils/SendMail";
@@ -96,8 +96,7 @@ export const createUserService = async (user: IUser) => {
       email: user.email,
       password: user.password,
       provider: user.provider,
-      username: user.username,
-      role: UserRole.USER
+      username: user.username
     });
     await newUser.save();
 
@@ -190,8 +189,7 @@ export const GetUserByTokenService = async (token: string) => {
       provider : (decoded as any).provider,
       username : (decoded as any).username,
       credits : (decoded as any).credits,
-      profilePicture : (decoded as any).profilePicture,
-      role : (decoded as any).role,
+      profilePicture : (decoded as any).profilePicture
     }
 
 
@@ -218,108 +216,6 @@ export const GetUserByTokenService = async (token: string) => {
       success: false,
       data: null
     };
-  }
-}
-
-export const CreateAdminService = async ({ email, password, username }: { email: string; password: string; username: string }) => {
-  try {
-    const existingAdmin = await User.findOne({ email, role: UserRole.ADMIN });
-    if (existingAdmin) {
-      return {
-        status: 409,
-        message: "Admin already exists",
-        success: false,
-        data: null
-      }
-    }
-    const hashedPassword = await hashPassword(password);
-    const newAdmin = new User({
-      email,
-      password: hashedPassword,
-      provider: Provider.CREDENTIALS,
-      username,
-      role: UserRole.ADMIN,
-      credits: 0
-    });
-    await newAdmin.save();
-
-    return {
-      status: 201,
-      message: "Admin created successfully",
-      success: true,
-      data: { user: newAdmin }
-    };
-  } catch (error) {
-    return {
-      status: 500,
-      message: "Internal server error",
-      success: false,
-      data: error
-    };
-  }
-}
-
-export const GetAllUserService = async (
-  { page, limit, search, createdAt }: { page: number; limit: number; search?: string; createdAt?: Date | string | undefined }
-) => {
-  try {
-
-    const isNumber = !isNaN(search as any);
-
-    const matchConditions: any = {};
-
-
-    if (search) {
-      matchConditions.$or = [
-        { email: { $regex: search, $options: "i" } },
-        { username: { $regex: search, $options: "i" } },
-        { role: { $regex: search, $options: "i" } },
-        { provider: { $regex: search, $options: "i" } },
-        ...(isNumber
-          ? [
-            { credits: Number(search) },
-          ]
-          : []),
-      ];
-    }
-
-    if (createdAt) {
-      const startOfDay = new Date(createdAt);
-      const endOfDay = new Date(createdAt);
-      endOfDay.setHours(23, 59, 59, 999);
-
-      matchConditions.createdAt = {
-        $gte: startOfDay,
-        $lte: endOfDay,
-      };
-    }
-
-    const users = await User.aggregate([
-      { $match: matchConditions },
-      { $match: { role: "user" } },
-      { $sort: { createdAt: -1 } },
-      { $skip: (page - 1) * limit },
-      { $limit: limit },
-      { $project: { password: 0 } }
-    ])
-    return {
-      status: 200,
-      message: "Users fetched successfully",
-      success: true,
-      data: {
-        users,
-        total: await User.countDocuments(matchConditions),
-        page: page,
-        limit: limit
-      }
-    };
-  } catch (error) {
-    return {
-      status: 500,
-      message: "Internal server error",
-      success: false,
-      data: error
-    }
   }
 }
 
@@ -380,25 +276,6 @@ export const UpdateUserService = async (userId: string, username: string, credit
       message: "User updated successfully",
       success: true,
       data: user
-    };
-  } catch (error) {
-    return {
-      status: 500,
-      message: "Internal server error",
-      success: false,
-      data: error
-    };
-  }
-}
-
-export const getAllUsersAsCSVService = async () => {
-  try {
-    const users = await User.find({ role: "user" }).select("-password");
-    return {
-      status: 200,
-      message: "Users fetched successfully",
-      success: true,
-      data: users
     };
   } catch (error) {
     return {

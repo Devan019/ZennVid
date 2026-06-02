@@ -1,14 +1,13 @@
 import { NextFunction, Request, Response } from "express";
 import expressAsyncHandler from "../utils/expressAsync";
 import { formatResponse } from "../utils/formateResponse";
-import { CreateAdminService, createTmpUserService, createUserService, GetUserByTokenService, signInUserService } from "./service";
+import {createTmpUserService, createUserService, GetUserByTokenService, signInUserService } from "./service";
 import { CheckUserValidation, SignInValidation, UserValidation } from "./schema/zodschema";
 import { ISendResponse } from "../constants/interfaces";
 import { SetCookie } from "../utils/setCookie";
 import { redisClient } from "../utils/redisClient";
 import { generateJWTtoken } from "../utils/jwtAssign";
 import { ACCESS_KEY, accessPeroid, accessPeroidJwt, FRONTEND_URL, REFRESH_KEY, REFRESH_SECRET, refreshPeroid, refreshPeroidJwt } from "../env_var";
-import { UserRole } from "../constants/provider";
 import { RefreshToken } from "./model/RefreshToken";
 import { sha256Hex } from "../utils/cyrpto";
 import jwt from "jsonwebtoken";
@@ -35,7 +34,6 @@ export const autoSignInUserService = async (req: Request, res: Response, user: a
       provider: user.provider,
       username: user.username,
       credits: user.credits,
-      role: user.role as UserRole,
     }
 
     //gen access token and setcookie
@@ -189,16 +187,6 @@ export const logout = expressAsyncHandler(async (req: Request, res: Response, ne
   }
 })
 
-export const CreateAdmin = expressAsyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const { email, password, username } = req.body;
-    const response: ISendResponse = await CreateAdminService({ email, password, username });
-    return formatResponse(res, response.status, response.message, response.success, response.data);
-  } catch (error) {
-    return formatResponse(res, 500, "Internal server error", false, error);
-  }
-})
-
 export const revokeToken = expressAsyncHandler(async (req: Request, res: Response, next: NextFunction) => {
   try {
     // 1. Get refresh token from cookie
@@ -273,7 +261,6 @@ export const revokeToken = expressAsyncHandler(async (req: Request, res: Respons
       provider: userDoc.provider,
       username: userDoc.username,
       credits: userDoc.credits,
-      role: userDoc.role,
       profilePicture: userDoc.profilePicture
     };
 

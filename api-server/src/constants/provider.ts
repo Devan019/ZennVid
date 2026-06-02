@@ -3,11 +3,6 @@ export enum Provider {
   CREDENTIALS = "credentials",
 }
 
-export enum UserRole {
-  USER = "user",
-  ADMIN = "admin",
-}
-
 export const languages = [
   { code: "ab", language: "Abkhaz" },
   { code: "ace", language: "Acehnese" },

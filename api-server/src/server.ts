@@ -8,10 +8,12 @@ import connectToMongo from "./utils/mongoConnection";
 import { FRONTEND_URL, IP_ADDRESS, PORT } from "./env_var";
 import JobRouter from "./sse/videogen_event";
 import worker from "./worker";
+import { paymentEventRouter, webhookRouter } from "./webhook";
 
 
 // import { rateLimit } from 'express-rate-limit'
 const app = e();
+app.use("/webhook", e.raw({ type: 'application/json' }), webhookRouter);
 app.use(e.json());
 
 const corsOptions = {
@@ -36,15 +38,13 @@ const corsOptions = {
 // })
 app.set("trust proxy", 1);
 // app.use(limiter)
-
-app.use(e.static("public"));
-
 app.use(cookieParser());
 app.use(cors(corsOptions));
 app.use("/auth", AuthRouter);
 app.use("/oauth", OAuthRouter);
 app.use("/api", ApiRouter);
 app.use("/jobstatus", JobRouter);
+app.use("/payments", paymentEventRouter);
 
 const startServer = async () => {
   app.listen(PORT, IP_ADDRESS, () => {

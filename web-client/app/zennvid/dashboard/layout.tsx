@@ -14,7 +14,7 @@ const layout = ({
     {
       href: FRONTEND_ROUTES.MAGICSTUDIO,
       icon: "magic",
-      label: "Magic Studio",
+      label: "Magic Studio (20 credits)",
       tooltip:
         "Create cinematic AI videos",
     },
@@ -22,20 +22,10 @@ const layout = ({
     {
       href: FRONTEND_ROUTES.SYNCSTUDIO,
       icon: "Videotape",
-      label: "Sync Studio",
+      label: "Sync Studio (20 credits) ",
       tooltip:
         "Sync lips & cinematic motion",
     },
-
-    {
-      href:
-        FRONTEND_ROUTES.ANIMETWIN,
-      icon: "sparkles",
-      label: "Anime Twin",
-      tooltip:
-        "Find your anime twin",
-    },
-
     {
       href: FRONTEND_ROUTES.YOURVIDEO,
       icon: "videoOff",
@@ -55,7 +45,7 @@ const layout = ({
         <SidebarProvider>
           {/* ROOT */}
           <div
-            className=" grid min-h-screen w-full overflow-hidden bg-[#F4F1EA] lg:grid-cols-[340px_1fr] 3xl:grid-cols-[420px_1fr]"
+            className=" grid min-h-screen w-full overflow-x-clip bg-[#F4F1EA] lg:grid-cols-[340px_1fr] 3xl:grid-cols-[420px_1fr]"
           >
             {/* SIDEBAR */}
             <DashboardSidebar

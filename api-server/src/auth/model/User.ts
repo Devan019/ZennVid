@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import { Provider, UserRole } from "../../constants/provider";
+import { Provider } from "../../constants/provider";
 import { RefreshToken } from "./RefreshToken";
 
 const UserSchema = new Schema({
@@ -22,15 +22,10 @@ const UserSchema = new Schema({
   },
   credits : {
     type: Number,
-    default: 50,
+    default: 40,
   },
   profilePicture: {
     type: String,
-  },
-  role : {
-    type: String,
-    enum: UserRole,
-    default: UserRole.USER,
   },
 }, {timestamps : true})
 

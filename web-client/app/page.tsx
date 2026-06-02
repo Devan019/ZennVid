@@ -7,7 +7,6 @@ import { ReactLenis } from "@studio-freight/react-lenis";
 import { Footer } from "@/components/common/Footer";
 import { FullscreenMenu } from "@/components/common/FullscreenMenu";
 import { Navbar } from "@/components/common/Navbar";
-import { AnimeTwinSection } from "@/components/Home/AnimeTwinSection";
 import { FinalCTASection } from "@/components/Home/cta";
 import { AboutSection } from "@/components/Home/FeatureSection";
 import { HeroSection } from "@/components/Home/HeroSection";
@@ -134,7 +133,6 @@ const Page = () => {
           <AboutSection />
           <MagicStudioSection />
           <SyncStudioSection />
-          <AnimeTwinSection />
           <FinalCTASection />
         </main>
 

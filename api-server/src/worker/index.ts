@@ -18,7 +18,7 @@ const worker = new Worker(
         return await magicStudioTask(job);
       case syncStudioJobName:
         //call sync studio api
-        return await tmpTask(job);
+        return await syncStudioTask(job);
       default:
         throw new Error(`Unhandled job type: ${job.name}`);
     }

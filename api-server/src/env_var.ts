@@ -25,20 +25,9 @@ const AUTH_GOOGLE_SECRET = process.env.AUTH_GOOGLE_SECRET
 const AUTH_GOOGLE_REDIRECT_URI = process.env.AUTH_GOOGLE_REDIRECT_URI
 
 
-//resend key
-const RESEND_KEY = process.env.RESEND_KEY
-
 //frontend url
 const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:3000";
 
-
-//cloudinary
-const CLOUDINARY_CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME;
-const CLOUDINARY_API_KEY = process.env.CLOUDINARY_API_KEY;
-const CLOUDINARY_API_SECRET = process.env.CLOUDINARY_API_SECRET;
-
-//encryption secret for openapi 
-const OPENAPI_SECERT = process.env.ENCRYPTION_SECRET;
 
 //nodemailer for email
 const SMTP_USER = process.env.SMTP_USER;
@@ -61,10 +50,6 @@ const HF_TOKEN8 = process.env.HF_TOKEN8;
 const HF_TOKEN9 = process.env.HF_TOKEN9;
 const HF_TOKEN10 = process.env.HF_TOKEN10;
 
-//nebius api
-const NEBIUS_API_KEY = process.env.NEBIUS_API_KEY;
-const NEBIUS_API_URL = process.env.NEBIUS_API_URL;
-
 //hugging face repo for voice clone, lip sync, translate, edge tts, image pipeline and image gen
 const VOICE_CLONE_REPO = process.env.VOICE_CLONE_REPO;
 const VOICE_CLONE_REPO_API = process.env.VOICE_CLONE_REPO_API;
@@ -74,17 +59,8 @@ const LIP_SYNC_REPO_API = process.env.LIP_SYNC_REPO_API;
 
 const DURATION = process.env.LIP_SYNC_AUDIO_API;
 
-const TRANSLATE_REPO = process.env.TRANSLATE_REPO;
-const TRANSLATE_REPO_API = process.env.TRANSLATE_REPO_API;
-
 const EDGE_TTS_REPO = process.env.EDGE_TTS_REPO;
 const EDGE_TTS_REPO_API = process.env.EDGE_TTS_REPO_API;
-
-const IMAGE_PIPELINE_REPO = process.env.IMAGE_PIPELINE_REPO;
-const IMAGE_PIPELINE_REPO_API = process.env.IMAGE_PIPELINE_REPO_API;
-
-const HF_IMAGE_GEN_REPO = process.env.IMAGE_GEN_REPO;
-const HF_IMAGE_GEN_REPO_API = process.env.IMAGE_GEN_REPO_API;
 
 //assembly ai api key
 const ASSEMBLY_AI_KEY = process.env.ASSEMBLY_AI_KEY;
@@ -94,12 +70,12 @@ const ASSEMBLY_AI_KEY = process.env.ASSEMBLY_AI_KEY;
 const CLOUDFLARE_WORKER_URL = process.env.CLOUDFLARE_WORKER_URL;
 const CLOUDFLARE_WORKER_KEY = process.env.CLOUDFLARE_WORKER_KEY;
 
-//pinecone
-const PINECONE_API_KEY = process.env.PINECONE_API_KEY;
-const PINECONE_INDEX_NAME = process.env.PINECONE_INDEX_NAME;
+const CLOUDFLARE_TXT2IMG = CLOUDFLARE_WORKER_URL + "/txt2img";
+const CLOUDFLARE_IMG2IMG = CLOUDFLARE_WORKER_URL + "/img2img";
+
 
 //redis url
-const REDIS_URL = process.env.REDIS_URL;
+const REDIS_URL = process.env.AVAIN_VALKEY;
 
 //keys
 const ACCESS_KEY = process.env.ACCESS_KEY;
@@ -134,12 +110,18 @@ const S3_SECRET_KEY = process.env.S3_SECRET_KEY;
 const S3_PUBLIC_BUCKET = process.env.S3_PUBLIC_BUCKET;
 const S3_PRIVATE_BUCKET = process.env.S3_PRIVATE_BUCKET;
 const S3_REGION = "auto";
-const  S3_CDN = process.env.S3_CDN;
+const S3_CDN = process.env.S3_CDN;
 
 //s3 files prefix
 const video_prefix = "videos";
 const image_prefix = "images";
 const audio_prefix = "audios";
+
+const razorpay_webhook_secret = process.env.RAZORPAY_WEBHOOK_SECRET
+const razorpay_key_id = process.env.RAZORPAY_KEY;
+const razorpay_key_secret = process.env.RAZORPAY_TOKEN;
+const razorpay_order_expire_time = 30 * 60; //30 min
+const razorpay_order_redis_key = "razorpay_order" 
 
 //export all
 export {
@@ -153,12 +135,7 @@ export {
   AUTH_GOOGLE_ID,
   AUTH_GOOGLE_SECRET,
   AUTH_GOOGLE_REDIRECT_URI,
-  RESEND_KEY,
   FRONTEND_URL,
-  CLOUDINARY_CLOUD_NAME,
-  CLOUDINARY_API_KEY,
-  CLOUDINARY_API_SECRET,
-  OPENAPI_SECERT,
   SMTP_USER,
   SMTP_PASS,
   GROQ_API_KEY,
@@ -172,23 +149,13 @@ export {
   HF_TOKEN8,
   HF_TOKEN9,
   HF_TOKEN10,
-  NEBIUS_API_KEY,
-  NEBIUS_API_URL,
   VOICE_CLONE_REPO,
   VOICE_CLONE_REPO_API,
   LIP_SYNC_REPO,
   LIP_SYNC_REPO_API,
   DURATION,
-  TRANSLATE_REPO,
-  TRANSLATE_REPO_API,
   EDGE_TTS_REPO,
   EDGE_TTS_REPO_API,
-  IMAGE_PIPELINE_REPO,
-  IMAGE_PIPELINE_REPO_API,
-  HF_IMAGE_GEN_REPO,
-  HF_IMAGE_GEN_REPO_API,
-  PINECONE_API_KEY,
-  PINECONE_INDEX_NAME,
   REDIS_URL,
   ACCESS_KEY,
   REFRESH_KEY,
@@ -206,6 +173,8 @@ export {
   active_job_zset,
   CLOUDFLARE_WORKER_KEY,
   CLOUDFLARE_WORKER_URL,
+  CLOUDFLARE_TXT2IMG,
+  CLOUDFLARE_IMG2IMG,
   ASSEMBLY_AI_KEY,
   S3_ACCESS_KEY,
   S3_API,
@@ -217,6 +186,11 @@ export {
   S3_CDN,
   audio_prefix,
   video_prefix,
-  image_prefix
+  image_prefix,
+  razorpay_webhook_secret,
+  razorpay_key_id,
+  razorpay_key_secret,
+  razorpay_order_expire_time,
+  razorpay_order_redis_key
 }
 

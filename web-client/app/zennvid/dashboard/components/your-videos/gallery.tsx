@@ -1,12 +1,12 @@
 /* eslint-disable @next/next/no-html-link-for-pages */
 "use client";
 
-import { useEffect, useState, useRef} from "react";
-import { VideoIcon, Search, SlidersHorizontal, Sparkles, Info, Trash2, X } from "lucide-react";
+import { useEffect, useState, useRef } from "react";
+import { VideoIcon, Search, SlidersHorizontal, Sparkles, Info, Trash2, X, RefreshCw } from "lucide-react";
 import { VideoData, VideoLayoutGrid } from "@/components/ui/video-layout";
 import { useUser } from "@/context/UserProvider";
-import { deleteVideo, feedCreate, getUserVideos} from "@/lib/apiProvider";
-import { useMutation, useQuery} from "@tanstack/react-query";
+import { deleteVideo, feedCreate, getUserVideos } from "@/lib/apiProvider";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { FaSignsPost } from "react-icons/fa6";
@@ -80,6 +80,7 @@ const VideoGallery = () => {
   const [deletingIds, setDeletingIds] = useState<string[]>([]);
   const [connectingJobIds, setConnectingJobIds] = useState<string[]>([]);
   const sseConnectionsRef = useRef(new Map<string, EventSource>());
+  const [isSyncing, setIsSyncing] = useState(false);
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -230,11 +231,11 @@ const VideoGallery = () => {
       return;
     }
     const progressVids = data.DATA?.progressVideos || [];
-    const progressMap = new Map<string,ProgressVideo>();
+    const progressMap = new Map<string, ProgressVideo>();
     const activeJobIds = new Set<string>();
-    
+
     progressVids.forEach((pv) => {
-      progressMap.set(pv.jobId,pv);
+      progressMap.set(pv.jobId, pv);
       activeJobIds.add(pv.jobId);
       connectSseForProgress(pv.jobId);
     });
@@ -250,7 +251,7 @@ const VideoGallery = () => {
         videoUrl: video.videoMetadata?.url || "",
         created_at: video.created_at || new Date().toISOString(),
         style: video.style || "default",
-        language:video.language ||"english",
+        language: video.language || "english",
         voiceCharacter: video.voiceCharacter || "unknown",
       }));
 
@@ -353,7 +354,7 @@ const VideoGallery = () => {
     async (video: VideoData) => {
       console.log("Downloading video:", video);
       try {
-        const response =await fetch( video.videoUrl);
+        const response = await fetch(video.videoUrl);
         const blob = await response.blob();
 
         const url = URL.createObjectURL(blob);
@@ -371,6 +372,18 @@ const VideoGallery = () => {
         );
       }
     };
+
+  const handleSync = async () => {
+    try {
+      setIsSyncing(true);
+      await videoQuery.refetch();
+      toast.success("Videos synced");
+    } catch {
+      toast.error("Failed to sync videos");
+    } finally {
+      setIsSyncing(false);
+    }
+  };
 
   const ShareModal = (
     <div className="space-y-5 text-black">
@@ -515,22 +528,44 @@ const VideoGallery = () => {
           </div>
 
           {/* FILTER */}
-          <div className="relative">
-            <SlidersHorizontal className="pointer-events-none absolute left-4 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-black/40" />
+          <div className="flex flex-col gap-3 sm:flex-row">
+            {/* FILTER */}
+            <div className="relative">
+              <SlidersHorizontal className="pointer-events-none absolute left-4 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-black/40" />
 
-            <select name="filter" title="filter" value={filterType} onChange={(e) => setFilterType(e.target.value)} className="h-14 w-full rounded-2xl border border-black/10 bg-[#F8F6F1] pl-12 pr-10 text-sm uppercase tracking-[0.15em] text-black outline-none lg:w-[240px]">
-              <option value="all">
-                All Types
-              </option>
+              <select
+                name="filter"
+                title="filter"
+                value={filterType}
+                onChange={(e) => setFilterType(e.target.value)}
+                className="h-14 w-full rounded-2xl border border-black/10 bg-[#F8F6F1] pl-12 pr-10 text-sm uppercase tracking-[0.15em] text-black outline-none lg:w-[240px]"
+              >
+                <option value="all">
+                  All Types
+                </option>
 
-              <option value="magic_studio_video">
-                Magic Studio
-              </option>
+                <option value="magic_studio_video">
+                  Magic Studio
+                </option>
 
-              <option value="sync_studio_video">
-                Sync Studio
-              </option>
-            </select>
+                <option value="sync_studio_video">
+                  Sync Studio
+                </option>
+              </select>
+            </div>
+
+            {/* SYNC BUTTON */}
+            <button
+              onClick={handleSync}
+              disabled={isSyncing}
+              className="flex h-14 items-center justify-center gap-3 rounded-2xl border border-black/10 bg-black px-5 text-sm font-medium uppercase tracking-[0.15em] text-white transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <RefreshCw
+                className={`h-4 w-4 ${isSyncing ? "animate-spin" : ""}`}
+              />
+
+              {isSyncing ? "Syncing..." : "Sync"}
+            </button>
           </div>
         </div>
 

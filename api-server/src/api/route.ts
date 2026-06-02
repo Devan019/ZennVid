@@ -2,15 +2,11 @@ import { Router } from "express";
 import { syncStudio, magicVideo } from "./video_generater/controller";
 import { isAuthenticated } from "../middleware";
 import { deleteVideo, getVideos } from "./videoapi/controller";
-import { CreateNewApp, dashboardStats, GetAllApps, SendKeyToEmail } from "./openapi/controller";
-import { GenAudio, GenCaptions, GetVoices, Languages, Translater } from "./openapi/api/controller";
-import { checkApiKey } from "./openapi/api/checkApiKey";
-import { updateCredit } from "./pricing/controller";
+import { createOrder, updateCredit } from "./pricing/controller";
 import { scriptRouter } from "../script/route";
 import FeedRouter from "./feed/route";
 import multer from "multer";
 import path from "path";
-import { animeMatching } from "./anime/controller";
 import { checkSyncStudioRateLimit, checkMagicStudioRateLimit } from "../utils/rate-limiting";
 
 export const ApiRouter = Router();
@@ -34,10 +30,9 @@ ApiRouter.use("/script", scriptRouter);
 /** feed */
 ApiRouter.use("/feed", FeedRouter);
 
-/** anime matching */
-ApiRouter.use("/anime", isAuthenticated, upload.single("image"), animeMatching);
 /**credits */
 ApiRouter.post("/update-credit", isAuthenticated, updateCredit);
+ApiRouter.post("/create-order", isAuthenticated, createOrder);
 
 /**videoapi */
 /** prompt to video gen */
@@ -47,15 +42,3 @@ ApiRouter.get("/videos", isAuthenticated, getVideos);
 ApiRouter.post("/syncstudio-video", isAuthenticated,checkSyncStudioRateLimit, upload.fields([{name: "image", maxCount: 1}, {name: "audio", maxCount: 1}]), syncStudio);
 /** delete */
 ApiRouter.delete("/videos/:videoId", isAuthenticated, deleteVideo);
-
-/**openapi */
-ApiRouter.get("/openapi/apps" , isAuthenticated , GetAllApps);
-ApiRouter.post("/openapi/app" , isAuthenticated , CreateNewApp);
-ApiRouter.post("/openapi/app/sendkey" , isAuthenticated , SendKeyToEmail);
-ApiRouter.get("/openapi/dashboard", isAuthenticated, dashboardStats);
-
-ApiRouter.get("/openapi/languages",checkApiKey, Languages); 
-ApiRouter.get("/openapi/voices",checkApiKey, GetVoices); 
-ApiRouter.post("/openapi/translate",checkApiKey, Translater);
-ApiRouter.post("/openapi/generate-audio",checkApiKey, GenAudio);
-ApiRouter.post("/openapi/generate-captions",checkApiKey, GenCaptions);

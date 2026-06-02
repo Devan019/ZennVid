@@ -12,7 +12,6 @@ export type User = {
   credits: number;
   _id: string;
   provider: string;
-  role: 'admin' | 'user';
 }
 interface UserContextType {
   user: User | null;

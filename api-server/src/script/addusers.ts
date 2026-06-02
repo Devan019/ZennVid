@@ -3,7 +3,7 @@ import expressAsyncHandler from "../utils/expressAsync";
 import { formatResponse } from "../utils/formateResponse";
 import bcrypt from "bcrypt";
 import { User } from "../auth/model/User";
-import { Provider, UserRole } from "../constants/provider";
+import { Provider } from "../constants/provider";
 
 export const createBulkUsers = expressAsyncHandler(async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -50,7 +50,6 @@ export const createBulkUsers = expressAsyncHandler(async (req: Request, res: Res
           provider,
           credits: 100, // Default credits
           profilePicture: provider === Provider.GOOGLE ? `https://ui-avatars.com/api/?name=${username}` : "",
-          role: UserRole.USER,
           createdAt: dateForDay,
           updatedAt: dateForDay
         });

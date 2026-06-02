@@ -16,7 +16,6 @@ export interface IFormErrors {
 
 export interface ConformUser {
   email: string;
-  role: string;
   password: string;
   username?: string;
 }

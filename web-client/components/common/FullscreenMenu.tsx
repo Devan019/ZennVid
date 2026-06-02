@@ -1,5 +1,6 @@
 "use client";
 
+import { FRONTEND_ROUTES } from "@/constants/frontend_routes";
 import { AnimatePresence, motion } from "framer-motion";
 
 interface FullscreenMenuProps {
@@ -10,27 +11,23 @@ interface FullscreenMenuProps {
 const links = [
   {
     title: "Home",
-    href: "#",
+    href: FRONTEND_ROUTES.HOME,
   },
   {
     title: "About",
-    href: "#about",
+    href: FRONTEND_ROUTES.About,
   },
   {
     title: "Magic Studio",
-    href: "#magicstudio",
+    href: FRONTEND_ROUTES.HomeMagic,
   },
   {
     title: "Sync Studio",
-    href: "#syncstudio",
-  },
-  {
-    title: "Anime Twin",
-    href: "#animetwin",
+    href: FRONTEND_ROUTES.SYNCSTUDIO,
   },
   {
     title: "Contact",
-    href: "#contact",
+    href: FRONTEND_ROUTES.Contact,
   },
 ];
 
