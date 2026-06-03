@@ -17,7 +17,7 @@ app.use("/webhook", e.raw({ type: 'application/json' }), webhookRouter);
 app.use(e.json());
 
 const corsOptions = {
-  origin: [FRONTEND_URL],
+  origin: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true

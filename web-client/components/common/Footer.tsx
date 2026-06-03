@@ -44,7 +44,7 @@ export function Footer() {
     },
   ];
   return (
-    <footer className="relative min-h-screen overflow-hidden bg-black text-white">
+    <footer data-theme="dark" className="relative min-h-screen overflow-hidden bg-black text-white">
 
       {/* BACKGROUND GLOW */}
       <div

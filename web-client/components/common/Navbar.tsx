@@ -162,7 +162,7 @@ export const Navbar = ({ setMenuOpen }: NavbarProps) => {
         {isAuthenticated && (
           <div
             className="
-              hidden
+              flex
               items-center
               gap-6
               md:flex
@@ -310,7 +310,7 @@ export const Navbar = ({ setMenuOpen }: NavbarProps) => {
             }}
             onClick={logout}
             className={`
-              hidden
+              flex
               md:flex
               items-center
               justify-center
@@ -369,7 +369,7 @@ export const Navbar = ({ setMenuOpen }: NavbarProps) => {
         {!isAuthenticated && (
           <div
             className="
-              hidden
+              flex
               items-center
               gap-6
               md:flex
@@ -423,7 +423,7 @@ export const Navbar = ({ setMenuOpen }: NavbarProps) => {
           }}
           onClick={() => router.push("/auth")}
           className={`
-    hidden
+    flex
     md:flex
     items-center
     justify-center

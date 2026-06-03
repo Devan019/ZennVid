@@ -8,7 +8,21 @@ import { active_job_data, active_job_time, active_job_zset, audio_prefix, image_
 import { redisClient } from "../../utils/redisClient";
 import { cleanupUploadedFiles } from "./controller";
 import { uploadFileToS3 } from "../../utils/s3";
+import ffmpeg from "fluent-ffmpeg";
+import ffprobe from "ffprobe-static";
 
+
+ffmpeg.setFfprobePath(ffprobe.path);
+
+const getAudioDuration = (filePath: string): Promise<number> => {
+  return new Promise((resolve, reject) => {
+    ffmpeg.ffprobe(filePath, (err, metadata) => {
+      if (err) return reject(err);
+
+      resolve(metadata.format.duration || 0);
+    });
+  });
+};
 
 const inProgressVideoCache = async (userId: string, job: any) => {
   try {
@@ -103,6 +117,13 @@ export const syncStudioCreationVideo = async (req: Request, res: Response, next:
 
     imagePath = (req.files as any).image[0].path;
     audioPath = (req.files as any).audio[0].path;
+
+    const audioDuration = await getAudioDuration(audioPath);
+
+    if (audioDuration > 8) {
+      cleanupUploadedFiles(req.files);
+      return formatResponse(res, 400, "Audio duration should be less than 8 seconds", false, null);
+    }
 
     //upload image to s3
     const uploadResult = await uploadFileToS3({

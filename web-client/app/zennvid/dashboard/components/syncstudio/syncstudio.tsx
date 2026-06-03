@@ -67,6 +67,40 @@ const VideoCreator = ({
     },
   });
 
+  const validateAudioDuration = (
+    file: File,
+    maxDuration = 8
+  ): Promise<boolean> => {
+    return new Promise((resolve, reject) => {
+      const audio = document.createElement("audio");
+
+      audio.preload = "metadata";
+
+      audio.onloadedmetadata = () => {
+        URL.revokeObjectURL(audio.src);
+
+        if (audio.duration > maxDuration) {
+          reject(
+            new Error(`Audio must be under ${maxDuration} seconds`)
+          );
+        } else {
+          resolve(true);
+        }
+      };
+
+      audio.onerror = () => {
+        reject(new Error("Invalid audio file"));
+      };
+
+      audio.src = URL.createObjectURL(file);
+    });
+  };
+
+  const validateFileSize = (file: File, maxSizeMB = 10): boolean => {
+    const maxSizeBytes = maxSizeMB * 1024 * 1024;
+    return file.size <= maxSizeBytes;
+  }
+
   const handleSubmit = async () => {
     if (!title || !characterName || !imageFile) {
       toast.error("Please fill all required fields");
@@ -86,6 +120,34 @@ const VideoCreator = ({
     }
     setIsSubmitting(true);
     try {
+      //check audio duration 
+      if (audioFile) {
+        const data = await validateAudioDuration(audioFile);
+        if (!data) {
+          toast.error("Audio must be under 8 seconds");
+          setIsSubmitting(false);
+          return;
+        }
+
+        const isValidSize = validateFileSize(audioFile);
+        if (!isValidSize) {
+          toast.error("Audio file size must be under 10MB");
+          setIsSubmitting(false);
+          return;
+        }
+      }
+
+      if(imageFile) {
+        const isValidSize = validateFileSize(imageFile);
+        if (!isValidSize) {
+          toast.error("Image file size must be under 10MB");
+          setIsSubmitting(false);
+          return;
+        }
+      }
+
+
+
       const formData = new FormData();
       formData.append("description", isVoiceCloning ? voiceClonePrompt : title);
       formData.append("character", characterName);

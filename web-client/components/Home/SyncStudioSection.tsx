@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { FRONTEND_ROUTES } from "@/constants/frontend_routes";
 
 export const SyncStudioSection = () => {
-  const videoUrl = "https://cdn.zennvid.tech/media/sync_video.mp4";
+  const videoUrl = "https://cdn.zennvid.tech/videos/133e7689-c421-4fc5-abc3-e5825e867817";
   const router = useRouter();
   const [isPlaying, setIsPlaying] = useState(false);
 
