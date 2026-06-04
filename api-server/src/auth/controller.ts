@@ -4,7 +4,7 @@ import { formatResponse } from "../utils/formateResponse";
 import { createTmpUserService, createUserService, GetUserByTokenService, signInUserService } from "./service";
 import { CheckUserValidation, SignInValidation, UserValidation } from "./schema/zodschema";
 import { ISendResponse } from "../constants/interfaces";
-import { SetCookie } from "../utils/setCookie";
+import { SetCookie, ClearCookie } from "../utils/cookieHelper";
 import { redisClient } from "../utils/redisClient";
 import { generateJWTtoken } from "../utils/jwtAssign";
 import { ACCESS_KEY, accessPeroid, accessPeroidJwt, FRONTEND_URL, REFRESH_KEY, REFRESH_SECRET, refreshPeroid, refreshPeroidJwt, IS_PROD } from "../env_var";
@@ -169,17 +169,9 @@ export const logout = expressAsyncHandler(async (req: Request, res: Response, ne
     //delete refresh token from db
     await RefreshToken.deleteOne({ user: userId, token: await sha256Hex(refresh_token), sessionId });
 
-    res.clearCookie("access_token", {
-      httpOnly: true,
-      secure: IS_PROD,
-      sameSite: "strict"
-    });
-
-    res.clearCookie("refresh_token", {
-      httpOnly: true,
-      secure: IS_PROD,
-      sameSite: "strict"
-    });
+    //clear cookies
+    ClearCookie(res, "access_token");
+    ClearCookie(res, "refresh_token");
 
     return formatResponse(res, 200, "User logged out successfully", true, null);
   } catch (error) {
@@ -213,16 +205,8 @@ export const revokeToken = expressAsyncHandler(async (req: Request, res: Respons
 
     if (!tokenRecord) {
       // If we don't find the token, it means it's either expired, logged out, or invalid.
-      res.clearCookie("access_token", {
-        httpOnly: true,
-        secure: IS_PROD,
-        sameSite: "strict"
-      });
-      res.clearCookie("refresh_token", {
-        httpOnly: true,
-        secure: IS_PROD,
-        sameSite: "strict"
-      });
+      ClearCookie(res, "access_token");
+      ClearCookie(res, "refresh_token");
       return formatResponse(res, 401, "Unauthorized", false, null);
     }
 
@@ -232,16 +216,8 @@ export const revokeToken = expressAsyncHandler(async (req: Request, res: Respons
       await RefreshToken.deleteOne({ user: id, sessionId: sessionId });
 
       //clear cookies
-      res.clearCookie("access_token", {
-        httpOnly: true,
-        secure: IS_PROD,
-        sameSite: "strict"
-      });
-      res.clearCookie("refresh_token", {
-        httpOnly: true,
-        secure: IS_PROD,
-        sameSite: "strict"
-      });
+      ClearCookie(res, "access_token");
+      ClearCookie(res, "refresh_token");
       return formatResponse(res, 401, "Unauthorized", false, null);
     }
 

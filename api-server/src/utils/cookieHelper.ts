@@ -16,3 +16,13 @@ export const SetCookie = (
     domain: DOMAIN
   });
 };
+
+export const ClearCookie = (res: Response, key: string) => {
+  res.clearCookie(key, {
+    httpOnly: true,
+    secure: IS_PROD,
+    sameSite: IS_PROD ? "none" as const : "lax" as const,
+    domain: DOMAIN,
+    path: "/"
+  });
+}
