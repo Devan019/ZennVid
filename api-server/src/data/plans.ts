@@ -1,32 +1,36 @@
 export const plans = [
   {
-    id: "micro",
-    name: "Micro",
-    price: "₹100",
-    amount: 100,
-    credits: 70,
-    description:
-      "A great starting point for small creators. (70 credits)",
-    highlight: false,
-  },
-  {
     id: "starter",
     name: "Starter",
-    price: "₹150",
-    amount: 150,
-    credits: 150,
+    price: "₹29",
+    amount: 29,
+    credits: 200,
+    icon: Zap,
     description:
-      "For those who need a little more power. (150 credits)",
+      "Perfect for trying cinematic AI generation.",
+    highlight: false,
+  },
+
+  {
+    id: "creator",
+    name: "Creator",
+    price: "₹79",
+    amount: 79,
+    credits: 500,
+    icon: Sparkles,
+    description:
+      "Best for active creators generating regularly.",
     highlight: true,
   },
   {
-    id: "pro_lite",
-    name: "Pro Lite",
-    price: "₹200",
-    amount: 200,
-    credits: 250,
+    id: "pro",
+    name: "Pro",
+    price: "₹149",
+    amount: 149,
+    credits: 1000,
+    icon: Crown,
     description:
-      "For serious creators who need more flexibility. (250 credits)",
+      "For power users and cinematic workflows.",
     highlight: false,
   },
 ];
