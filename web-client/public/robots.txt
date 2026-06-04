@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://zennvid.tech
+
+# Sitemaps
+Sitemap: https://zennvid.tech/sitemap.xml
