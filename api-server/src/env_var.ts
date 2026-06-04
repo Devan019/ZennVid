@@ -10,7 +10,7 @@ const IP_ADDRESS = process.env.IP || "localhost";
 const PORT = parseInt(process.env.PORT ?? "8000");
 
 //mongodb uri
-const MONGO_URI = process.env.MINGODB_PROD || "mongodb://localhost:27017/zennvid";
+const MONGO_URI = process.env.MONGODB_PROD || "mongodb://localhost:27017/zennvid";
 
 
 //domain
