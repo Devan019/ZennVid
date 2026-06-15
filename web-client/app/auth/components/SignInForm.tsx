@@ -24,6 +24,25 @@ const SignInForm: React.FC<SignInFormProps> = ({
   onInputChange,
   onSubmit,
 }) => {
+  const fillDemoCredentials = () => {
+    const emailEvent = {
+      target: {
+        name: "emailOrUsername",
+        value: "23ceubs023@ddu.ac.in",
+      },
+    } as React.ChangeEvent<HTMLInputElement>;
+
+    const passwordEvent = {
+      target: {
+        name: "password",
+        value: "ddupassword",
+      },
+    } as React.ChangeEvent<HTMLInputElement>;
+
+    onInputChange(emailEvent);
+    onInputChange(passwordEvent);
+  };
+
   return (
     <form onSubmit={onSubmit} className="space-y-5">
       {/* EMAIL */}
@@ -49,6 +68,10 @@ const SignInForm: React.FC<SignInFormProps> = ({
           disabled={isLoading}
           className={inputClass}
         />
+
+        {errors.email && (
+          <p className="mt-2 text-sm text-red-500">{errors.email}</p>
+        )}
       </div>
 
       {/* PASSWORD */}
@@ -93,6 +116,47 @@ const SignInForm: React.FC<SignInFormProps> = ({
             <Eye className="h-5 w-5" />
           )}
         </button>
+
+        {errors.password && (
+          <p className="mt-2 text-sm text-red-500">{errors.password}</p>
+        )}
+      </div>
+
+      {/* DEMO CREDENTIALS */}
+      <div className="rounded-2xl border border-black/10 bg-black/[0.03] p-4">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wider text-black/60">
+              Demo Account
+            </p>
+            <p className="mt-1 text-sm text-black/70">
+              23ceubs023@ddu.ac.in
+            </p>
+            <p className="text-sm text-black/70">
+              ddupassword
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={fillDemoCredentials}
+            disabled={isLoading}
+            className="
+              rounded-xl
+              border
+              border-black/10
+              px-4
+              py-2
+              text-sm
+              font-medium
+              transition
+              hover:bg-black
+              hover:text-white
+            "
+          >
+            Use Demo
+          </button>
+        </div>
       </div>
 
       {/* SUBMIT */}
